@@ -116,6 +116,8 @@
         board[0][4] = wq;
         board[7][3] = bk;
         board[7][4] = bq;
+        board[4][4] = wr;
+        board[3][3] = br;
         for (i = 0; i < 8; i++) {
             board[1][i] = wp;
             board[6][i] = bp;
@@ -178,6 +180,7 @@
         }
         //Pawn movement
         function pawn(x, y, xs, ys, board) {
+            console.log("Pawn" + board[xs][ys].color + " " + turns);
             var d = 1;
             if (board[xs][ys].color == "black") {
                 d = -1;
@@ -199,9 +202,48 @@
         }
         //Rook movement
         function rook(x, y, xs, ys, board) {
+            console.log("Rook " + board[xs][ys].color + " " + turns+" x:"+x+" y:"+y);
             var freedom = [];
-            return true
+            i = 1;
+            while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
+                freedom.push("" + (xs) + (ys + i));
+                console.log(freedom[i-1]);
+                i++;
+            }
+            if (ys + i < 7 && board[xs][ys + i + 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs) + (ys + i + 1));
+            }
+            i = 1;
+            return false;
+            while (typeof (board[xs][ys - i]) == "undefined" && ys - i > 0) {
+                freedom.push("" + (xs) + (ys - i));
+                console.log(freedom[i]);
+                console.log(ys - i);
+                i++;
+            }
+            if (ys - i > 0 && board[xs][ys - i - 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs) + (ys - i - 1));
+            }
+            i = 1;
+            while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
+                freedom.push("" + (xs + i) + (ys));
+                console.log(freedom[i]);
+                i++;
+            }
+            if (xs + i < 7 && board[xs + i + 1][ys].color != board[xs][ys].color) {
+                freedom.push("" + (xs + i + 1) + (ys));
 
+
+            }
+            i = 1
+            while (typeof (board[xs - i][ys]) == "undefined" && xs - i > 0) {
+                freedom.push("" + (xs - i) + (ys));
+                console.log(freedom[i]);
+                i++;
+            }
+            if (xs - i > 0 && board[xs - i - 1][ys].color != board[xs][ys].color) {
+                freedom.push("" + (xs - i - 1) + (ys));
+            }
             return movable(freedom, x, y);
         }
         //Horse movement
