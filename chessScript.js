@@ -198,26 +198,26 @@ function rook(x, y, xs, ys, board) {
     if (ys - i >= 0 && board[xs][ys - i].color != board[xs][ys].color) {
         freedom.push("" + (xs) + (ys - i));
     }
-    /*
+    //Down
     i = 1;
     while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
         freedom.push("" + (xs + i) + (ys));
-        console.log(freedom[i]);
         i++;
     }
-    if (xs + i < 7 && board[xs + i + 1][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs + i + 1) + (ys));
+    //Take out
+    if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys));
     }
+    //Up
     i = 1
     while (typeof (board[xs - i][ys]) == "undefined" && xs - i > 0) {
         freedom.push("" + (xs - i) + (ys));
-        console.log(freedom[i]);
         i++;
     }
-    if (xs - i > 0 && board[xs - i - 1][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs - i - 1) + (ys));
+    //Take out
+    if (xs - i >= 0 && board[xs - i][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys));
     }
-    */
     return movable(freedom, x, y);
 }
 //Horse movement
