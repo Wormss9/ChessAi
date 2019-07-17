@@ -228,7 +228,7 @@ function diaMove(xs, ys, board) {
         freedom.push("" + (xs + i) + (ys - i));
         i++;
     }
-    console.log(""+(xs + i) + (ys - i));
+    console.log("" + (xs + i) + (ys - i));
     if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
         freedom.push("" + (xs + i) + (ys - i));
     }
@@ -263,8 +263,30 @@ function rook(x, y, xs, ys, board) {
 //Horse movement
 function horse(x, y, xs, ys, board) {
     var freedom = [];
-    return true
-
+    if (xs + 3 <= 7 && ys + 2 <= 7 && typeof (board[xs + 3][ys + 2]) == "undefined" || board[xs + 3][ys + 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 3) + (ys + 2));
+    }
+    if (xs + 3 <= 7 && ys - 2 >= 0 && typeof (board[xs + 3][ys - 2]) == "undefined" || board[xs + 3][ys - 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 3) + (ys - 2));
+    }
+    if (xs - 3 >= 0 && ys + 2 <= 7 && typeof (board[xs - 3][ys + 2]) == "undefined" || board[xs - 3][ys + 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 3) + (ys + 2));
+    }
+    if (xs - 3 >= 0 && ys - 2 >= 0 && typeof (board[xs - 3][ys - 2]) == "undefined" || board[xs - 3][ys - 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 3) + (ys - 2));
+    }
+    if (xs + 2 <= 7 && ys + 3 <= 7 && typeof (board[xs + 2][ys + 3]) == "undefined" || board[xs + 2][ys + 3].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 2) + (ys + 3));
+    }
+    if (xs + 2 <= 7 && ys - 3 >= 0 && typeof (board[xs + 2][ys - 3]) == "undefined" || board[xs + 2][ys - 3].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 2) + (ys - 3));
+    }
+    if (xs - 2 >= 0 && ys + 3 <= 7 && typeof (board[xs - 2][ys + 3]) == "undefined" || board[xs - 2][ys + 3].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 2) + (ys + 3));
+    }
+    if (xs - 2 >= 0 && ys - 3 >= 0 && typeof (board[xs - 2][ys - 3]) == "undefined" || board[xs - 2][ys - 3].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 2) + (ys - 3));
+    }
     return movable(freedom, x, y);
 }
 //Bishop movement
