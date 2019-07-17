@@ -263,29 +263,29 @@ function rook(x, y, xs, ys, board) {
 //Horse movement
 function horse(x, y, xs, ys, board) {
     var freedom = [];
-    if (xs + 3 <= 7 && ys + 2 <= 7 && typeof (board[xs + 3][ys + 2]) == "undefined" || board[xs + 3][ys + 2].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 3) + (ys + 2));
+    if (xs + 2 <= 7 && ys + 1 <= 7 && typeof (board[xs + 2][ys + 1]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 2) + (ys + 1));
     }
-    if (xs + 3 <= 7 && ys - 2 >= 0 && typeof (board[xs + 3][ys - 2]) == "undefined" || board[xs + 3][ys - 2].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 3) + (ys - 2));
+    if (xs + 2 <= 7 && ys - 1 >= 0 && typeof (board[xs + 2][ys - 1]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 2) + (ys - 1));
     }
-    if (xs - 3 >= 0 && ys + 2 <= 7 && typeof (board[xs - 3][ys + 2]) == "undefined" || board[xs - 3][ys + 2].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 3) + (ys + 2));
+    if (xs - 2 >= 0 && ys + 1 <= 7 && typeof (board[xs - 2][ys + 1]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 2) + (ys + 1));
     }
-    if (xs - 3 >= 0 && ys - 2 >= 0 && typeof (board[xs - 3][ys - 2]) == "undefined" || board[xs - 3][ys - 2].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 3) + (ys - 2));
+    if (xs - 2 >= 0 && ys - 1 >= 0 && typeof (board[xs - 2][ys - 1]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 2) + (ys - 1));
     }
-    if (xs + 2 <= 7 && ys + 3 <= 7 && typeof (board[xs + 2][ys + 3]) == "undefined" || board[xs + 2][ys + 3].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 2) + (ys + 3));
+    if (xs + 1 <= 7 && ys + 2 <= 7 && typeof (board[xs + 1][ys + 2]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 1) + (ys + 2));
     }
-    if (xs + 2 <= 7 && ys - 3 >= 0 && typeof (board[xs + 2][ys - 3]) == "undefined" || board[xs + 2][ys - 3].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 2) + (ys - 3));
+    if (xs + 1 <= 7 && ys - 2 >= 0 && typeof (board[xs + 1][ys - 2]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 1) + (ys - 2));
     }
-    if (xs - 2 >= 0 && ys + 3 <= 7 && typeof (board[xs - 2][ys + 3]) == "undefined" || board[xs - 2][ys + 3].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 2) + (ys + 3));
+    if (xs - 1 >= 0 && ys + 2 <= 7 && typeof (board[xs - 1][ys + 2]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 1) + (ys + 2));
     }
-    if (xs - 2 >= 0 && ys - 3 >= 0 && typeof (board[xs - 2][ys - 3]) == "undefined" || board[xs - 2][ys - 3].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 2) + (ys - 3));
+    if (xs - 1 >= 0 && ys - 2 >= 0 && typeof (board[xs - 1][ys - 2]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 1) + (ys - 2));
     }
     return movable(freedom, x, y);
 }
@@ -296,7 +296,38 @@ function bishop(x, y, xs, ys, board) {
 //King movement
 function king(x, y, xs, ys, board) {
     var freedom = [];
-    return true
+    //RightDown
+    if ((xs + 1) < 8 && (ys + 1) < 8 && board[xs + 1][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 1) + (ys + 1));
+    }
+    //LeftUp   
+    if ((xs - 1) < 8 && (ys - 1) < 8 && board[xs - 1][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 1) + (ys - 1));
+    }
+    //RightUp   
+    if ((xs - 1) >= 0 && (ys + 1) < 8 && board[xs - 1][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 1) + (ys + 1));
+    }
+    //LeftDown    
+    if ((xs + 1) < 8 && (ys - 1) >= 0 && board[xs + 1][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 1) + (ys - 1));
+    }
+    //Right
+    1f (ys + 1 <= 7 && board[xs][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs) + (ys + 1));
+    }
+    //Left
+    if (ys - 1 >= 0 && board[xs][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs) + (ys - 1));
+    }
+    //Down
+    if (xs + 1 <= 7 && board[xs + 1][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs + 1) + (ys));
+    }
+    //Up
+    if (xs - 1 >= 0 && board[xs - 1][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs - 1) + (ys));
+    }
 
     return movable(freedom, x, y);
 }
