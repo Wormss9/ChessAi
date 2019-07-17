@@ -96,15 +96,17 @@ for (i = 0; i < 8; i++) {
 //Board Drawing
 document.write('<table id="table">')
 for (var i = 0; i < 9; i++) {
-    document.write("<tr>")
+    document.write("<tr>");
     for (var j = 0; j < 9; j++) {
         if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
             document.write("<td style='background-color:grey'>");
         }
-        else { document.write("<td>"); }
-        document.write("<p id=" + (i - 1) + (j - 1) + "></td>")
+        else {
+            document.write("<td>");
+        }
+        document.write("<p id=" + (i - 1) + (j - 1) + "></td>");
     }
-    document.write("</tr>")
+    document.write("</tr>");
 }
 
 
@@ -127,10 +129,14 @@ for (var i = 0; i < 8; i++) {
 //Input translator
 function coordinates() {
     var input = document.getElementById("input").value;
-    if (input.length !== 2) { return false; }
+    if (input.length !== 2) {
+        return false;
+    }
     x = input[0].charCodeAt(0) - 97;
     y = input[1] - 1;
-    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    if (x < 0 || y < 0 || x > 7 || y > 7) {
+        return false;
+    }
     return "" + x + y;
 }
 //
@@ -138,13 +144,38 @@ function coordinates() {
 //
 //Compare freedom to selected move
 function movable(freedom, x, y) {
-    console.log(freedom + "/n" + x + " " + y)
+    console.log(freedom + "/n" + x + " " + y);
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
     else {
         return false;
     }
+}
+//Are you in check?
+function check(board, color) {
+    var kx = -1;
+    var ky;
+    for (var i = 0; i < 8; i++) {
+        for (var j = o; j < 8; j++) {
+            if (typeof (board[i][j]) != undefined && board[i][j].type == "king" && board[i][j].color == color) {
+                kx = i;
+                ky = j;
+                break;
+            }
+        }
+        if (kx != -1) {
+            break;
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        for (j = o; j < 8; j++) {
+            if (typeof (board[i][j]) != undefined && board[i][j].color != color && rule(kx, ky, i, j, board)){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 //Vertical/Horizontal Movement
 function verMove(xs, ys, board) {
@@ -364,6 +395,16 @@ function change() {
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    var moved={
+        x:-1,
+        y:-1,
+        piece:wp
+    }
+    var moving={
+        x:-1,
+        y:-1,
+        piece:wp
+    }
     switch (turn) {
         case 0:
             if (board[x][y] != undefined && board[x][y].color == "white") {
@@ -381,9 +422,22 @@ function change() {
             if (rule(x, y, xs, ys, board)) {
                 document.getElementById("error").innerHTML = "&#8203";
                 document.getElementById("myButton1").value = "Black Select";
+                if(typeof (board[x][y]) != undefined){
+                    moved.x=x;
+                    moved.y=y;
+                    moved.piece=board[x][y];
+                }
                 board[x][y] = board[xs][ys];
+                moving.x=xs;
+                moving.y=ys;
+                moving.piece=board[xs][ys];
                 board[xs][ys] = null;
                 turn = 2;
+                if (check(board, "white")){
+                    turn = 0;
+                    document.getElementById("myButton1").value = "White Select";
+                    document.getElementById("error").innerHTML = "Check";
+                }
                 refresh();
             }
             else {
