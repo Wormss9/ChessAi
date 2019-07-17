@@ -89,7 +89,6 @@ board[0][3] = wk;
 board[0][4] = wq;
 board[7][3] = bk;
 board[7][4] = bq;
-board[4][4] = wk;
 for (i = 0; i < 8; i++) {
     board[1][i] = wp;
     board[6][i] = bp;
