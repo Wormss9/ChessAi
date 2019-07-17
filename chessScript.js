@@ -140,9 +140,6 @@ function coordinates() {
 //
 //Compare freedom to selected move
 function movable(freedom, x, y) {
-    for (i = 0; i < freedom.length; i++) {
-        console.log(freedom[i])
-    }
     console.log(freedom + "/n" + x + " " + y)
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
@@ -151,33 +148,9 @@ function movable(freedom, x, y) {
         return false;
     }
 }
-//Pawn movement
-function pawn(x, y, xs, ys, board) {
-    console.log("Pawn" + board[xs][ys].color + " " + turns);
-    var d = 1;
-    if (board[xs][ys].color == "black") {
-        d = -1;
-    }
-    var freedom = [];
-    i = 1;
-    while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
-        freedom.push("" + (xs + i * d) + (ys));
-        i++;
-    }
-    if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + d) + (ys + 1));
-    }
-    if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + d) + (ys - 1));
-    }
-
-    return movable(freedom, x, y);
-}
-//Rook movement
-function rook(x, y, xs, ys, board) {
-    console.log("Rook " + board[xs][ys].color + " " + turns + " x:" + x + " y:" + y);
-    var freedom = [];
-    //Right
+//Vertical/Horizontal Movement
+function verMove(xs, ys, board){ 
+    var freedom=[];
     i = 1;
     //Move
     while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
@@ -218,7 +191,33 @@ function rook(x, y, xs, ys, board) {
     if (xs - i >= 0 && board[xs - i][ys].color != board[xs][ys].color) {
         freedom.push("" + (xs - i) + (ys));
     }
+    return freedom;
+}
+//Pawn movement
+function pawn(x, y, xs, ys, board) {
+    console.log("Pawn" + board[xs][ys].color + " " + turns);
+    var d = 1;
+    if (board[xs][ys].color == "black") {
+        d = -1;
+    }
+    var freedom = [];
+    i = 1;
+    while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
+        freedom.push("" + (xs + i * d) + (ys));
+        i++;
+    }
+    if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + d) + (ys + 1));
+    }
+    if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
+        freedom.push("" + (xs + d) + (ys - 1));
+    }
+
     return movable(freedom, x, y);
+}
+//Rook movement
+function rook(x, y, xs, ys, board) {
+    return movable(verMove(xs, ys, board), x, y);
 }
 //Horse movement
 function horse(x, y, xs, ys, board) {
