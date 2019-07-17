@@ -125,13 +125,11 @@
         for (var i = 0; i < 9; i++) {
             document.write("<tr>")
             for (var j = 0; j < 9; j++) {
-                document.write("<td><p id=" + (i - 1) + (j - 1) + "></p></td>")
-                //if (i > 0 && j > 0 && board[i - 1][j - 1]) {
-                //    document.write(board[i - 1][j - 1].bn)
-                //}
-                //if (i == 0 && j != 0) { document.write(String.fromCharCode(j + 96)) };
-                //if (j == 0 && i != 0) { document.write(i) };
-                //document.write("</td>")
+                if((i+j+1)%2==0 && i>0 && j>0){
+                    document.write("<td style='background-color:grey'>");
+                }
+                else{document.write("<td>");}
+                document.write("<p id=" + (i - 1) + (j - 1) + "></td>")
             }
             document.write("</tr>")
         }
@@ -165,17 +163,18 @@
         //Rules
         function rule(x, y, xs, ys, board) {
             var test = "Test "
-            document.getElementById("error").innerHTML = test;
+            document.getElementById("demo").innerHTML = test;
+            return true;
             //Pawn
             if (board[xs][ys].type == "pawn") {
                 test += "pawn "+xs+" "+ys+" ";
-                document.getElementById("error").innerHTML = test;
+                document.getElementById("demo").innerHTML = test;
                 var d = 1;
                 if (board[xs][ys].type == "black") {
                     d = -1;
                 }
                 test+="direction:"+d+" ";
-                document.getElementById("error").innerHTML = test;
+                document.getElementById("demo").innerHTML = test;
                 var freedom = []
                 i = 1
                 while (i <= 2 && board[xs][ys + i * d] == "undefined") {
