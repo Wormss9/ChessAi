@@ -160,7 +160,10 @@
             if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
             return "" + x + y;
         }
+        //
         //Rules
+        //
+        //Compare freedom to selected move
         function movable(freedom, x, y) {
             for (i = 0; i < freedom.length; i++) {
                 console.log(freedom[i])
@@ -173,28 +176,65 @@
                 return false;
             }
         }
+        //Pawn movement
         function pawn(x, y, xs, ys, board) {
-            if (board[xs][ys].type == "pawn") {
-                var d = 1;
-                if (board[xs][ys].color == "black") {
-                    d = -1;
-                }
-                var freedom = [];
-                i = 1;
-                while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
-                    freedom.push("" + (xs + i * d) + (ys));
-                    i++;
-                }
-                if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
-                    freedom.push("" + (xs + d) + (ys + 1));
-                }
-                if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
-                    freedom.push("" + (xs + d) + (ys - 1));
-                }
-
-                return movable(freedom, x, y);
+            var d = 1;
+            if (board[xs][ys].color == "black") {
+                d = -1;
             }
+            var freedom = [];
+            i = 1;
+            while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
+                freedom.push("" + (xs + i * d) + (ys));
+                i++;
+            }
+            if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs + d) + (ys + 1));
+            }
+            if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs + d) + (ys - 1));
+            }
+
+            return movable(freedom, x, y);
         }
+        //Rook movement
+        function rook(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Horse movement
+        function horse(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Bishop movement
+        function bishop(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //King movement
+        function king(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Queen movement
+        function queen(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+
+
+        //Very modularity, much readable, not spagetti
         function rule(x, y, xs, ys, board) {
             switch (board[xs][ys].type) {
                 case "pawn":
