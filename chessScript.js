@@ -89,8 +89,8 @@ board[0][3] = wk;
 board[0][4] = wq;
 board[7][3] = bk;
 board[7][4] = bq;
-board[4][4] = wr;
-board[4][0] = br;
+board[4][4] = wb;
+board[4][0] = bb;
 for (i = 0; i < 8; i++) {
     board[1][i] = wp;
     board[6][i] = bp;
@@ -149,8 +149,8 @@ function movable(freedom, x, y) {
     }
 }
 //Vertical/Horizontal Movement
-function verMove(xs, ys, board){ 
-    var freedom=[];
+function verMove(xs, ys, board) {
+    var freedom = [];
     i = 1;
     //Move
     while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
@@ -193,6 +193,15 @@ function verMove(xs, ys, board){
     }
     return freedom;
 }
+//Vertical/Horizontal Movement
+function diaMove(xs, ys, board) {
+    i = 1;
+    while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
+        freedom.push("" + (xs + i) + (ys + i));
+        i++;
+    }
+    return freedom;
+}
 //Pawn movement
 function pawn(x, y, xs, ys, board) {
     console.log("Pawn" + board[xs][ys].color + " " + turns);
@@ -228,10 +237,7 @@ function horse(x, y, xs, ys, board) {
 }
 //Bishop movement
 function bishop(x, y, xs, ys, board) {
-    var freedom = [];
-    return true
-
-    return movable(freedom, x, y);
+   return movable(diaMove(xs, ys, board), x, y);
 }
 //King movement
 function king(x, y, xs, ys, board) {
@@ -242,12 +248,8 @@ function king(x, y, xs, ys, board) {
 }
 //Queen movement
 function queen(x, y, xs, ys, board) {
-    var freedom = [];
-    return true
-
-    return movable(freedom, x, y);
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)),x,y);
 }
-
 
 //Very modularity, much readable, not spagetti
 function rule(x, y, xs, ys, board) {
