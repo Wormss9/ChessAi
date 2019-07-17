@@ -125,10 +125,10 @@
         for (var i = 0; i < 9; i++) {
             document.write("<tr>")
             for (var j = 0; j < 9; j++) {
-                if((i+j+1)%2==0 && i>0 && j>0){
+                if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
                     document.write("<td style='background-color:grey'>");
                 }
-                else{document.write("<td>");}
+                else { document.write("<td>"); }
                 document.write("<p id=" + (i - 1) + (j - 1) + "></td>")
             }
             document.write("</tr>")
@@ -160,60 +160,95 @@
             if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
             return "" + x + y;
         }
+        //
         //Rules
+        //
+        //Compare freedom to selected move
+        function movable(freedom, x, y) {
+            for (i = 0; i < freedom.length; i++) {
+                console.log(freedom[i])
+            }
+            console.log(" ")
+            if (freedom.indexOf("" + x + y) > -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        //Pawn movement
+        function pawn(x, y, xs, ys, board) {
+            var d = 1;
+            if (board[xs][ys].color == "black") {
+                d = -1;
+            }
+            var freedom = [];
+            i = 1;
+            while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
+                freedom.push("" + (xs + i * d) + (ys));
+                i++;
+            }
+            if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs + d) + (ys + 1));
+            }
+            if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
+                freedom.push("" + (xs + d) + (ys - 1));
+            }
+
+            return movable(freedom, x, y);
+        }
+        //Rook movement
+        function rook(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Horse movement
+        function horse(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Bishop movement
+        function bishop(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //King movement
+        function king(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+        //Queen movement
+        function queen(x, y, xs, ys, board) {
+            var freedom = [];
+            return true
+
+            return movable(freedom, x, y);
+        }
+
+
+        //Very modularity, much readable, not spagetti
         function rule(x, y, xs, ys, board) {
-            var test = "Test "
-            document.getElementById("demo").innerHTML = test;
-            return true;
-            //Pawn
-            if (board[xs][ys].type == "pawn") {
-                test += "pawn "+xs+" "+ys+" ";
-                document.getElementById("demo").innerHTML = test;
-                var d = 1;
-                if (board[xs][ys].type == "black") {
-                    d = -1;
-                }
-                test+="direction:"+d+" ";
-                document.getElementById("demo").innerHTML = test;
-                var freedom = []
-                i = 1
-                while (i <= 2 && board[xs][ys + i * d] == "undefined") {
-                    freedom.push("" + (xs) + (ys + i * d));
-                    test+="" + (xs) + (ys + i * d);
-                    i++;
-                }
-                //if (board[xs+d][ys+d] != "undefined" && board[xs+1][ys+d].bn==""){
-                //    freedom.push(""+(xs+1)+(ys+1))
-                //}
-                //if (board[xs-1][ys+1] != "undefined" && board[xs-1][ys+d]){
-                //    freedom.push(""+(xs-1)+(ys+1))
-                //}
-                if (freedom.indexOf("" + x + y) > -1) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            //Rook
-            if (board[xs][ys].type == "rook") {
-                return true
-            }
-            //Horse
-            if (board[xs][ys].type == "horse") {
-                return true
-            }
-            //Bishop
-            if (board[xs][ys].type == "bishop") {
-                return true
-            }
-            //Queen
-            if (board[xs][ys].type == "queen") {
-                return true
-            }
-            //King
-            if (board[xs][ys].type == "king") {
-                return true
+            switch (board[xs][ys].type) {
+                case "pawn":
+                    return pawn(x, y, xs, ys, board);
+                case "rook":
+                    return rook(x, y, xs, ys, board);
+                case "horse":
+                    return horse(x, y, xs, ys, board);
+                case "bishop":
+                    return bishop(x, y, xs, ys, board);
+                case "king":
+                    return king(x, y, xs, ys, board);
+                case "queen":
+                    return queen(x, y, xs, ys, board);
             }
             document.getElementById("error").innerHTML = "Unknown Piece";
         }
@@ -288,8 +323,6 @@
             }
 
         }
-
-        document.getElementById("error").innerHTML="fuck"
     </script>
 
 
