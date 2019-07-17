@@ -89,8 +89,7 @@ board[0][3] = wk;
 board[0][4] = wq;
 board[7][3] = bk;
 board[7][4] = bq;
-board[4][4] = wb;
-board[4][0] = bb;
+board[4][4] = wq;
 for (i = 0; i < 8; i++) {
     board[1][i] = wp;
     board[6][i] = bp;
@@ -163,7 +162,7 @@ function verMove(xs, ys, board) {
     }
     //Left
     i = 1;
-    while (typeof (board[xs][ys - i]) == "undefined" && ys - i > 0) {
+    while (typeof (board[xs][ys - i]) == "undefined" && ys - i >= 0) {
         freedom.push("" + (xs) + (ys - i));
         i++;
     }
@@ -183,7 +182,7 @@ function verMove(xs, ys, board) {
     }
     //Up
     i = 1
-    while (typeof (board[xs - i][ys]) == "undefined" && xs - i > 0) {
+    while (typeof (board[xs - i][ys]) == "undefined" && xs - i >= 0) {
         freedom.push("" + (xs - i) + (ys));
         i++;
     }
@@ -195,10 +194,43 @@ function verMove(xs, ys, board) {
 }
 //Vertical/Horizontal Movement
 function diaMove(xs, ys, board) {
+    var freedom = [];
+    //RightDown
     i = 1;
     while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
         freedom.push("" + (xs + i) + (ys + i));
         i++;
+    }
+    if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys + i));
+    }
+    //LeftUp
+    i = 1;
+    while (typeof (board[xs - i][ys - i]) == "undefined" && ys - i >= 0 && xs - i >= 0) {
+        freedom.push("" + (xs - i) + (ys - i));
+        i++;
+    }
+    if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys - i));
+    }
+    //RightUp
+    i = 1;
+    while (typeof (board[xs - i][ys + i]) == "undefined" && ys + i < 8 && xs - i >= 0) {
+        freedom.push("" + (xs - i) + (ys + i));
+        i++;
+    }
+    if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys + i));
+    }
+    //LeftDown
+    i = 1;
+    while (typeof (board[xs + i][ys - i]) == "undefined" && ys - i >= 0 && xs + i < 8) {
+        freedom.push("" + (xs + i) + (ys - i));
+        i++;
+    }
+    console.log(""+(xs + i) + (ys - i));
+    if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys - i));
     }
     return freedom;
 }
@@ -237,7 +269,7 @@ function horse(x, y, xs, ys, board) {
 }
 //Bishop movement
 function bishop(x, y, xs, ys, board) {
-   return movable(diaMove(xs, ys, board), x, y);
+    return movable(diaMove(xs, ys, board), x, y);
 }
 //King movement
 function king(x, y, xs, ys, board) {
@@ -248,7 +280,7 @@ function king(x, y, xs, ys, board) {
 }
 //Queen movement
 function queen(x, y, xs, ys, board) {
-    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)),x,y);
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y);
 }
 
 //Very modularity, much readable, not spagetti
