@@ -146,13 +146,13 @@ function coordinates() {
 //Compare freedom to selected move
 function movable(freedom, x, y) {
     i = 0;
-    var log="Available: ";
+    var log = "Available: ";
     while (i < freedom.length) {
         var a = "" + freedom[i];
-        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10)+1) + ", ";
+        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
         i++;
     }
-    log = log + "\n Selected: " + String.fromCharCode(y + 97) +(x + 1) ;
+    log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
     console.log(log);
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
@@ -298,17 +298,24 @@ function pawn(x, y, xs, ys, board) {
     }
     var freedom = [];
     i = 1;
+    console.log("F FL FR")
     while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
         freedom.push("" + (xs + i * d) + (ys));
         i++;
+        console.log("F "+ (xs + i * d) + (ys))
     }
-    if (typeof (board[xs + d][ys + 1]) != "undefined" && board[xs + d][ys + 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + d) + (ys + 1));
+    if (typeof (board[xs + d][ys + 1]) != "undefined") {
+        if (board[xs + d][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + d) + (ys + 1));
+            console.log("FR "+(xs + d)+(ys + 1));
+        }
     }
-    if (typeof (board[xs + d][ys - 1]) != "undefined" && board[xs + d][ys - 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + d) + (ys - 1));
+    if (typeof (board[xs + d][ys - 1]) != "undefined") {
+        if (board[xs + d][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + d) + (ys - 1));
+            console.log("FL "+(xs + d)+(ys - 1));
+        }
     }
-
     return movable(freedom, x, y);
 }
 //Rook movement
@@ -425,7 +432,7 @@ function queen(x, y, xs, ys, board) {
 
 //Very modularity, much readable, not spagetti
 function rule(x, y, xs, ys, board) {
-    console.log("Piece: "+board[xs][ys].color+ " " + board[xs][ys].type + " turn:" + turns);
+    console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
     switch (board[xs][ys].type) {
         case "pawn":
             return pawn(x, y, xs, ys, board);
@@ -447,30 +454,32 @@ var xs
 var ys
 turn = 0;
 turns = 0;
-function processButton(){
+function processButton() {
     var input = document.getElementById("input").value;
     if (input.length !== 2) { return false; }
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x,y);
+    change(x, y);
 }
-function change(x,y) {
+function change(x, y) {
     var moving = {
         x: -1,
         y: -1,
         piece: wp
     }
-    console.log("Change "+x+y);
+    console.log("Change " + x + y);
     switch (turn) {
         case 0:
+            
             if (board[x][y] != undefined && board[x][y].color == "white") {
                 document.getElementById("error").innerHTML = "&#8203";
                 document.getElementById("myButton1").value = "White Move";
                 xs = x;
                 ys = y;
                 turn = 1;
-                console.log("Case = 1 "+x+y);
+                document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
+                console.log("Case = 1 " + x + y);
             }
             else {
                 document.getElementById("error").innerHTML = "Not Your Piece";
@@ -496,7 +505,7 @@ function change(x,y) {
                 moving.piece = board[xs][ys];
                 board[xs][ys] = null;
                 turn = 2;
-                console.log("Case = 2 "+x+y);
+                console.log("Case = 2 " + x + y);
                 if (check(board, "white")) {
                     turn = 0;
                     document.getElementById("myButton1").value = "White Select";
@@ -509,6 +518,7 @@ function change(x,y) {
                 document.getElementById("myButton1").value = "White Select";
                 document.getElementById("error").innerHTML = "Cant go there";
             }
+            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
             break;
         case 2:
             if (board[x][y] != undefined && board[x][y].color == "black") {
@@ -517,7 +527,8 @@ function change(x,y) {
                 xs = x;
                 ys = y;
                 turn = 3;
-                console.log("Case = 3 "+x+y);
+                document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
+                console.log("Case = 3 " + x + y);
             }
             else {
                 document.getElementById("error").innerHTML = "Not Your Piece";
@@ -532,24 +543,25 @@ function change(x,y) {
                 refresh();
                 turn = 0;
                 turns += 1;
-                console.log("Case = 0 "+x+y);
+                console.log("Case = 0 " + x + y);
             }
             else {
                 turn = 2;
                 document.getElementById("myButton1").value = "Black Select";
                 document.getElementById("error").innerHTML = "Cant go there";
             }
+            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
             break;
 
     }
 }
 pieceSelected = false;
-function processClick(coordinates){
+function processClick(coordinates) {
     //rozoberanie coordinates
-    xc = coordinates.slice(0,1);
-    yc = coordinates.slice(1,2);
-    change(xc,yc);
-    //nemam tusenia ci su v spravnom poradi, potom to kukni
+    xc = coordinates.slice(0, 1);
+    yc = coordinates.slice(1, 2);
+    change(parseInt(xc, 10), parseInt(yc, 10));
+    /*nemam tusenia ci su v spravnom poradi, potom to kukni
     if(window.pieceSelected == false){
         window.pieceSelected = true;
         //oznaci figurku
@@ -560,18 +572,20 @@ function processClick(coordinates){
         window.pieceSelected = false;
         //odoznaci figurku
         document.getElementById(coordinates).setAttribute("style",'font-weight: normal;');
+        
     }
+    */
 }
-function pieceSelect(xc,yc){
+function pieceSelect(xc, yc) {
     window.x = xc;
     window.y = yc;
 }
-function pieceMove(xc,yc){
+function pieceMove(xc, yc) {
     window.xs = xc;
     window.ys = yc;
     //zabezpečuje že vieš označiť a odoznačiť figúrku
-    if([window.xs,window.ys]!=[window.x,window.y]){
-        console.log('move from: '+[window.x,window.y] + ' to: ' + [window.xs,window.ys])
+    if ([window.xs, window.ys] != [window.x, window.y]) {
+        console.log('move from: ' + [window.x, window.y] + ' to: ' + [window.xs, window.ys])
         //<--tuto tá funkcia čo pohybuje týpkov s parametrami x,y,xs,ys,board,
         // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
         // TO-DO: ilegálne pohyby treba poriešiť ešte
