@@ -145,7 +145,7 @@ function coordinates() {
 //
 //Compare freedom to selected move
 function movable(freedom, x, y) {
-    console.log(freedom + "\n" + x+ + y);
+    console.log(freedom + "\n" + x + + y);
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
@@ -172,7 +172,7 @@ function check(board, color) {
     }
     for (i = 0; i < 8; i++) {
         for (j = o; j < 8; j++) {
-            if (typeof (board[i][j]) != undefined && board[i][j].color != color && rule(kx, ky, i, j, board)){
+            if (typeof (board[i][j]) != undefined && board[i][j].color != color && rule(kx, ky, i, j, board)) {
                 return true;
             }
         }
@@ -184,43 +184,52 @@ function verMove(xs, ys, board) {
     var freedom = [];
     i = 1;
     //Move
-    while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
-        freedom.push("" + (xs) + (ys + i));
-        i++;
-    }
-    //Take out
-    if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
-        freedom.push("" + (xs) + (ys + i));
+    if (ys < 7) {
+        while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
+            freedom.push("" + (xs) + (ys + i));
+            i++;
+        }
+        //Take out   
+        if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys + i));
+        }
     }
     //Left
     i = 1;
-    while (typeof (board[xs][ys - i]) == "undefined" && ys - i >= 0) {
-        freedom.push("" + (xs) + (ys - i));
-        i++;
-    }
-    //Take out
-    if (ys - i >= 0 && board[xs][ys - i].color != board[xs][ys].color) {
-        freedom.push("" + (xs) + (ys - i));
+    if (ys > 0) {
+        while (typeof (board[xs][ys - i]) == "undefined" && ys - i > 0) {
+            freedom.push("" + (xs) + (ys - i));
+            i++;
+        }
+        //Take out
+        if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys - i));
+        }
     }
     //Down
     i = 1;
-    while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
-        freedom.push("" + (xs + i) + (ys));
-        i++;
-    }
-    //Take out
-    if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs + i) + (ys));
+    if (xs < 7) {
+        while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys));
+            i++;
+        }
+        //Take out
+        if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys));
+        }
     }
     //Up
     i = 1
-    while (typeof (board[xs - i][ys]) == "undefined" && xs - i >= 0) {
-        freedom.push("" + (xs - i) + (ys));
-        i++;
-    }
-    //Take out
-    if (xs - i >= 0 && board[xs - i][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs - i) + (ys));
+    if (xs > 0) {
+        while (typeof (board[xs - i][ys]) == "undefined" && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys));
+            i++;
+        }
+
+        //Take out
+        if (xs - i > 0 && board[xs - i][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys));
+        }
     }
     return freedom;
 }
@@ -229,39 +238,47 @@ function diaMove(xs, ys, board) {
     var freedom = [];
     //RightDown
     i = 1;
-    while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
-        freedom.push("" + (xs + i) + (ys + i));
-        i++;
-    }
-    if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
-        freedom.push("" + (xs + i) + (ys + i));
+    if (xs < 7 && ys < 7) {
+        while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys + i));
+            i++;
+        }
+        if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys + i));
+        }
     }
     //LeftUp
     i = 1;
-    while (typeof (board[xs - i][ys - i]) == "undefined" && ys - i >= 0 && xs - i >= 0) {
-        freedom.push("" + (xs - i) + (ys - i));
-        i++;
-    }
-    if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
-        freedom.push("" + (xs - i) + (ys - i));
+    if (xs > 0 && ys > 0) {
+        while (typeof (board[xs - i][ys - i]) == "undefined" && ys - i >= 0 && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys - i));
+            i++;
+        }
+        if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys - i));
+        }
     }
     //RightUp
     i = 1;
-    while (typeof (board[xs - i][ys + i]) == "undefined" && ys + i < 8 && xs - i >= 0) {
-        freedom.push("" + (xs - i) + (ys + i));
-        i++;
-    }
-    if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
-        freedom.push("" + (xs - i) + (ys + i));
+    if (xs > 0 && ys < 7) {
+        while (typeof (board[xs - i][ys + i]) == "undefined" && ys + i < 8 && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys + i));
+            i++;
+        }
+        if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys + i));
+        }
     }
     //LeftDown
     i = 1;
-    while (typeof (board[xs + i][ys - i]) == "undefined" && ys - i >= 0 && xs + i < 8) {
-        freedom.push("" + (xs + i) + (ys - i));
-        i++;
-    }
-    if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
-        freedom.push("" + (xs + i) + (ys - i));
+    if (xs < 7 && ys > 0) {
+        while (typeof (board[xs + i][ys - i]) == "undefined" && ys - i >= 0 && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys - i));
+            i++;
+        }
+        if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys - i));
+        }
     }
     return freedom;
 }
@@ -294,29 +311,45 @@ function rook(x, y, xs, ys, board) {
 //Horse movement
 function horse(x, y, xs, ys, board) {
     var freedom = [];
-    if (xs + 2 <= 7 && ys + 1 <= 7 && typeof (board[xs + 2][ys + 1]) == "undefined" || (typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color)) {
-        freedom.push("" + (xs + 2) + (ys + 1));
+    if (xs + 2 <= 7 && ys + 1 <= 7) {
+        if (typeof (board[xs + 2][ys + 1]) == "undefined" || (typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 2) + (ys + 1));
+        }
     }
-    if (xs + 2 <= 7 && ys - 1 >= 0 && typeof (board[xs + 2][ys - 1]) == "undefined" || (typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color)) {
-        freedom.push("" + (xs + 2) + (ys - 1));
+    if (xs + 2 <= 7 && ys - 1 >= 0) {
+        if (typeof (board[xs + 2][ys - 1]) == "undefined" || (typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 2) + (ys - 1));
+        }
     }
-    if (xs - 2 >= 0 && ys + 1 <= 7 && typeof (board[xs - 2][ys + 1]) == "undefined" || (typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color)) {
-        freedom.push("" + (xs - 2) + (ys + 1));
+    if (xs - 2 >= 0 && ys + 1 <= 7) {
+        if (typeof (board[xs - 2][ys + 1]) == "undefined" || (typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 2) + (ys + 1));
+        }
     }
-    if (xs - 2 >= 0 && ys - 1 >= 0 && typeof (board[xs - 2][ys - 1]) == "undefined" || (typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color)) {
-        freedom.push("" + (xs - 2) + (ys - 1));
+    if (xs - 2 >= 0 && ys - 1 >= 0) {
+        if (typeof (board[xs - 2][ys - 1]) == "undefined" || (typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 2) + (ys - 1));
+        }
     }
-    if (xs + 1 <= 7 && ys + 2 <= 7 && typeof (board[xs + 1][ys + 2]) == "undefined" || (typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color)) {
-        freedom.push("" + (xs + 1) + (ys + 2));
+    if (xs + 1 <= 7 && ys + 2 <= 7) {
+        if (typeof (board[xs + 1][ys + 2]) == "undefined" || (typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 1) + (ys + 2));
+        }
     }
-    if (xs + 1 <= 7 && ys - 2 >= 0 && typeof (board[xs + 1][ys - 2]) == "undefined" || (typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color)) {
-        freedom.push("" + (xs + 1) + (ys - 2));
+    if (xs + 1 <= 7 && ys - 2 >= 0) {
+        if (typeof (board[xs + 1][ys - 2]) == "undefined" || (typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 1) + (ys - 2));
+        }
     }
-    if (xs - 1 >= 0 && ys + 2 <= 7 && typeof (board[xs - 1][ys + 2]) == "undefined" || (typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color)) {
-        freedom.push("" + (xs - 1) + (ys + 2));
+    if (xs - 1 >= 0 && ys + 2 <= 7) {
+        if (typeof (board[xs - 1][ys + 2]) == "undefined" || (typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 1) + (ys + 2));
+        }
     }
-    if (xs - 1 >= 0 && ys - 2 >= 0 && typeof (board[xs - 1][ys - 2]) == "undefined" || (typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color)) {
-        freedom.push("" + (xs - 1) + (ys - 2));
+    if (xs - 1 >= 0 && ys - 2 >= 0) {
+        if (typeof (board[xs - 1][ys - 2]) == "undefined" || (typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 1) + (ys - 2));
+        }
     }
     return movable(freedom, x, y);
 }
@@ -328,36 +361,52 @@ function bishop(x, y, xs, ys, board) {
 function king(x, y, xs, ys, board) {
     var freedom = [];
     //RightDown
-    if ((xs + 1) < 8 && (ys + 1) < 8 && typeof (board[xs + 1][ys + 1]) == "undefined" || typeof (board[xs + 1][ys + 1]) != "undefined" && board[xs + 1][ys + 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 1) + (ys + 1));
+    if ((xs + 1) < 8 && (ys + 1) < 8) {
+        if (typeof (board[xs + 1][ys + 1]) == "undefined" || typeof (board[xs + 1][ys + 1]) != "undefined" && board[xs + 1][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys + 1));
+        }
     }
     //LeftUp   
-    if ((xs - 1) < 8 && (ys - 1) < 8 && typeof (board[xs - 1][ys - 1]) == "undefined" || typeof (board[xs - 1][ys - 1]) != "undefined" && board[xs - 1][ys - 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 1) + (ys - 1));
+    if ((xs - 1) >= 0 && (ys - 1) < 8) {
+        if (typeof (board[xs - 1][ys - 1]) == "undefined" || typeof (board[xs - 1][ys - 1]) != "undefined" && board[xs - 1][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys - 1));
+        }
     }
     //RightUp   
-    if ((xs - 1) >= 0 && (ys + 1) < 8 && typeof (board[xs - 1][ys + 1]) == "undefined" || typeof (board[xs - 1][ys + 1]) != "undefined" && board[xs - 1][ys + 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 1) + (ys + 1));
+    if ((xs - 1) >= 0 && (ys + 1) < 8) {
+        if (typeof (board[xs - 1][ys + 1]) == "undefined" || typeof (board[xs - 1][ys + 1]) != "undefined" && board[xs - 1][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys + 1));
+        }
     }
     //LeftDown    
-    if ((xs + 1) < 8 && (ys - 1) >= 0 && typeof (board[xs + 1][ys - 1]) == "undefined" || typeof (board[xs + 1][ys - 1]) != "undefined" && board[xs + 1][ys - 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 1) + (ys - 1));
+    if ((xs + 1) < 8 && (ys - 1) >= 0) {
+        if (typeof (board[xs + 1][ys - 1]) == "undefined" || typeof (board[xs + 1][ys - 1]) != "undefined" && board[xs + 1][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys - 1));
+        }
     }
     //Right
-    if (ys + 1 <= 7 && typeof (board[xs][ys + 1]) == "undefined" || typeof (board[xs][ys + 1]) != "undefined" && board[xs][ys + 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs) + (ys + 1));
+    if (ys + 1 <= 7) {
+        if (typeof (board[xs][ys + 1]) == "undefined" || typeof (board[xs][ys + 1]) != "undefined" && board[xs][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys + 1));
+        }
     }
     //Left
-    if (ys - 1 >= 0 && typeof (board[xs][ys - 1]) == "undefined" || typeof (board[xs][ys - 1]) != "undefined" && board[xs][ys - 1].color != board[xs][ys].color) {
-        freedom.push("" + (xs) + (ys - 1));
+    if (ys - 1 >= 0) {
+        if (typeof (board[xs][ys - 1]) == "undefined" || typeof (board[xs][ys - 1]) != "undefined" && board[xs][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys - 1));
+        }
     }
     //Down
-    if (xs + 1 <= 7 && typeof (board[xs + 1][ys]) == "undefined" || typeof (board[xs + 1][ys]) != "undefined" && board[xs + 1][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs + 1) + (ys));
+    if (xs + 1 <= 7) {
+        if (typeof (board[xs + 1][ys]) == "undefined" || typeof (board[xs + 1][ys]) != "undefined" && board[xs + 1][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys));
+        }
     }
     //Up
-    if (xs - 1 >= 0 && typeof (board[xs - 1][ys]) == "undefined" || typeof (board[xs - 1][ys]) != "undefined" && board[xs - 1][ys].color != board[xs][ys].color) {
-        freedom.push("" + (xs - 1) + (ys));
+    if (xs - 1 >= 0) {
+        if (typeof (board[xs - 1][ys]) == "undefined" || typeof (board[xs - 1][ys]) != "undefined" && board[xs - 1][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys));
+        }
     }
 
     return movable(freedom, x, y);
@@ -396,15 +445,15 @@ function change() {
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    var moved={
-        x:-1,
-        y:-1,
-        piece:wp
+    var moved = {
+        x: -1,
+        y: -1,
+        piece: wp
     }
-    var moving={
-        x:-1,
-        y:-1,
-        piece:wp
+    var moving = {
+        x: -1,
+        y: -1,
+        piece: wp
     }
     switch (turn) {
         case 0:
@@ -423,18 +472,18 @@ function change() {
             if (rule(x, y, xs, ys, board)) {
                 document.getElementById("error").innerHTML = "&#8203";
                 document.getElementById("myButton1").value = "Black Select";
-                if(typeof (board[x][y]) != undefined){
-                    moved.x=x;
-                    moved.y=y;
-                    moved.piece=board[x][y];
+                if (typeof (board[x][y]) != undefined) {
+                    moved.x = x;
+                    moved.y = y;
+                    moved.piece = board[x][y];
                 }
                 board[x][y] = board[xs][ys];
-                moving.x=xs;
-                moving.y=ys;
-                moving.piece=board[xs][ys];
+                moving.x = xs;
+                moving.y = ys;
+                moving.piece = board[xs][ys];
                 board[xs][ys] = null;
                 turn = 2;
-                if (check(board, "white")){
+                if (check(board, "white")) {
                     turn = 0;
                     document.getElementById("myButton1").value = "White Select";
                     document.getElementById("error").innerHTML = "Check";
