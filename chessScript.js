@@ -1,16 +1,4 @@
-document.getElementById("error").innerHTML = "&#8203"
-//Array creator
-function createArray(length) {
-    var arr = new Array(length || 0),
-        i = length;
-    if (arguments.length > 1) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
-    }
-    return arr;
-}
 //Chess pieces
-var board = createArray(8, 8)
 var wr = {
     bn: "&#9814;",
     color: "white",
@@ -26,25 +14,21 @@ var wb = {
     color: "white",
     type: "bishop"
 }
-
 var wk = {
     bn: "&#9812;",
     color: "white",
     type: "king"
 }
-
 var wq = {
     bn: "&#9813;",
     color: "white",
     type: "queen"
 }
-
 var wp = {
     bn: "&#9817;",
     color: "white",
     type: "pawn"
 }
-
 var br = {
     bn: "&#9820;",
     color: "black",
@@ -60,408 +44,38 @@ var bb = {
     color: "black",
     type: "bishop"
 }
-
 var bk = {
     bn: "&#9818;",
     color: "black",
     type: "king"
 }
-
 var bq = {
     bn: "&#9819;",
     color: "black",
     type: "queen"
 }
-
 var bp = {
     bn: "&#9823;",
     color: "black",
     type: "pawn"
 }
-//Board inicalizaton
-board[0][0] = board[0][7] = wr;
-board[7][0] = board[7][7] = br;
-board[0][1] = board[0][6] = wh;
-board[7][1] = board[7][6] = bh;
-board[0][2] = board[0][5] = wb;
-board[7][2] = board[7][5] = bb;
-board[0][3] = wk;
-board[0][4] = wq;
-board[7][3] = bk;
-board[7][4] = bq;
-for (i = 0; i < 8; i++) {
-    board[1][i] = wp;
-    board[6][i] = bp;
-}
-//Board Drawing
-document.write('<table id="table">')
-for (var i = 0; i < 9; i++) {
-    document.write("<tr>");
-    for (var j = 0; j < 9; j++) {
-        if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
-            document.write("<td style='background-color:grey' class='sachovnica'>");
-        }
-        else {
-            document.write("<td class='sachovnica'>");
-        }
-        document.write("<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>");
-    }
-    document.write("</tr>");
-}
-document.write("</table>");
-
-
-//Refresh
-function refresh() {
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            if (board[i][j] != null) {
-                document.getElementById("" + i + j).innerHTML = board[i][j].bn;
-            }
-            else document.getElementById("" + i + j).innerHTML = null;
-        }
-    }
-}
+var board = createArray(8, 8)
+initialiseBoard()
+drawBoard()
 refresh();
-for (var i = 0; i < 8; i++) {
-    document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
-    document.getElementById(i + "-1").innerHTML = i + 1;
-}
-//Input translator
-function coordinates() {
-    var input = document.getElementById("input").value;
-    if (input.length !== 2) {
-        return false;
-    }
-    x = input[0].charCodeAt(0) - 97;
-    y = input[1] - 1;
-    if (x < 0 || y < 0 || x > 7 || y > 7) {
-        return false;
-    }
-    return "" + x + y;
-}
-//
-//Rules
-//
-//Compare freedom to selected move
-function movable(freedom, x, y) {
-    i = 0;
-    var log = "Available: ";
-    while (i < freedom.length) {
-        var a = "" + freedom[i];
-        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
-        i++;
-    }
-    log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
-    console.log(log);
-    if (freedom.indexOf("" + x + y) > -1) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-//Are you in check?
-function check(board, color) {
-    return false;
-    var kx = -1;
-    var ky;
-    for (var i = 0; i < 8; i++) {
-        for (var j = o; j < 8; j++) {
-            if (typeof (board[i][j]) != undefined && board[i][j].type == "king" && board[i][j].color == color) {
-                kx = i;
-                ky = j;
-                break;
-            }
-        }
-        if (kx != -1) {
-            break;
-        }
-    }
-    for (i = 0; i < 8; i++) {
-        for (j = o; j < 8; j++) {
-            if (typeof (board[i][j]) != undefined && board[i][j].color != color && rule(kx, ky, i, j, board)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-//Vertical/Horizontal Movement
-function verMove(xs, ys, board) {
-    var freedom = [];
-    i = 1;
-    //Move
-    if (ys < 7) {
-        while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
-            freedom.push("" + (xs) + (ys + i));
-            i++;
-        }
-        //Take out   
-        if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys + i));
-        }
-    }
-    //Left
-    i = 1;
-    if (ys > 0) {
-        while (typeof (board[xs][ys - i]) == "undefined" && ys - i > 0) {
-            freedom.push("" + (xs) + (ys - i));
-            i++;
-        }
-        //Take out
-        if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys - i));
-        }
-    }
-    //Down
-    i = 1;
-    if (xs < 7) {
-        while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys));
-            i++;
-        }
-        //Take out
-        if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys));
-        }
-    }
-    //Up
-    i = 1
-    if (xs > 0) {
-        while (typeof (board[xs - i][ys]) == "undefined" && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys));
-            i++;
-        }
-
-        //Take out
-        if (xs - i > 0 && board[xs - i][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys));
-        }
-    }
-    return freedom;
-}
-//Vertical/Horizontal Movement
-function diaMove(xs, ys, board) {
-    var freedom = [];
-    //RightDown
-    i = 1;
-    if (xs < 7 && ys < 7) {
-        while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys + i));
-            i++;
-        }
-        if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys + i));
-        }
-    }
-    //LeftUp
-    i = 1;
-    if (xs > 0 && ys > 0) {
-        while (typeof (board[xs - i][ys - i]) == "undefined" && ys - i >= 0 && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys - i));
-            i++;
-        }
-        if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys - i));
-        }
-    }
-    //RightUp
-    i = 1;
-    if (xs > 0 && ys < 7) {
-        while (typeof (board[xs - i][ys + i]) == "undefined" && ys + i < 8 && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys + i));
-            i++;
-        }
-        if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys + i));
-        }
-    }
-    //LeftDown
-    i = 1;
-    if (xs < 7 && ys > 0) {
-        while (typeof (board[xs + i][ys - i]) == "undefined" && ys - i >= 0 && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys - i));
-            i++;
-        }
-        if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys - i));
-        }
-    }
-    return freedom;
-}
-//Pawn movement
-function pawn(x, y, xs, ys, board) {
-    var d = 1;
-    if (board[xs][ys].color == "black") {
-        d = -1;
-    }
-    var freedom = [];
-    i = 1;
-    console.log("F FL FR")
-    while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
-        freedom.push("" + (xs + i * d) + (ys));
-        i++;
-        console.log("F "+ (xs + i * d) + (ys))
-    }
-    if (typeof (board[xs + d][ys + 1]) != "undefined") {
-        if (board[xs + d][ys + 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs + d) + (ys + 1));
-            console.log("FR "+(xs + d)+(ys + 1));
-        }
-    }
-    if (typeof (board[xs + d][ys - 1]) != "undefined") {
-        if (board[xs + d][ys - 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs + d) + (ys - 1));
-            console.log("FL "+(xs + d)+(ys - 1));
-        }
-    }
-    return movable(freedom, x, y);
-}
-//Rook movement
-function rook(x, y, xs, ys, board) {
-    return movable(verMove(xs, ys, board), x, y);
-}
-//Horse movement
-function horse(x, y, xs, ys, board) {
-    var freedom = [];
-    if (xs + 2 <= 7 && ys + 1 <= 7) {
-        if (typeof (board[xs + 2][ys + 1]) == "undefined" || (typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color)) {
-            freedom.push("" + (xs + 2) + (ys + 1));
-        }
-    }
-    if (xs + 2 <= 7 && ys - 1 >= 0) {
-        if (typeof (board[xs + 2][ys - 1]) == "undefined" || (typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color)) {
-            freedom.push("" + (xs + 2) + (ys - 1));
-        }
-    }
-    if (xs - 2 >= 0 && ys + 1 <= 7) {
-        if (typeof (board[xs - 2][ys + 1]) == "undefined" || (typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color)) {
-            freedom.push("" + (xs - 2) + (ys + 1));
-        }
-    }
-    if (xs - 2 >= 0 && ys - 1 >= 0) {
-        if (typeof (board[xs - 2][ys - 1]) == "undefined" || (typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color)) {
-            freedom.push("" + (xs - 2) + (ys - 1));
-        }
-    }
-    if (xs + 1 <= 7 && ys + 2 <= 7) {
-        if (typeof (board[xs + 1][ys + 2]) == "undefined" || (typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color)) {
-            freedom.push("" + (xs + 1) + (ys + 2));
-        }
-    }
-    if (xs + 1 <= 7 && ys - 2 >= 0) {
-        if (typeof (board[xs + 1][ys - 2]) == "undefined" || (typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color)) {
-            freedom.push("" + (xs + 1) + (ys - 2));
-        }
-    }
-    if (xs - 1 >= 0 && ys + 2 <= 7) {
-        if (typeof (board[xs - 1][ys + 2]) == "undefined" || (typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color)) {
-            freedom.push("" + (xs - 1) + (ys + 2));
-        }
-    }
-    if (xs - 1 >= 0 && ys - 2 >= 0) {
-        if (typeof (board[xs - 1][ys - 2]) == "undefined" || (typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color)) {
-            freedom.push("" + (xs - 1) + (ys - 2));
-        }
-    }
-    return movable(freedom, x, y);
-}
-//Bishop movement
-function bishop(x, y, xs, ys, board) {
-    return movable(diaMove(xs, ys, board), x, y);
-}
-//King movement
-function king(x, y, xs, ys, board) {
-    var freedom = [];
-    //RightDown
-    if ((xs + 1) < 8 && (ys + 1) < 8) {
-        if (typeof (board[xs + 1][ys + 1]) == "undefined" || typeof (board[xs + 1][ys + 1]) != "undefined" && board[xs + 1][ys + 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs + 1) + (ys + 1));
-        }
-    }
-    //LeftUp   
-    if ((xs - 1) >= 0 && (ys - 1) < 8) {
-        if (typeof (board[xs - 1][ys - 1]) == "undefined" || typeof (board[xs - 1][ys - 1]) != "undefined" && board[xs - 1][ys - 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs - 1) + (ys - 1));
-        }
-    }
-    //RightUp   
-    if ((xs - 1) >= 0 && (ys + 1) < 8) {
-        if (typeof (board[xs - 1][ys + 1]) == "undefined" || typeof (board[xs - 1][ys + 1]) != "undefined" && board[xs - 1][ys + 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs - 1) + (ys + 1));
-        }
-    }
-    //LeftDown    
-    if ((xs + 1) < 8 && (ys - 1) >= 0) {
-        if (typeof (board[xs + 1][ys - 1]) == "undefined" || typeof (board[xs + 1][ys - 1]) != "undefined" && board[xs + 1][ys - 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs + 1) + (ys - 1));
-        }
-    }
-    //Right
-    if (ys + 1 <= 7) {
-        if (typeof (board[xs][ys + 1]) == "undefined" || typeof (board[xs][ys + 1]) != "undefined" && board[xs][ys + 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys + 1));
-        }
-    }
-    //Left
-    if (ys - 1 >= 0) {
-        if (typeof (board[xs][ys - 1]) == "undefined" || typeof (board[xs][ys - 1]) != "undefined" && board[xs][ys - 1].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys - 1));
-        }
-    }
-    //Down
-    if (xs + 1 <= 7) {
-        if (typeof (board[xs + 1][ys]) == "undefined" || typeof (board[xs + 1][ys]) != "undefined" && board[xs + 1][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs + 1) + (ys));
-        }
-    }
-    //Up
-    if (xs - 1 >= 0) {
-        if (typeof (board[xs - 1][ys]) == "undefined" || typeof (board[xs - 1][ys]) != "undefined" && board[xs - 1][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs - 1) + (ys));
-        }
-    }
-
-    return movable(freedom, x, y);
-}
-//Queen movement
-function queen(x, y, xs, ys, board) {
-    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y);
-}
-
-//Very modularity, much readable, not spagetti
-function rule(x, y, xs, ys, board) {
-    console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
-    switch (board[xs][ys].type) {
-        case "pawn":
-            return pawn(x, y, xs, ys, board);
-        case "rook":
-            return rook(x, y, xs, ys, board);
-        case "horse":
-            return horse(x, y, xs, ys, board);
-        case "bishop":
-            return bishop(x, y, xs, ys, board);
-        case "king":
-            return king(x, y, xs, ys, board);
-        case "queen":
-            return queen(x, y, xs, ys, board);
-    }
-    document.getElementById("error").innerHTML = "Unknown Piece";
-}
-//Turn changer + piece mover
 var xs
 var ys
 turn = 0;
 turns = 0;
-function processButton() {
-    var input = document.getElementById("input").value;
-    if (input.length !== 2) { return false; }
-    y = input[0].charCodeAt(0) - 97;
-    x = input[1] - 1;
-    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y);
-}
+/**
+ * Gets input
+ * selects piece
+ * moves piece (if possible)
+ * knows whos move it curently is
+ *
+ * @param {*} x
+ * @param {*} y
+ */
 function change(x, y) {
     var moving = {
         x: -1,
@@ -471,7 +85,7 @@ function change(x, y) {
     console.log("Change " + x + y);
     switch (turn) {
         case 0:
-            
+
             if (board[x][y] != undefined && board[x][y].color == "white") {
                 document.getElementById("error").innerHTML = "&#8203";
                 document.getElementById("myButton1").value = "White Move";
@@ -555,32 +169,508 @@ function change(x, y) {
 
     }
 }
-pieceSelected = false;
+
+/**
+ *  Array creator
+ *
+ * @param {*} dimensions of a square array
+ * @returns a 2 dimensional array
+ */
+function createArray(length) {
+    var arr = new Array(length || 0),
+        i = length;
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
+    }
+    return arr;
+}
+
+/**
+ *  Refreshes the <table> acording to the board[][]
+ *
+ */
+function refresh() {
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            if (board[i][j] != null) {
+                document.getElementById("" + i + j).innerHTML = board[i][j].bn;
+            }
+            else document.getElementById("" + i + j).innerHTML = null;
+        }
+    }
+}
+/**
+ *  Compare freedom to selected move
+ *
+ * @param {*} freedom
+ * @param {*} x
+ * @param {*} y
+ * @returns
+ */
+function movable(freedom, x, y) {
+    i = 0;
+    var log = "Available: ";
+    while (i < freedom.length) {
+        var a = "" + freedom[i];
+        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
+        i++;
+    }
+    log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
+    console.log(log);
+    if (freedom.indexOf("" + x + y) > -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+/**
+ * Checks whether you are in check or not
+ *
+ * @param {*} board
+ * @param {*} color
+ * @returns
+ */
+function check(board, color) {
+    return false;
+    var kx = -1;
+    var ky;
+    for (var i = 0; i < 8; i++) {
+        for (var j = o; j < 8; j++) {
+            if (typeof (board[i][j]) != undefined && board[i][j].type == "king" && board[i][j].color == color) {
+                kx = i;
+                ky = j;
+                break;
+            }
+        }
+        if (kx != -1) {
+            break;
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        for (j = o; j < 8; j++) {
+            if (typeof (board[i][j]) != undefined && board[i][j].color != color && rule(kx, ky, i, j, board)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+/**
+ *  Checks vertical/horizontal movability
+ *  used by rook and queen
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns freedom
+ */
+function verMove(xs, ys, board) {
+    var freedom = [];
+    i = 1;
+    //Move
+    if (ys < 7) {
+        while (typeof (board[xs][ys + i]) == "undefined" && ys + i < 8) {
+            freedom.push("" + (xs) + (ys + i));
+            i++;
+        }
+        //Take out   
+        if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys + i));
+        }
+    }
+    //Left
+    i = 1;
+    if (ys > 0) {
+        while (typeof (board[xs][ys - i]) == "undefined" && ys - i > 0) {
+            freedom.push("" + (xs) + (ys - i));
+            i++;
+        }
+        //Take out
+        if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys - i));
+        }
+    }
+    //Down
+    i = 1;
+    if (xs < 7) {
+        while (typeof (board[xs + i][ys]) == "undefined" && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys));
+            i++;
+        }
+        //Take out
+        if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys));
+        }
+    }
+    //Up
+    i = 1
+    if (xs > 0) {
+        while (typeof (board[xs - i][ys]) == "undefined" && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys));
+            i++;
+        }
+
+        //Take out
+        if (xs - i > 0 && board[xs - i][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys));
+        }
+    }
+    return freedom;
+}
+/**
+ *  Checks diagonal movability
+ *  used by bishop and queen
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns freedom
+ */
+function diaMove(xs, ys, board) {
+    var freedom = [];
+    //RightDown
+    i = 1;
+    if (xs < 7 && ys < 7) {
+        while (typeof (board[xs + i][ys + i]) == "undefined" && ys + i < 8 && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys + i));
+            i++;
+        }
+        if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys + i));
+        }
+    }
+    //LeftUp
+    i = 1;
+    if (xs > 0 && ys > 0) {
+        while (typeof (board[xs - i][ys - i]) == "undefined" && ys - i >= 0 && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys - i));
+            i++;
+        }
+        if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys - i));
+        }
+    }
+    //RightUp
+    i = 1;
+    if (xs > 0 && ys < 7) {
+        while (typeof (board[xs - i][ys + i]) == "undefined" && ys + i < 8 && xs - i >= 0) {
+            freedom.push("" + (xs - i) + (ys + i));
+            i++;
+        }
+        if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
+            freedom.push("" + (xs - i) + (ys + i));
+        }
+    }
+    //LeftDown
+    i = 1;
+    if (xs < 7 && ys > 0) {
+        while (typeof (board[xs + i][ys - i]) == "undefined" && ys - i >= 0 && xs + i < 8) {
+            freedom.push("" + (xs + i) + (ys - i));
+            i++;
+        }
+        if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
+            freedom.push("" + (xs + i) + (ys - i));
+        }
+    }
+    return freedom;
+}
+
+/**
+ *  Pawn movability
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function pawn(x, y, xs, ys, board) {
+    var d = 1;
+    if (board[xs][ys].color == "black") {
+        d = -1;
+    }
+    var freedom = [];
+    i = 1;
+    console.log("F FL FR")
+    while (i <= 2 && typeof (board[xs + i * d][ys]) == "undefined") {
+        freedom.push("" + (xs + i * d) + (ys));
+        i++;
+        console.log("F " + (xs + i * d) + (ys))
+    }
+    if (typeof (board[xs + d][ys + 1]) != "undefined") {
+        if (board[xs + d][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + d) + (ys + 1));
+            console.log("FR " + (xs + d) + (ys + 1));
+        }
+    }
+    if (typeof (board[xs + d][ys - 1]) != "undefined") {
+        if (board[xs + d][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + d) + (ys - 1));
+            console.log("FL " + (xs + d) + (ys - 1));
+        }
+    }
+    return movable(freedom, x, y);
+}
+/**
+ *  Rook movability
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function rook(x, y, xs, ys, board) {
+    return movable(verMove(xs, ys, board), x, y);
+}
+/**
+ * Horse movability
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function horse(x, y, xs, ys, board) {
+    var freedom = [];
+    if (xs + 2 <= 7 && ys + 1 <= 7) {
+        if (typeof (board[xs + 2][ys + 1]) == "undefined" || (typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 2) + (ys + 1));
+        }
+    }
+    if (xs + 2 <= 7 && ys - 1 >= 0) {
+        if (typeof (board[xs + 2][ys - 1]) == "undefined" || (typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 2) + (ys - 1));
+        }
+    }
+    if (xs - 2 >= 0 && ys + 1 <= 7) {
+        if (typeof (board[xs - 2][ys + 1]) == "undefined" || (typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 2) + (ys + 1));
+        }
+    }
+    if (xs - 2 >= 0 && ys - 1 >= 0) {
+        if (typeof (board[xs - 2][ys - 1]) == "undefined" || (typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 2) + (ys - 1));
+        }
+    }
+    if (xs + 1 <= 7 && ys + 2 <= 7) {
+        if (typeof (board[xs + 1][ys + 2]) == "undefined" || (typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 1) + (ys + 2));
+        }
+    }
+    if (xs + 1 <= 7 && ys - 2 >= 0) {
+        if (typeof (board[xs + 1][ys - 2]) == "undefined" || (typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs + 1) + (ys - 2));
+        }
+    }
+    if (xs - 1 >= 0 && ys + 2 <= 7) {
+        if (typeof (board[xs - 1][ys + 2]) == "undefined" || (typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 1) + (ys + 2));
+        }
+    }
+    if (xs - 1 >= 0 && ys - 2 >= 0) {
+        if (typeof (board[xs - 1][ys - 2]) == "undefined" || (typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color)) {
+            freedom.push("" + (xs - 1) + (ys - 2));
+        }
+    }
+    return movable(freedom, x, y);
+}
+/**
+ *  Bishop movability
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function bishop(x, y, xs, ys, board) {
+    return movable(diaMove(xs, ys, board), x, y);
+}
+
+/**
+ * King movability
+ * (not concerning itself with check)
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function king(x, y, xs, ys, board) {
+    var freedom = [];
+    //RightDown
+    if ((xs + 1) < 8 && (ys + 1) < 8) {
+        if (typeof (board[xs + 1][ys + 1]) == "undefined" || typeof (board[xs + 1][ys + 1]) != "undefined" && board[xs + 1][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys + 1));
+        }
+    }
+    //LeftUp   
+    if ((xs - 1) >= 0 && (ys - 1) < 8) {
+        if (typeof (board[xs - 1][ys - 1]) == "undefined" || typeof (board[xs - 1][ys - 1]) != "undefined" && board[xs - 1][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys - 1));
+        }
+    }
+    //RightUp   
+    if ((xs - 1) >= 0 && (ys + 1) < 8) {
+        if (typeof (board[xs - 1][ys + 1]) == "undefined" || typeof (board[xs - 1][ys + 1]) != "undefined" && board[xs - 1][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys + 1));
+        }
+    }
+    //LeftDown    
+    if ((xs + 1) < 8 && (ys - 1) >= 0) {
+        if (typeof (board[xs + 1][ys - 1]) == "undefined" || typeof (board[xs + 1][ys - 1]) != "undefined" && board[xs + 1][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys - 1));
+        }
+    }
+    //Right
+    if (ys + 1 <= 7) {
+        if (typeof (board[xs][ys + 1]) == "undefined" || typeof (board[xs][ys + 1]) != "undefined" && board[xs][ys + 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys + 1));
+        }
+    }
+    //Left
+    if (ys - 1 >= 0) {
+        if (typeof (board[xs][ys - 1]) == "undefined" || typeof (board[xs][ys - 1]) != "undefined" && board[xs][ys - 1].color != board[xs][ys].color) {
+            freedom.push("" + (xs) + (ys - 1));
+        }
+    }
+    //Down
+    if (xs + 1 <= 7) {
+        if (typeof (board[xs + 1][ys]) == "undefined" || typeof (board[xs + 1][ys]) != "undefined" && board[xs + 1][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs + 1) + (ys));
+        }
+    }
+    //Up
+    if (xs - 1 >= 0) {
+        if (typeof (board[xs - 1][ys]) == "undefined" || typeof (board[xs - 1][ys]) != "undefined" && board[xs - 1][ys].color != board[xs][ys].color) {
+            freedom.push("" + (xs - 1) + (ys));
+        }
+    }
+
+    return movable(freedom, x, y);
+}
+/**
+ * Queen movability
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function queen(x, y, xs, ys, board) {
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y);
+}
+/**
+ * Checks movability of selected piece
+ * Adds very modularity, much readable, not spagetti
+ * @param {*} x
+ * @param {*} y
+ * @param {*} xs
+ * @param {*} ys
+ * @param {*} board
+ * @returns boolean
+ */
+function rule(x, y, xs, ys, board) {
+    console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
+    switch (board[xs][ys].type) {
+        case "pawn":
+            return pawn(x, y, xs, ys, board);
+        case "rook":
+            return rook(x, y, xs, ys, board);
+        case "horse":
+            return horse(x, y, xs, ys, board);
+        case "bishop":
+            return bishop(x, y, xs, ys, board);
+        case "king":
+            return king(x, y, xs, ys, board);
+        case "queen":
+            return queen(x, y, xs, ys, board);
+    }
+    document.getElementById("error").innerHTML = "Unknown Piece";
+}
+/**
+ *  Processes button input
+ *
+ * @returns changes board
+ */
+function processButton() {
+    var input = document.getElementById("input").value;
+    if (input.length !== 2) { return false; }
+    y = input[0].charCodeAt(0) - 97;
+    x = input[1] - 1;
+    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    change(x, y);
+}
+/**
+ *Processes click input
+ *
+ * @param {*} coordinates
+ */
 function processClick(coordinates) {
     //rozoberanie coordinates
     xc = coordinates.slice(0, 1);
     yc = coordinates.slice(1, 2);
     change(parseInt(xc, 10), parseInt(yc, 10));
-    /*nemam tusenia ci su v spravnom poradi, potom to kukni
-    if(window.pieceSelected == false){
-        window.pieceSelected = true;
-        //oznaci figurku
-        document.getElementById(coordinates).setAttribute("style",'font-weight: bold;');
-        pieceSelect(xc,yc);
-    }else{
-        pieceMove(xc,yc);
-        window.pieceSelected = false;
-        //odoznaci figurku
-        document.getElementById(coordinates).setAttribute("style",'font-weight: normal;');
-        
+}
+/**
+ * Initialises board
+ *
+ */
+function initialiseBoard() {
+    board[0][0] = board[0][7] = wr;
+    board[7][0] = board[7][7] = br;
+    board[0][1] = board[0][6] = wh;
+    board[7][1] = board[7][6] = bh;
+    board[0][2] = board[0][5] = wb;
+    board[7][2] = board[7][5] = bb;
+    board[0][3] = wk;
+    board[0][4] = wq;
+    board[7][3] = bk;
+    board[7][4] = bq;
+    for (i = 0; i < 8; i++) {
+        board[1][i] = wp;
+        board[6][i] = bp;
     }
-    */
 }
-function pieceSelect(xc, yc) {
-    window.x = xc;
-    window.y = yc;
+/**
+ * Draws HTML board
+ *
+ */
+function drawBoard() {
+    document.write('<table id="table">')
+    for (var i = 0; i < 9; i++) {
+        document.write("<tr>");
+        for (var j = 0; j < 9; j++) {
+            if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
+                document.write("<td style='background-color:grey' class='sachovnica'>");
+            }
+            else {
+                document.write("<td class='sachovnica'>");
+            }
+            document.write("<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>");
+        }
+        document.write("</tr>");
+    }
+    document.write("</table>");
+    for (var i = 0; i < 8; i++) {
+        document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
+        document.getElementById(i + "-1").innerHTML = i + 1;
+    }
 }
-function pieceMove(xc, yc) {
+
+
+
+
+/*function pieceMove(xc, yc) {
     window.xs = xc;
     window.ys = yc;
     //zabezpečuje že vieš označiť a odoznačiť figúrku
@@ -590,6 +680,26 @@ function pieceMove(xc, yc) {
         // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
         // TO-DO: ilegálne pohyby treba poriešiť ešte
         // funguje tak že ak sa figúrka posunie na nejaké miesto odoznaci ju na tom mieste kde sa posunula
-        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever 
+        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever
     }
-}
+}*/
+
+/*function coordinates() {
+    var input = document.getElementById("input").value;
+    if (input.length !== 2) {
+        return false;
+    }
+    x = input[0].charCodeAt(0) - 97;
+    y = input[1] - 1;
+    if (x < 0 || y < 0 || x > 7 || y > 7) {
+        return false;
+    }
+    return "" + x + y;
+}*/
+
+/*
+pieceSelected = false;
+function pieceSelect(xc, yc) {
+    window.x = xc;
+    window.y = yc;
+}*/
