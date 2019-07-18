@@ -145,7 +145,15 @@ function coordinates() {
 //
 //Compare freedom to selected move
 function movable(freedom, x, y) {
-    console.log(freedom + "\n" + x + + y);
+    i = 0;
+    var log="Available: ";
+    while (i < freedom.length) {
+        var a = "" + freedom[i];
+        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10)+1) + ", ";
+        i++;
+    }
+    log = log + "\n Selected: " + String.fromCharCode(y + 97) +(x + 1) ;
+    console.log(log);
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
@@ -284,7 +292,6 @@ function diaMove(xs, ys, board) {
 }
 //Pawn movement
 function pawn(x, y, xs, ys, board) {
-    console.log("Pawn" + board[xs][ys].color + " " + turns);
     var d = 1;
     if (board[xs][ys].color == "black") {
         d = -1;
@@ -418,6 +425,7 @@ function queen(x, y, xs, ys, board) {
 
 //Very modularity, much readable, not spagetti
 function rule(x, y, xs, ys, board) {
+    console.log("Piece: "+board[xs][ys].color+ " " + board[xs][ys].type + " turn:" + turns);
     switch (board[xs][ys].type) {
         case "pawn":
             return pawn(x, y, xs, ys, board);
