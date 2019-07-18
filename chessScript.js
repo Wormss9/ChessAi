@@ -453,11 +453,6 @@ function change() {
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    var moved = {
-        x: -1,
-        y: -1,
-        piece: wp
-    }
     var moving = {
         x: -1,
         y: -1,
@@ -478,6 +473,11 @@ function change() {
             break;
         case 1:
             if (rule(x, y, xs, ys, board)) {
+                var moved = {
+                    x: -1,
+                    y: -1,
+                    piece: wp
+                }
                 document.getElementById("error").innerHTML = "&#8203";
                 document.getElementById("myButton1").value = "Black Select";
                 if (typeof (board[x][y]) != undefined) {
@@ -567,6 +567,6 @@ function pieceMove(xc,yc){
         // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
         // TO-DO: ilegálne pohyby treba poriešiť ešte
         // funguje tak že ak sa figúrka posunie na nejaké miesto odoznaci ju na tom mieste kde sa posunula
-        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever
+        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever 
     }
 }
