@@ -447,17 +447,21 @@ var xs
 var ys
 turn = 0;
 turns = 0;
-function change() {
+function processButton(){
     var input = document.getElementById("input").value;
     if (input.length !== 2) { return false; }
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    change(x,y);
+}
+function change(x,y) {
     var moving = {
         x: -1,
         y: -1,
         piece: wp
     }
+    console.log("Change "+x+y);
     switch (turn) {
         case 0:
             if (board[x][y] != undefined && board[x][y].color == "white") {
@@ -466,6 +470,7 @@ function change() {
                 xs = x;
                 ys = y;
                 turn = 1;
+                console.log("Case = 1 "+x+y);
             }
             else {
                 document.getElementById("error").innerHTML = "Not Your Piece";
@@ -491,6 +496,7 @@ function change() {
                 moving.piece = board[xs][ys];
                 board[xs][ys] = null;
                 turn = 2;
+                console.log("Case = 2 "+x+y);
                 if (check(board, "white")) {
                     turn = 0;
                     document.getElementById("myButton1").value = "White Select";
@@ -511,6 +517,7 @@ function change() {
                 xs = x;
                 ys = y;
                 turn = 3;
+                console.log("Case = 3 "+x+y);
             }
             else {
                 document.getElementById("error").innerHTML = "Not Your Piece";
@@ -525,6 +532,7 @@ function change() {
                 refresh();
                 turn = 0;
                 turns += 1;
+                console.log("Case = 0 "+x+y);
             }
             else {
                 turn = 2;
@@ -540,6 +548,7 @@ function processClick(coordinates){
     //rozoberanie coordinates
     xc = coordinates.slice(0,1);
     yc = coordinates.slice(1,2);
+    change(xc,yc);
     //nemam tusenia ci su v spravnom poradi, potom to kukni
     if(window.pieceSelected == false){
         window.pieceSelected = true;
