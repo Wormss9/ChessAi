@@ -108,6 +108,7 @@ for (var i = 0; i < 9; i++) {
     }
     document.write("</tr>");
 }
+document.write("</table>");
 
 
 //Refresh
@@ -144,7 +145,7 @@ function coordinates() {
 //
 //Compare freedom to selected move
 function movable(freedom, x, y) {
-    console.log(freedom + "/n" + x + " " + y);
+    console.log(freedom + "\n" + x+ + y);
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
@@ -154,6 +155,7 @@ function movable(freedom, x, y) {
 }
 //Are you in check?
 function check(board, color) {
+    return false;
     var kx = -1;
     var ky;
     for (var i = 0; i < 8; i++) {
@@ -258,7 +260,6 @@ function diaMove(xs, ys, board) {
         freedom.push("" + (xs + i) + (ys - i));
         i++;
     }
-    console.log("" + (xs + i) + (ys - i));
     if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
         freedom.push("" + (xs + i) + (ys - i));
     }
@@ -293,28 +294,28 @@ function rook(x, y, xs, ys, board) {
 //Horse movement
 function horse(x, y, xs, ys, board) {
     var freedom = [];
-    if (xs + 2 <= 7 && ys + 1 <= 7 && typeof (board[xs + 2][ys + 1]) == "undefined" || typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color) {
+    if (xs + 2 <= 7 && ys + 1 <= 7 && typeof (board[xs + 2][ys + 1]) == "undefined" || (typeof (board[xs + 2][ys + 1]) != "undefined" && board[xs + 2][ys + 1].color != board[xs][ys].color)) {
         freedom.push("" + (xs + 2) + (ys + 1));
     }
-    if (xs + 2 <= 7 && ys - 1 >= 0 && typeof (board[xs + 2][ys - 1]) == "undefined" || typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color) {
+    if (xs + 2 <= 7 && ys - 1 >= 0 && typeof (board[xs + 2][ys - 1]) == "undefined" || (typeof (board[xs + 2][ys - 1]) != "undefined" && board[xs + 2][ys - 1].color != board[xs][ys].color)) {
         freedom.push("" + (xs + 2) + (ys - 1));
     }
-    if (xs - 2 >= 0 && ys + 1 <= 7 && typeof (board[xs - 2][ys + 1]) == "undefined" || typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color) {
+    if (xs - 2 >= 0 && ys + 1 <= 7 && typeof (board[xs - 2][ys + 1]) == "undefined" || (typeof (board[xs - 2][ys + 1]) != "undefined" && board[xs - 2][ys + 1].color != board[xs][ys].color)) {
         freedom.push("" + (xs - 2) + (ys + 1));
     }
-    if (xs - 2 >= 0 && ys - 1 >= 0 && typeof (board[xs - 2][ys - 1]) == "undefined" || typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color) {
+    if (xs - 2 >= 0 && ys - 1 >= 0 && typeof (board[xs - 2][ys - 1]) == "undefined" || (typeof (board[xs - 2][ys - 1]) != "undefined" && board[xs - 2][ys - 1].color != board[xs][ys].color)) {
         freedom.push("" + (xs - 2) + (ys - 1));
     }
-    if (xs + 1 <= 7 && ys + 2 <= 7 && typeof (board[xs + 1][ys + 2]) == "undefined" || typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color) {
+    if (xs + 1 <= 7 && ys + 2 <= 7 && typeof (board[xs + 1][ys + 2]) == "undefined" || (typeof (board[xs + 1][ys + 2]) != "undefined" && board[xs + 1][ys + 2].color != board[xs][ys].color)) {
         freedom.push("" + (xs + 1) + (ys + 2));
     }
-    if (xs + 1 <= 7 && ys - 2 >= 0 && typeof (board[xs + 1][ys - 2]) == "undefined" || typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color) {
+    if (xs + 1 <= 7 && ys - 2 >= 0 && typeof (board[xs + 1][ys - 2]) == "undefined" || (typeof (board[xs + 1][ys - 2]) != "undefined" && board[xs + 1][ys - 2].color != board[xs][ys].color)) {
         freedom.push("" + (xs + 1) + (ys - 2));
     }
-    if (xs - 1 >= 0 && ys + 2 <= 7 && typeof (board[xs - 1][ys + 2]) == "undefined" || typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color) {
+    if (xs - 1 >= 0 && ys + 2 <= 7 && typeof (board[xs - 1][ys + 2]) == "undefined" || (typeof (board[xs - 1][ys + 2]) != "undefined" && board[xs - 1][ys + 2].color != board[xs][ys].color)) {
         freedom.push("" + (xs - 1) + (ys + 2));
     }
-    if (xs - 1 >= 0 && ys - 2 >= 0 && typeof (board[xs - 1][ys - 2]) == "undefined" || typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color) {
+    if (xs - 1 >= 0 && ys - 2 >= 0 && typeof (board[xs - 1][ys - 2]) == "undefined" || (typeof (board[xs - 1][ys - 2]) != "undefined" && board[xs - 1][ys - 2].color != board[xs][ys].color)) {
         freedom.push("" + (xs - 1) + (ys - 2));
     }
     return movable(freedom, x, y);
