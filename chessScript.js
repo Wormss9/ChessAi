@@ -99,12 +99,12 @@ for (var i = 0; i < 9; i++) {
     document.write("<tr>");
     for (var j = 0; j < 9; j++) {
         if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
-            document.write("<td style='background-color:grey'>");
+            document.write("<td style='background-color:grey' class='sachovnica'>");
         }
         else {
-            document.write("<td>");
+            document.write("<td class='sachovnica'>");
         }
-        document.write("<p id=" + (i - 1) + (j - 1) + "></td>");
+        document.write("<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>");
     }
     document.write("</tr>");
 }
@@ -534,5 +534,39 @@ function change() {
             break;
 
     }
-
+}
+pieceSelected = false;
+function processClick(coordinates){
+    //rozoberanie coordinates
+    xc = coordinates.slice(0,1);
+    yc = coordinates.slice(1,2);
+    //nemam tusenia ci su v spravnom poradi, potom to kukni
+    if(window.pieceSelected == false){
+        window.pieceSelected = true;
+        //oznaci figurku
+        document.getElementById(coordinates).setAttribute("style",'font-weight: bold;');
+        pieceSelect(xc,yc);
+    }else{
+        pieceMove(xc,yc);
+        window.pieceSelected = false;
+        //odoznaci figurku
+        document.getElementById(coordinates).setAttribute("style",'font-weight: normal;');
+    }
+}
+function pieceSelect(xc,yc){
+    window.x = xc;
+    window.y = yc;
+}
+function pieceMove(xc,yc){
+    window.xs = xc;
+    window.ys = yc;
+    //zabezpečuje že vieš označiť a odoznačiť figúrku
+    if([window.xs,window.ys]!=[window.x,window.y]){
+        console.log('move from: '+[window.x,window.y] + ' to: ' + [window.xs,window.ys])
+        //<--tuto tá funkcia čo pohybuje týpkov s parametrami x,y,xs,ys,board,
+        // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
+        // TO-DO: ilegálne pohyby treba poriešiť ešte
+        // funguje tak že ak sa figúrka posunie na nejaké miesto odoznaci ju na tom mieste kde sa posunula
+        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever
+    }
 }
