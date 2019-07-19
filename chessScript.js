@@ -1,62 +1,62 @@
 //Chess pieces
 var wr = {
     bn: "&#9814;",
-    color: "white",
+    color: "White",
     type: "rook"
 }
 var wh = {
     bn: "&#9816;",
-    color: "white",
+    color: "White",
     type: "horse"
 }
 var wb = {
     bn: "&#9815;",
-    color: "white",
+    color: "White",
     type: "bishop"
 }
 var wk = {
     bn: "&#9812;",
-    color: "white",
+    color: "White",
     type: "king"
 }
 var wq = {
     bn: "&#9813;",
-    color: "white",
+    color: "White",
     type: "queen"
 }
 var wp = {
     bn: "&#9817;",
-    color: "white",
+    color: "White",
     type: "pawn"
 }
 var br = {
     bn: "&#9820;",
-    color: "black",
+    color: "Black",
     type: "rook"
 }
 var bh = {
     bn: "&#9822;",
-    color: "black",
+    color: "Black",
     type: "horse"
 }
 var bb = {
     bn: "&#9821;",
-    color: "black",
+    color: "Black",
     type: "bishop"
 }
 var bk = {
     bn: "&#9818;",
-    color: "black",
+    color: "Black",
     type: "king"
 }
 var bq = {
     bn: "&#9819;",
-    color: "black",
+    color: "Black",
     type: "queen"
 }
 var bp = {
     bn: "&#9823;",
-    color: "black",
+    color: "Black",
     type: "pawn"
 }
 var board = createArray(8, 8)
@@ -87,7 +87,7 @@ function change(x, y) {
             ys = sel[1];
             break;
         case 1:
-            movePiece(x, y, board)  
+            movePiece(x, y, board)
             break;
         case 2:
             var sel = selectPiece(x, y, board)
@@ -95,7 +95,7 @@ function change(x, y) {
             ys = sel[1];
             break;
         case 3:
-            movePiece(x, y, board) 
+            movePiece(x, y, board)
             break;
 
     }
@@ -144,7 +144,7 @@ function refresh() {
  * @param {*} y
  * @returns
  */
-function movable(freedom, x, y,check) {
+function movable(freedom, x, y, check) {
     i = 0;
     var log = "Available: ";
     while (i < freedom.length) {
@@ -153,8 +153,9 @@ function movable(freedom, x, y,check) {
         i++;
     }
     log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
-    if(!check){
-    console.log(log);}
+    if (!check) {
+        console.log(log);
+    }
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
@@ -188,7 +189,7 @@ function check(board, color) {
     //console.log("King is:" + kx + ky)
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].color != color && rule(kx, ky, i, j, board,1)) {
+            if (board[i][j] != null && board[i][j].color != color && rule(kx, ky, i, j, board, 1)) {
                 return true;
             }
         }
@@ -306,9 +307,9 @@ function diaMove(xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function pawn(x, y, xs, ys, board,check) {
+function pawn(x, y, xs, ys, board, check) {
     var d = 1;
-    if (board[xs][ys].color == "black") {
+    if (board[xs][ys].color == "Black") {
         d = -1;
     }
     var freedom = [];
@@ -327,7 +328,7 @@ function pawn(x, y, xs, ys, board,check) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
     }
-    return movable(freedom, x, y,check);
+    return movable(freedom, x, y, check);
 }
 /**
  *  Rook movability
@@ -339,8 +340,8 @@ function pawn(x, y, xs, ys, board,check) {
  * @param {*} board
  * @returns boolean
  */
-function rook(x, y, xs, ys, board,check) {
-    return movable(verMove(xs, ys, board), x, y,check);
+function rook(x, y, xs, ys, board, check) {
+    return movable(verMove(xs, ys, board), x, y, check);
 }
 /**
  * Horse movability
@@ -352,7 +353,7 @@ function rook(x, y, xs, ys, board,check) {
  * @param {*} board
  * @returns boolean
  */
-function horse(x, y, xs, ys, board,check) {
+function horse(x, y, xs, ys, board, check) {
     var freedom = [];
     if (xs + 2 <= 7 && ys + 1 <= 7) {
         if (board[xs + 2][ys + 1] == null || board[xs + 2][ys + 1] != null && board[xs + 2][ys + 1].color != board[xs][ys].color) {
@@ -394,7 +395,7 @@ function horse(x, y, xs, ys, board,check) {
             freedom.push("" + (xs - 1) + (ys - 2));
         }
     }
-    return movable(freedom, x, y,check);
+    return movable(freedom, x, y, check);
 }
 /**
  *  Bishop movability
@@ -406,8 +407,8 @@ function horse(x, y, xs, ys, board,check) {
  * @param {*} board
  * @returns boolean
  */
-function bishop(x, y, xs, ys, board,check) {
-    return movable(diaMove(xs, ys, board), x, y,check);
+function bishop(x, y, xs, ys, board, check) {
+    return movable(diaMove(xs, ys, board), x, y, check);
 }
 
 /**
@@ -420,7 +421,7 @@ function bishop(x, y, xs, ys, board,check) {
  * @param {*} board
  * @returns boolean
  */
-function king(x, y, xs, ys, board,check) {
+function king(x, y, xs, ys, board, check) {
     var freedom = [];
     //RightDown
     if ((xs + 1) < 8 && (ys + 1) < 8) {
@@ -471,7 +472,7 @@ function king(x, y, xs, ys, board,check) {
         }
     }
 
-    return movable(freedom, x, y,check);
+    return movable(freedom, x, y, check);
 }
 /**
  * Queen movability
@@ -483,8 +484,8 @@ function king(x, y, xs, ys, board,check) {
  * @param {*} board
  * @returns boolean
  */
-function queen(x, y, xs, ys, board,check) {
-    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y,check);
+function queen(x, y, xs, ys, board, check) {
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y, check);
 }
 /**
  * Checks movability of selected piece
@@ -506,17 +507,17 @@ function rule(x, y, xs, ys, board, check) {
     }
     switch (board[xs][ys].type) {
         case "pawn":
-            return pawn(x, y, xs, ys, board,check);
+            return pawn(x, y, xs, ys, board, check);
         case "rook":
-            return rook(x, y, xs, ys, board,check);
+            return rook(x, y, xs, ys, board, check);
         case "horse":
-            return horse(x, y, xs, ys, board,check);
+            return horse(x, y, xs, ys, board, check);
         case "bishop":
-            return bishop(x, y, xs, ys, board,check);
+            return bishop(x, y, xs, ys, board, check);
         case "king":
-            return king(x, y, xs, ys, board,check);
+            return king(x, y, xs, ys, board, check);
         case "queen":
-            return queen(x, y, xs, ys, board,check);
+            return queen(x, y, xs, ys, board, check);
     }
     document.getElementById("error").innerHTML = "Unknown Piece";
 }
@@ -595,13 +596,21 @@ function drawBoard() {
         document.getElementById(i + "-1").innerHTML = i + 1;
     }
 }
+/**
+ *  Selects and saves piece
+ *  (if selectable)
+ * @param {*} x
+ * @param {*} y
+ * @param {*} board
+ * @returns xs + ys
+ */
 function selectPiece(x, y, board) {
     var color;
     if (turn == 0) {
-        color = "white"
+        color = "White"
     }
     else {
-        color = "black"
+        color = "Black"
     }
     if (board[x][y] != null && board[x][y].color == color) {
         document.getElementById("error").innerHTML = "&#8203";
@@ -622,46 +631,89 @@ function selectPiece(x, y, board) {
     }
     return ("" + xs + ys)
 }
-function movePiece(x, y, board){    
-    if (rule(x, y, xs, ys, board,0)) {
-            document.getElementById("error").innerHTML = "&#8203";
-            document.getElementById("myButton1").value = "Black Select";
-            /*if (board[x][y] != null) {
-                moved.x = x;
-                moved.y = y;
-                moved.piece = board[x][y];
-            }*/
-            board[x][y] = board[xs][ys];
-            board[xs][ys] = null;
-            if(turn==1){
-                turn=2;
-            }
-            else{
-                turn=0;
-                turns+=1;
-            }
-            console.log("Case = 2 " + x + y);
+
+/**
+ *  Moves selected piece
+ *  (if movable)
+ *
+ * @param {*} x
+ * @param {*} y
+ * @param {*} board
+ */
+function movePiece(x, y, board) {
+    var color = [];
+    if (turn == 1) {
+        color[0] = "White"
+        color[1] = "Black"
+    }
+    else {
+        color[0] = "Black"
+        color[1] = "White"
+    }
+    if (rule(x, y, xs, ys, board, 0)) {
+
+        document.getElementById("myButton1").value = color[1] + " Select";
+        /*if (board[x][y] != null) {
+            moved.x = x;
+            moved.y = y;
+            moved.piece = board[x][y];
+        }*/
+        var moving = {
+            x: x,
+            y: y,
+            piece: board[x][y],
+        }
+        var moved = {
+            xs: xs,
+            ys: ys,
+            piece: board[xs][ys],
+        }
+        board[x][y] = board[xs][ys];
+        board[xs][ys] = null;
+        if (check(board, color[0])) {
             if (turn == 1) {
-                color = "white"
+                turn = 0;
             }
             else {
-                color = "black"
+                turn = 2;
             }
-            if (check(board, color)) {
-                turn = 0;
-                document.getElementById("myButton1").value = "White Select";
-                document.getElementById("error").innerHTML = "Check";
-            }
-            refresh();
+            board[moving.x][moving.y] = moving.piece;
+            board[moved.xs][moved.ys] = moved.piece;
+
+            document.getElementById("error").innerHTML = "Check";
+        }
+        if (turn == 1) {
+            turn = 2;
         }
         else {
             turn = 0;
-            document.getElementById("myButton1").value = "White Select";
-            document.getElementById("error").innerHTML = "Cant go there";
+            turns += 1;
         }
-        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-        jsonBoard = JSON.stringify(board);
+        if(check(board, color[1])&& checkmate(board, color[1])){
+            document.getElementById("error").innerHTML = "Checkmate";
+        }
+        refresh();
     }
+    else {
+        turn = 0;
+        document.getElementById("myButton1").value = color[0] + " Select";
+        document.getElementById("error").innerHTML = "Cant go there";
+    }
+    console.log("wat " + xs + ys);
+    document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+    jsonBoard = JSON.stringify(board);
+}
+
+/**
+ *Checks for checkmate
+ *
+ * @param {*} board
+ * @param {*} color
+ * @returns boolean
+ */
+function checkmate(board, color){
+    return false;
+}
 
 /*
   function pieceMove(xc, yc) {
