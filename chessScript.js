@@ -79,14 +79,7 @@ turns = 0;
  * @param {*} y
  */
 function change(x, y) {
-    var moving = {
-        x: -1,
-        y: -1,
-        piece: wp
-    }
     //console.log("Change " + x + y);
-    parseInt()
-    parseInt()
     switch (turn) {
         case 0:
             var sel = selectPiece(x, y, board)
@@ -94,40 +87,7 @@ function change(x, y) {
             ys = sel[1];
             break;
         case 1:
-            if (rule(x, y, xs, ys, board,0)) {
-                var moved = {
-                    x: -1,
-                    y: -1,
-                    piece: wp
-                }
-                document.getElementById("error").innerHTML = "&#8203";
-                document.getElementById("myButton1").value = "Black Select";
-                if (board[x][y] != null) {
-                    moved.x = x;
-                    moved.y = y;
-                    moved.piece = board[x][y];
-                }
-                board[x][y] = board[xs][ys];
-                moving.x = xs;
-                moving.y = ys;
-                moving.piece = board[xs][ys];
-                board[xs][ys] = null;
-                turn = 2;
-                console.log("Case = 2 " + x + y);
-                if (check(board, "white")) {
-                    turn = 0;
-                    document.getElementById("myButton1").value = "White Select";
-                    document.getElementById("error").innerHTML = "Check";
-                }
-                refresh();
-            }
-            else {
-                turn = 0;
-                document.getElementById("myButton1").value = "White Select";
-                document.getElementById("error").innerHTML = "Cant go there";
-            }
-            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            jsonBoard = JSON.stringify(board);
+            movePiece(x, y, board)  
             break;
         case 2:
             var sel = selectPiece(x, y, board)
@@ -135,23 +95,7 @@ function change(x, y) {
             ys = sel[1];
             break;
         case 3:
-            if (rule(x, y, xs, ys, board,0)) {
-                document.getElementById("error").innerHTML = " ";
-                document.getElementById("myButton1").value = "White Select";
-                board[x][y] = board[xs][ys];
-                board[xs][ys] = null;
-                refresh();
-                turn = 0;
-                turns += 1;
-                console.log("Case = 0 " + x + y);
-            }
-            else {
-                turn = 2;
-                document.getElementById("myButton1").value = "Black Select";
-                document.getElementById("error").innerHTML = "Cant go there";
-            }
-            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            jsonBoard = JSON.stringify(board);
+            movePiece(x, y, board) 
             break;
 
     }
@@ -678,7 +622,46 @@ function selectPiece(x, y, board) {
     }
     return ("" + xs + ys)
 }
-
+function movePiece(x, y, board){    
+    if (rule(x, y, xs, ys, board,0)) {
+            document.getElementById("error").innerHTML = "&#8203";
+            document.getElementById("myButton1").value = "Black Select";
+            /*if (board[x][y] != null) {
+                moved.x = x;
+                moved.y = y;
+                moved.piece = board[x][y];
+            }*/
+            board[x][y] = board[xs][ys];
+            board[xs][ys] = null;
+            if(turn==1){
+                turn=2;
+            }
+            else{
+                turn=0;
+                turns+=1;
+            }
+            console.log("Case = 2 " + x + y);
+            if (turn == 1) {
+                color = "white"
+            }
+            else {
+                color = "black"
+            }
+            if (check(board, color)) {
+                turn = 0;
+                document.getElementById("myButton1").value = "White Select";
+                document.getElementById("error").innerHTML = "Check";
+            }
+            refresh();
+        }
+        else {
+            turn = 0;
+            document.getElementById("myButton1").value = "White Select";
+            document.getElementById("error").innerHTML = "Cant go there";
+        }
+        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+        jsonBoard = JSON.stringify(board);
+    }
 
 /*
   function pieceMove(xc, yc) {
