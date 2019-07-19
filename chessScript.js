@@ -1,3 +1,11 @@
+/*Ak chces vlozit vstup pridaj ho funkciou typu
+processClick(coordinates) alebo processButton()
+(change(x,y))
+vsetko by malo fungovat okrem rosady a en passantu
+a nevie zistovat pat ani mat
+ak to budes chciet skusit na zapasoch bez en passatu a rosad len hod na zaciatok checkmate() return false;
+*/
+
 //Chess pieces
 var wr = {
     bn: "&#9814;",
@@ -78,7 +86,7 @@ turns = 0;
  * @param {*} x
  * @param {*} y
  */
-function change(x, y) {
+function change(x, y,z) {
     //console.log("Change " + x + y);
     switch (turn) {
         case 0:
@@ -87,16 +95,14 @@ function change(x, y) {
             ys = sel[1];
             break;
         case 1:
-            movePiece(x, y, board)
-            break;
+            return movePiece(x, y, board,z);
         case 2:
             var sel = selectPiece(x, y, board)
             xs = sel[0];
             ys = sel[1];
             break;
         case 3:
-            movePiece(x, y, board)
-            break;
+            return movePiece(x, y, board,z)
 
     }
 }
@@ -328,6 +334,9 @@ function pawn(x, y, xs, ys, board, check) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
     }
+    if (check == 2) {
+        return freedom
+    }
     return movable(freedom, x, y, check);
 }
 /**
@@ -341,6 +350,9 @@ function pawn(x, y, xs, ys, board, check) {
  * @returns boolean
  */
 function rook(x, y, xs, ys, board, check) {
+    if (check == 2) {
+        return verMove(xs, ys, board);
+    }
     return movable(verMove(xs, ys, board), x, y, check);
 }
 /**
@@ -395,6 +407,9 @@ function horse(x, y, xs, ys, board, check) {
             freedom.push("" + (xs - 1) + (ys - 2));
         }
     }
+    if (check == 2) {
+        return freedom;
+    }
     return movable(freedom, x, y, check);
 }
 /**
@@ -408,6 +423,9 @@ function horse(x, y, xs, ys, board, check) {
  * @returns boolean
  */
 function bishop(x, y, xs, ys, board, check) {
+    if (check == 2) {
+        return diaMove(xs, ys, board);
+    }
     return movable(diaMove(xs, ys, board), x, y, check);
 }
 
@@ -471,7 +489,9 @@ function king(x, y, xs, ys, board, check) {
             freedom.push("" + (xs - 1) + (ys));
         }
     }
-
+    if (check == 2) {
+        return freedom;
+    }
     return movable(freedom, x, y, check);
 }
 /**
@@ -485,6 +505,9 @@ function king(x, y, xs, ys, board, check) {
  * @returns boolean
  */
 function queen(x, y, xs, ys, board, check) {
+    if (check == 2) {
+        return diaMove(xs, ys, board).concat(verMove(xs, ys, board));
+    }
     return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y, check);
 }
 /**
@@ -532,7 +555,7 @@ function processButton() {
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y);
+    change(x, y,0);
 }
 /**
  *Processes click input
@@ -543,7 +566,7 @@ function processClick(coordinates) {
     //rozoberanie coordinates
     xc = coordinates.slice(0, 1);
     yc = coordinates.slice(1, 2);
-    change(parseInt(xc, 10), parseInt(yc, 10));
+    change(parseInt(xc, 10), parseInt(yc, 10),0);
 }
 /**
  * Initialises board
@@ -640,7 +663,7 @@ function selectPiece(x, y, board) {
  * @param {*} y
  * @param {*} board
  */
-function movePiece(x, y, board) {
+function movePiece(x, y, board,z) {
     var color = [];
     if (turn == 1) {
         color[0] = "White"
@@ -679,8 +702,9 @@ function movePiece(x, y, board) {
             }
             board[moving.x][moving.y] = moving.piece;
             board[moved.xs][moved.ys] = moved.piece;
-
             document.getElementById("error").innerHTML = "Check";
+            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+            return false;
         }
         if (turn == 1) {
             turn = 2;
@@ -689,17 +713,30 @@ function movePiece(x, y, board) {
             turn = 0;
             turns += 1;
         }
-        if(check(board, color[1])&& checkmate(board, color[1])){
+        var boardBackup=board;
+        console.log()
+    // AAAAA
+        if (z=0 && check(board, color[1]) && checkmate(board, color[1])) {
             document.getElementById("error").innerHTML = "Checkmate";
         }
+        board=boardBackup;
         refresh();
+        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+        jsonBoard = JSON.stringify(board);
+        return true;
     }
     else {
-        turn = 0;
+        if (turn == 1) {
+            turn = 0;
+        }
+        else {
+            turn = 2;
+        }
         document.getElementById("myButton1").value = color[0] + " Select";
         document.getElementById("error").innerHTML = "Cant go there";
+        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+        return false
     }
-    console.log("wat " + xs + ys);
     document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
     jsonBoard = JSON.stringify(board);
 }
@@ -711,8 +748,54 @@ function movePiece(x, y, board) {
  * @param {*} color
  * @returns boolean
  */
-function checkmate(board, color){
-    return false;
+function checkmate(board, color) {
+    //king
+    var kx = -1;
+    var ky;
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
+                kx = i;
+                ky = j;
+                break;
+            }
+        }
+        if (kx != -1) {
+            break;
+        }
+
+    }
+    //freedoms
+    var pieces = [];
+    var freedoms = [];
+    if (color == "White") {
+        color = "Black";
+    }
+    else {
+        color = "White";
+    }
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            if (board[i][j] != null && board[i][j].color != color) {
+                if (rule(0, 0, i, j, board, 2).length != 0) {
+                    pieces.push("" + i + j);
+                    freedoms.push(rule(0, 0, i, j, board, 2));
+                }
+            }
+        }
+    }
+    var mate=true
+    for (i = 0; i < pieces.length; i++) {
+        for (j = 0; j < freedoms[i].length; j++) {
+            change(pieces[i][0], pieces[i][1]);
+            if(change(freedoms[i][j][0], freedoms[i][j][1]),1){
+                mate =false;
+                break;
+            }
+
+        }
+    }
+    return mate;
 }
 
 /*
