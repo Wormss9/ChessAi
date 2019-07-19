@@ -61,6 +61,7 @@ var bp = {
 }
 var board = createArray(8, 8)
 initialiseBoard()
+var jsonBoard = JSON.stringify(board);
 drawBoard()
 refresh();
 
@@ -83,27 +84,17 @@ function change(x, y) {
         y: -1,
         piece: wp
     }
-    console.log("Change " + x + y);
+    //console.log("Change " + x + y);
     parseInt()
     parseInt()
     switch (turn) {
         case 0:
-
-            if (board[x][y] != null && board[x][y].color == "white") {
-                document.getElementById("error").innerHTML = "&#8203";
-                document.getElementById("myButton1").value = "White Move";
-                xs = x;
-                ys = y;
-                turn = 1;
-                document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
-                console.log("Case = 1 " + x + y);
-            }
-            else {
-                document.getElementById("error").innerHTML = "Not Your Piece";
-            }
+            var sel = selectPiece(x, y, board)
+            xs = sel[0];
+            ys = sel[1];
             break;
         case 1:
-            if (rule(x, y, xs, ys, board)) {
+            if (rule(x, y, xs, ys, board,0)) {
                 var moved = {
                     x: -1,
                     y: -1,
@@ -136,23 +127,15 @@ function change(x, y) {
                 document.getElementById("error").innerHTML = "Cant go there";
             }
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+            jsonBoard = JSON.stringify(board);
             break;
         case 2:
-            if (board[x][y] != null && board[x][y].color == "black") {
-                document.getElementById("error").innerHTML = "&#8203";
-                document.getElementById("myButton1").value = "Black Move";
-                xs = x;
-                ys = y;
-                turn = 3;
-                document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
-                console.log("Case = 3 " + x + y);
-            }
-            else {
-                document.getElementById("error").innerHTML = "Not Your Piece";
-            }
+            var sel = selectPiece(x, y, board)
+            xs = sel[0];
+            ys = sel[1];
             break;
         case 3:
-            if (rule(x, y, xs, ys, board)) {
+            if (rule(x, y, xs, ys, board,0)) {
                 document.getElementById("error").innerHTML = " ";
                 document.getElementById("myButton1").value = "White Select";
                 board[x][y] = board[xs][ys];
@@ -168,10 +151,16 @@ function change(x, y) {
                 document.getElementById("error").innerHTML = "Cant go there";
             }
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+            jsonBoard = JSON.stringify(board);
             break;
 
     }
 }
+
+/**
+ * Select piece
+ *
+ */
 
 /**
  *  Array creator
@@ -211,7 +200,7 @@ function refresh() {
  * @param {*} y
  * @returns
  */
-function movable(freedom, x, y) {
+function movable(freedom, x, y,check) {
     i = 0;
     var log = "Available: ";
     while (i < freedom.length) {
@@ -220,7 +209,8 @@ function movable(freedom, x, y) {
         i++;
     }
     log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
-    console.log(log);
+    if(!check){
+    console.log(log);}
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
     }
@@ -236,11 +226,10 @@ function movable(freedom, x, y) {
  * @returns
  */
 function check(board, color) {
-    return false;
     var kx = -1;
     var ky;
     for (var i = 0; i < 8; i++) {
-        for (var j = o; j < 8; j++) {
+        for (var j = 0; j < 8; j++) {
             if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
                 kx = i;
                 ky = j;
@@ -250,10 +239,12 @@ function check(board, color) {
         if (kx != -1) {
             break;
         }
+
     }
+    //console.log("King is:" + kx + ky)
     for (i = 0; i < 8; i++) {
-        for (j = o; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].color != color && rule(kx, ky, i, j, board)) {
+        for (j = 0; j < 8; j++) {
+            if (board[i][j] != null && board[i][j].color != color && rule(kx, ky, i, j, board,1)) {
                 return true;
             }
         }
@@ -371,32 +362,28 @@ function diaMove(xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function pawn(x, y, xs, ys, board) {
+function pawn(x, y, xs, ys, board,check) {
     var d = 1;
     if (board[xs][ys].color == "black") {
         d = -1;
     }
     var freedom = [];
     i = 1;
-    console.log("F FL FR")
     while (i <= 2 && board[xs + i * d][ys] == null) {
         freedom.push("" + (xs + i * d) + (ys));
         i++;
-        console.log("F " + (xs + i * d) + (ys))
     }
     if (board[xs + d][ys + 1] != null) {
         if (board[xs + d][ys + 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys + 1));
-            console.log("FR " + (xs + d) + (ys + 1));
         }
     }
     if (board[xs + d][ys - 1] != null) {
         if (board[xs + d][ys - 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys - 1));
-            console.log("FL " + (xs + d) + (ys - 1));
         }
     }
-    return movable(freedom, x, y);
+    return movable(freedom, x, y,check);
 }
 /**
  *  Rook movability
@@ -408,8 +395,8 @@ function pawn(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function rook(x, y, xs, ys, board) {
-    return movable(verMove(xs, ys, board), x, y);
+function rook(x, y, xs, ys, board,check) {
+    return movable(verMove(xs, ys, board), x, y,check);
 }
 /**
  * Horse movability
@@ -421,7 +408,7 @@ function rook(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function horse(x, y, xs, ys, board) {
+function horse(x, y, xs, ys, board,check) {
     var freedom = [];
     if (xs + 2 <= 7 && ys + 1 <= 7) {
         if (board[xs + 2][ys + 1] == null || board[xs + 2][ys + 1] != null && board[xs + 2][ys + 1].color != board[xs][ys].color) {
@@ -463,7 +450,7 @@ function horse(x, y, xs, ys, board) {
             freedom.push("" + (xs - 1) + (ys - 2));
         }
     }
-    return movable(freedom, x, y);
+    return movable(freedom, x, y,check);
 }
 /**
  *  Bishop movability
@@ -475,8 +462,8 @@ function horse(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function bishop(x, y, xs, ys, board) {
-    return movable(diaMove(xs, ys, board), x, y);
+function bishop(x, y, xs, ys, board,check) {
+    return movable(diaMove(xs, ys, board), x, y,check);
 }
 
 /**
@@ -489,7 +476,7 @@ function bishop(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function king(x, y, xs, ys, board) {
+function king(x, y, xs, ys, board,check) {
     var freedom = [];
     //RightDown
     if ((xs + 1) < 8 && (ys + 1) < 8) {
@@ -540,7 +527,7 @@ function king(x, y, xs, ys, board) {
         }
     }
 
-    return movable(freedom, x, y);
+    return movable(freedom, x, y,check);
 }
 /**
  * Queen movability
@@ -552,8 +539,8 @@ function king(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function queen(x, y, xs, ys, board) {
-    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y);
+function queen(x, y, xs, ys, board,check) {
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y,check);
 }
 /**
  * Checks movability of selected piece
@@ -565,25 +552,27 @@ function queen(x, y, xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function rule(x, y, xs, ys, board) {
+function rule(x, y, xs, ys, board, check) {
     x = parseInt(x);
     y = parseInt(y);
     xs = parseInt(xs);
     ys = parseInt(ys);
-    console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
+    if (!check) {
+        console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
+    }
     switch (board[xs][ys].type) {
         case "pawn":
-            return pawn(x, y, xs, ys, board);
+            return pawn(x, y, xs, ys, board,check);
         case "rook":
-            return rook(x, y, xs, ys, board);
+            return rook(x, y, xs, ys, board,check);
         case "horse":
-            return horse(x, y, xs, ys, board);
+            return horse(x, y, xs, ys, board,check);
         case "bishop":
-            return bishop(x, y, xs, ys, board);
+            return bishop(x, y, xs, ys, board,check);
         case "king":
-            return king(x, y, xs, ys, board);
+            return king(x, y, xs, ys, board,check);
         case "queen":
-            return queen(x, y, xs, ys, board);
+            return queen(x, y, xs, ys, board,check);
     }
     document.getElementById("error").innerHTML = "Unknown Piece";
 }
@@ -662,7 +651,33 @@ function drawBoard() {
         document.getElementById(i + "-1").innerHTML = i + 1;
     }
 }
-
+function selectPiece(x, y, board) {
+    var color;
+    if (turn == 0) {
+        color = "white"
+    }
+    else {
+        color = "black"
+    }
+    if (board[x][y] != null && board[x][y].color == color) {
+        document.getElementById("error").innerHTML = "&#8203";
+        document.getElementById("myButton1").value = color + " Move";
+        xs = x;
+        ys = y;
+        if (turn == 0) {
+            turn = 1;
+        }
+        else {
+            turn = 3;
+        }
+        document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
+        console.log("Case = 1 " + x + y);
+    }
+    else {
+        document.getElementById("error").innerHTML = "Not Your Piece";
+    }
+    return ("" + xs + ys)
+}
 
 
 /*
