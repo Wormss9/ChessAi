@@ -272,52 +272,43 @@ function verMove(xs, ys, board) {
     var freedom = [];
     i = 1;
     //Move
-    if (ys < 7) {
-        while (board[xs][ys + i] == null && ys + i < 8) {
-            freedom.push("" + (xs) + (ys + i));
-            i++;
-        }
-        //Take out   
-        if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys + i));
-        }
+    while (ys + i <= 7 && board[xs][ys + i] == null) {
+        freedom.push("" + (xs) + (ys + i));
+        i++;
+    }
+    //Take out   
+    if (ys + i <= 7 && board[xs][ys + i].color != board[xs][ys].color) {
+        freedom.push("" + (xs) + (ys + i));
     }
     //Left
     i = 1;
-    if (ys > 0) {
-        while (board[xs][ys - i] == null && ys - i > 0) {
-            freedom.push("" + (xs) + (ys - i));
-            i++;
-        }
-        //Take out
-        if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs) + (ys - i));
-        }
+    while (ys - i >= 0 && board[xs][ys - i] == null) {
+        freedom.push("" + (xs) + (ys - i));
+        i++;
+    }
+    //Take out
+    if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
+        freedom.push("" + (xs) + (ys - i));
     }
     //Down
     i = 1;
-    if (xs < 7) {
-        while (board[xs + i][ys] == null && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys));
-            i++;
-        }
-        //Take out
-        if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys));
-        }
+    while (xs + i <= 7 && board[xs + i][ys] == null) {
+        freedom.push("" + (xs + i) + (ys));
+        i++;
+    }
+    //Take out
+    if (xs + i <= 7 && board[xs + i][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys));
     }
     //Up
     i = 1
-    if (xs > 0) {
-        while (board[xs - i][ys] == null && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys));
-            i++;
-        }
-
-        //Take out
-        if (xs - i > 0 && board[xs - i][ys].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys));
-        }
+    while (xs - i >= 0 && board[xs - i][ys] == null) {
+        freedom.push("" + (xs - i) + (ys));
+        i++;
+    }
+    //Take out
+    if (xs - i >= 0 && board[xs - i][ys].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys));
     }
     return freedom;
 }
@@ -333,47 +324,39 @@ function diaMove(xs, ys, board) {
     var freedom = [];
     //RightDown
     i = 1;
-    if (xs < 7 && ys < 7) {
-        while (board[xs + i][ys + i] == null && ys + i < 8 && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys + i));
-            i++;
-        }
-        if ((xs + i) < 8 && (ys + i) < 8 && board[xs + i][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys + i));
-        }
+    while (xs + i <= 7 && ys + i <= 7 && board[xs + i][ys + i] == null) {
+        freedom.push("" + (xs + i) + (ys + i));
+        i++;
+    }
+    if (xs + i <= 7 && ys + i <= 7 && board[xs + i][ys + i].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys + i));
     }
     //LeftUp
     i = 1;
-    if (xs > 0 && ys > 0) {
-        while (board[xs - i][ys - i] == null && ys - i >= 0 && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys - i));
-            i++;
-        }
-        if ((xs - i) < 8 && (ys - i) < 8 && board[xs - i][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys - i));
-        }
+    while (xs - i >= 0 && ys - i >= 0 && board[xs - i][ys - i] == null) {
+        freedom.push("" + (xs - i) + (ys - i));
+        i++;
+    }
+    if (xs - i >= 0 && ys - i >= 0 && board[xs - i][ys - i].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys - i));
     }
     //RightUp
     i = 1;
-    if (xs > 0 && ys < 7) {
-        while (board[xs - i][ys + i] == null && ys + i < 8 && xs - i >= 0) {
-            freedom.push("" + (xs - i) + (ys + i));
-            i++;
-        }
-        if ((xs - i) >= 0 && (ys + i) < 8 && board[xs - i][ys + i].color != board[xs][ys].color) {
-            freedom.push("" + (xs - i) + (ys + i));
-        }
+    while (xs - i >= 0 && ys + i <= 7 && board[xs - i][ys + i] == null) {
+        freedom.push("" + (xs - i) + (ys + i));
+        i++;
+    }
+    if (xs - i >= 0 && ys + i <= 7 && board[xs - i][ys + i].color != board[xs][ys].color) {
+        freedom.push("" + (xs - i) + (ys + i));
     }
     //LeftDown
     i = 1;
-    if (xs < 7 && ys > 0) {
-        while (board[xs + i][ys - i] == null && ys - i >= 0 && xs + i < 8) {
-            freedom.push("" + (xs + i) + (ys - i));
-            i++;
-        }
-        if ((xs + i) < 8 && (ys - i) >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
-            freedom.push("" + (xs + i) + (ys - i));
-        }
+    while (xs + i <= 7 && ys - i >= 0 && board[xs + i][ys - i] == null) {
+        freedom.push("" + (xs + i) + (ys - i));
+        i++;
+    }
+    if (xs + i <= 7 && ys - i >= 0 && board[xs + i][ys - i].color != board[xs][ys].color) {
+        freedom.push("" + (xs + i) + (ys - i));
     }
     return freedom;
 }
