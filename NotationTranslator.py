@@ -1,5 +1,5 @@
 import json
-
+import re
 
 file = open('MagnusCarlsen.pgn','r')
 contents = file.read()
@@ -18,8 +18,10 @@ for i in contents:
                 print(data[1:6])
             elif '[' not in data:
                 for j in data.split():
-                    if not j.endswith('.'):
+                    if not j.endswith('.') and not re.match('^.+-.+$',j):
                         moves.append(j)
+                        #tu sa da spracovat samostatny tah
+                        # TO-DO: napisat na to funkciu
                 print(moves)
                 moves.clear()
         data = ''
