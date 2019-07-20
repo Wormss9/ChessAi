@@ -87,7 +87,7 @@ turns = 0;
  * @param {*} y
  */
 function change(x, y, z) {
-    //console.log("Change " + x + y);
+    console.log("Change " + x + y);
     switch (turn) {
         case 0:
             var sel = selectPiece(x, y, board)
@@ -127,7 +127,6 @@ function createArray(length) {
     }
     return arr;
 }
-
 /**
  *  Refreshes the <table> acording to the board[][]
  *
@@ -666,8 +665,8 @@ function selectPiece(x, y, board) {
 function movePiece(x, y, board, z) {
     var color = [];
 
-    console.log("Is the board fucked up?");
-    console.log(board[2][1] != null);
+    //console.log("Is the board fucked up?");
+    //console.log(board[2][1] != null);
     if (turn == 1) {
         color[0] = "White"
         color[1] = "Black"
@@ -708,8 +707,8 @@ function movePiece(x, y, board, z) {
             document.getElementById("error").innerHTML = "Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
             //console.log("MovePiece false backmove")
-            console.log("Is the board fucked up?");
-            console.log(board[2][1] != null);
+            //console.log("Is the board fucked up?");
+            //console.log(board[2][1] != null);
             return false;
         }
         if (turn == 1) {
@@ -721,17 +720,20 @@ function movePiece(x, y, board, z) {
         }
 
         // AAAAA
-        console.log("Z: " + z)
+        //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
         if (z == 0) {
-            for(i=0;i<8;i++){
-                for(j=0;j<8;j++){
-                    boardBackup[i][j]=board[i][j];
+            for (i = 0; i < 8; i++) {
+                for (j = 0; j < 8; j++) {
+                    boardBackup[i][j] = board[i][j];
                 }
             }
+            console.log("Should i stay alive? " + (boardBackup == board));
+
+
             //boardBackup = board;
-            console.log("Is the backup fucked up when needed?save");
-            console.log(boardBackup[2][1] != null);
+            //console.log("Is the backup fucked up when needed?save");
+            //console.log(boardBackup[2][1] != null);
         }
         if (z == 0 && checkStatus) {
             if (checkmate(board, color[1])) {
@@ -739,12 +741,24 @@ function movePiece(x, y, board, z) {
             }
             else {
                 console.log("no checkmate");
-                console.log("Is the backup fucked up when needed?load");
-                console.log(boardBackup[2][1] != null);
-                for(i=0;i<8;i++){
-                    for(j=0;j<8;j++){
-                        board[i][j]=boardBackup[i][j];
+                //console.log("Is the backup fucked up when needed?load");
+                //console.log(boardBackup[2][1] != null);
+                var tcolor="null";
+                for (i = 0; i < 8; i++) {
+                    for (j = 0; j < 8; j++) {
+                        if (board[i][j] != boardBackup[i][j])  {
+                            if(board[i][j]!=null){
+                                tcolor=board[i][j].color
+                            }
+                            board[i][j] = boardBackup[i][j]
+                        }
                     }
+                }
+                if(tcolor=="White"){
+                    turn=0;
+                }
+                if(tcolor=="Black"){
+                    turn=3;
                 }
                 //board = boardBackup;
                 refresh();
