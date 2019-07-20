@@ -2,7 +2,7 @@ import json
 import re
 import numpy
 
-
+# necessary functions
 def fillBoard():
     board[0,0] = board[0,7] = 1     #wr
     board[0, 1] = board[0, 6] = 2   #wh
@@ -20,27 +20,44 @@ def fillBoard():
     board[7, 2] = board[7, 5] = 13  #wb
     board[7, 3] = 15                #bq
     board[7, 4] = 14                #bk
-
+squareNumber = {
+    "a": 0,
+    "b": 1,
+    "c": 2,
+    "d": 3,
+    "e": 4,
+    "f": 5,
+    "g": 6,
+    "h": 7
+}
 
 def processMove(move):
     for sign in move:
         print(sign)
+        if sign.isLower():
+            # handle pawn movement
+        else:
+            # make rules for movement of everything else, queen, king, rook, horse and bishop
         #TO-DO: translate algebraic notation to changes in an array
 
+
+# declaring variables
 data = ''
 move = ''
 turn = 0;
 moves = []
 
+# data structures
 board = numpy.zeros((8, 8))
 fillBoard()
 
 file = open('MagnusCarlsen.pgn','r')
 contents = file.read()
 
-
-with open("games.txt", "w") as output:
+# emptying the .csv file
+with open("train-games.csv", "w") as output:
     output.close()
+
 bracketsOpen = False
 for i in contents:
     if i == '\n':
@@ -54,8 +71,8 @@ for i in contents:
                     elif not j.endswith('.') and not re.match('^.+-.+$',j):
                         moves.append(j)
                 if moves!= []:
-                    print(moves)
-                    moves.clear()
+                    for move in moves:
+                        processMove(move)
         data = ''
     else:
         data+=i
