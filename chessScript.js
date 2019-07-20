@@ -5,7 +5,6 @@ vsetko by malo fungovat okrem rosady a en passantu
 a nevie zistovat pat ani mat
 ak to budes chciet skusit na zapasoch bez en passatu a rosad len hod na zaciatok checkmate() return false;
 */
-
 //Chess pieces
 var wr = {
     bn: "&#9814;",
@@ -68,11 +67,12 @@ var bp = {
     type: "pawn"
 }
 var board = createArray(8, 8)
+var boardBackup = createArray(8, 8)
 initialiseBoard()
 var jsonBoard = JSON.stringify(board);
 drawBoard()
 refresh();
-
+var gameover = false;
 var xs
 var ys
 turn = 0;
@@ -86,7 +86,7 @@ turns = 0;
  * @param {*} x
  * @param {*} y
  */
-function change(x, y,z) {
+function change(x, y, z) {
     //console.log("Change " + x + y);
     switch (turn) {
         case 0:
@@ -95,14 +95,14 @@ function change(x, y,z) {
             ys = sel[1];
             break;
         case 1:
-            return movePiece(x, y, board,z);
+            return movePiece(x, y, board, z);
         case 2:
             var sel = selectPiece(x, y, board)
             xs = sel[0];
             ys = sel[1];
             break;
         case 3:
-            return movePiece(x, y, board,z)
+            return movePiece(x, y, board, z)
 
     }
 }
@@ -152,15 +152,15 @@ function refresh() {
  */
 function movable(freedom, x, y, check) {
     i = 0;
-    var log = "Available: ";
+    //var log = "Available: ";
     while (i < freedom.length) {
         var a = "" + freedom[i];
-        log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
+        //log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
         i++;
     }
-    log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
+    //log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
     if (!check) {
-        console.log(log);
+        //console.log(log);
     }
     if (freedom.indexOf("" + x + y) > -1) {
         return true;
@@ -555,7 +555,7 @@ function processButton() {
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y,0);
+    change(x, y, 0);
 }
 /**
  *Processes click input
@@ -566,7 +566,7 @@ function processClick(coordinates) {
     //rozoberanie coordinates
     xc = coordinates.slice(0, 1);
     yc = coordinates.slice(1, 2);
-    change(parseInt(xc, 10), parseInt(yc, 10),0);
+    change(parseInt(xc, 10), parseInt(yc, 10), 0);
 }
 /**
  * Initialises board
@@ -663,8 +663,11 @@ function selectPiece(x, y, board) {
  * @param {*} y
  * @param {*} board
  */
-function movePiece(x, y, board,z) {
+function movePiece(x, y, board, z) {
     var color = [];
+
+    console.log("Is the board fucked up?");
+    console.log(board[2][1] != null);
     if (turn == 1) {
         color[0] = "White"
         color[1] = "Black"
@@ -673,8 +676,7 @@ function movePiece(x, y, board,z) {
         color[0] = "Black"
         color[1] = "White"
     }
-    if (rule(x, y, xs, ys, board, 0)) {
-
+    if (rule(x, y, xs, ys, board, z)) {
         document.getElementById("myButton1").value = color[1] + " Select";
         /*if (board[x][y] != null) {
             moved.x = x;
@@ -693,6 +695,7 @@ function movePiece(x, y, board,z) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
+
         if (check(board, color[0])) {
             if (turn == 1) {
                 turn = 0;
@@ -704,6 +707,9 @@ function movePiece(x, y, board,z) {
             board[moved.xs][moved.ys] = moved.piece;
             document.getElementById("error").innerHTML = "Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+            //console.log("MovePiece false backmove")
+            console.log("Is the board fucked up?");
+            console.log(board[2][1] != null);
             return false;
         }
         if (turn == 1) {
@@ -713,13 +719,39 @@ function movePiece(x, y, board,z) {
             turn = 0;
             turns += 1;
         }
-        var boardBackup=board;
-        console.log()
-    // AAAAA
-        if (z=0 && check(board, color[1]) && checkmate(board, color[1])) {
-            document.getElementById("error").innerHTML = "Checkmate";
+
+        // AAAAA
+        console.log("Z: " + z)
+        var checkStatus = check(board, color[1]);
+        if (z == 0) {
+            for(i=0;i<8;i++){
+                for(j=0;j<8;j++){
+                    boardBackup[i][j]=board[i][j];
+                }
+            }
+            //boardBackup = board;
+            console.log("Is the backup fucked up when needed?save");
+            console.log(boardBackup[2][1] != null);
         }
-        board=boardBackup;
+        if (z == 0 && checkStatus) {
+            if (checkmate(board, color[1])) {
+                document.getElementById("error").innerHTML = "Checkmate";
+            }
+            else {
+                console.log("no checkmate");
+                console.log("Is the backup fucked up when needed?load");
+                console.log(boardBackup[2][1] != null);
+                for(i=0;i<8;i++){
+                    for(j=0;j<8;j++){
+                        board[i][j]=boardBackup[i][j];
+                    }
+                }
+                //board = boardBackup;
+                refresh();
+            }
+        }
+
+
         refresh();
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         jsonBoard = JSON.stringify(board);
@@ -735,7 +767,8 @@ function movePiece(x, y, board,z) {
         document.getElementById("myButton1").value = color[0] + " Select";
         document.getElementById("error").innerHTML = "Cant go there";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-        return false
+        //console.log("MovePiece true? ")
+        return true
     }
     document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
     jsonBoard = JSON.stringify(board);
@@ -784,16 +817,20 @@ function checkmate(board, color) {
             }
         }
     }
-    var mate=true
-    for (i = 0; i < pieces.length; i++) {
+    var mate = true;
+    var i = 0;
+    while (mate == true && i < pieces.length) {
+        change(pieces[i][0], pieces[i][1], 1);
         for (j = 0; j < freedoms[i].length; j++) {
-            change(pieces[i][0], pieces[i][1]);
-            if(change(freedoms[i][j][0], freedoms[i][j][1]),1){
-                mate =false;
+            console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
+            if (change(freedoms[i][j][0], freedoms[i][j][1], 1)) {
+                console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
+                mate = false;
                 break;
             }
 
         }
+        i++
     }
     return mate;
 }
@@ -804,7 +841,7 @@ function checkmate(board, color) {
     window.ys = yc;
     //zabezpečuje že vieš označiť a odoznačiť figúrku
     if ([window.xs, window.ys] != [window.x, window.y]) {
-        console.log('move from: ' + [window.x, window.y] + ' to: ' + [window.xs, window.ys])
+        //console.log('move from: ' + [window.x, window.y] + ' to: ' + [window.xs, window.ys])
         //<--tuto tá funkcia čo pohybuje týpkov s parametrami x,y,xs,ys,board,
         // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
         // TO-DO: ilegálne pohyby treba poriešiť ešte
