@@ -77,6 +77,8 @@ var xs
 var ys
 turn = 0;
 turns = 0;
+var info;
+var additionalInfo;
 /**
  * Gets input
  * selects piece
@@ -86,6 +88,7 @@ turns = 0;
  * @param {*} x
  * @param {*} y
  */
+var caseh;
 function change(x, y, z) {
     console.log("Change " + x + y);
     switch (turn) {
@@ -95,14 +98,18 @@ function change(x, y, z) {
             ys = sel[1];
             break;
         case 1:
-            return movePiece(x, y, board, z);
+            caseh = movePiece(x, y, board, z)
+            info += turn;
+            return caseh;
         case 2:
             var sel = selectPiece(x, y, board)
             xs = sel[0];
             ys = sel[1];
             break;
         case 3:
-            return movePiece(x, y, board, z)
+            caseh = movePiece(x, y, board, z)
+            info += turn;
+            return caseh;
 
     }
 }
@@ -627,6 +634,15 @@ function drawBoard() {
  * @returns xs + ys
  */
 function selectPiece(x, y, board) {
+    if(gameover){
+        document.getElementById("error").innerHTML = "Game over";
+        initialiseBoard();
+        turn=0;
+        gameover=false;
+        refresh();
+        document.getElementById("myButton1").value = "White Select";
+        return false;       
+    }
     var color;
     if (turn == 0) {
         color = "White"
@@ -664,7 +680,6 @@ function selectPiece(x, y, board) {
  */
 function movePiece(x, y, board, z) {
     var color = [];
-
     //console.log("Is the board fucked up?");
     //console.log(board[2][1] != null);
     if (turn == 1) {
@@ -705,8 +720,9 @@ function movePiece(x, y, board, z) {
             board[moving.x][moving.y] = moving.piece;
             board[moved.xs][moved.ys] = moved.piece;
             document.getElementById("error").innerHTML = "Check";
+            additionalInfo="Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            //console.log("MovePiece false backmove")
+            console.log("MovePiece false backmove")
             //console.log("Is the board fucked up?");
             //console.log(board[2][1] != null);
             return false;
@@ -723,42 +739,39 @@ function movePiece(x, y, board, z) {
         //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
         if (z == 0) {
+            info +="Board: \n"
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
+                    info +=" "+board[i][j];
                     boardBackup[i][j] = board[i][j];
                 }
             }
-            console.log("Should i stay alive? " + (boardBackup == board));
-
-
-            //boardBackup = board;
-            //console.log("Is the backup fucked up when needed?save");
-            //console.log(boardBackup[2][1] != null);
         }
         if (z == 0 && checkStatus) {
             if (checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Checkmate";
+                additionalInfo="Checkmate"
+                gameover=true;
             }
             else {
-                console.log("no checkmate");
-                //console.log("Is the backup fucked up when needed?load");
-                //console.log(boardBackup[2][1] != null);
-                var tcolor="null";
+                console.log("No Checkmate");
+                document.getElementById("error").innerHTML = "Check";
+                var tcolor = "null";
                 for (i = 0; i < 8; i++) {
                     for (j = 0; j < 8; j++) {
-                        if (board[i][j] != boardBackup[i][j])  {
-                            if(board[i][j]!=null){
-                                tcolor=board[i][j].color
+                        if (board[i][j] != boardBackup[i][j]) {
+                            if (board[i][j] != null) {
+                                tcolor = board[i][j].color
                             }
                             board[i][j] = boardBackup[i][j]
                         }
                     }
                 }
-                if(tcolor=="White"){
-                    turn=0;
+                if (tcolor == "White") {
+                    turn = 0;
                 }
-                if(tcolor=="Black"){
-                    turn=3;
+                if (tcolor == "Black") {
+                    turn = 3;
                 }
                 //board = boardBackup;
                 refresh();
@@ -778,6 +791,7 @@ function movePiece(x, y, board, z) {
         else {
             turn = 2;
         }
+        additionalInfo="Cant go there";
         document.getElementById("myButton1").value = color[0] + " Select";
         document.getElementById("error").innerHTML = "Cant go there";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
@@ -834,9 +848,9 @@ function checkmate(board, color) {
     var mate = true;
     var i = 0;
     while (mate == true && i < pieces.length) {
-        change(pieces[i][0], pieces[i][1], 1);
         for (j = 0; j < freedoms[i].length; j++) {
             console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
+            change(pieces[i][0], pieces[i][1], 1);
             if (change(freedoms[i][j][0], freedoms[i][j][1], 1)) {
                 console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
                 mate = false;
@@ -883,4 +897,8 @@ pieceSelected = false;
 function pieceSelect(xc, yc) {
     window.x = xc;
     window.y = yc;
-}*/
+*/
+function json(){
+info +="Status: "+additionalInfo;
+var infojs = JSON.stringify(info);
+}
