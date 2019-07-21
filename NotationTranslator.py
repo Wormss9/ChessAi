@@ -30,6 +30,9 @@ squareNumber = {
     "g": 6,
     "h": 7
 }
+#char(96+x)?
+#ord(char) - 96?
+# wtf?
 
 def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check):
     # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
@@ -56,8 +59,13 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     # or a capture move, this function will handle that logic,
 
 def processMove(move,turn):
-        if move[:1].isLower():
-        else:
+    isCheck = False
+    if move[:1].isLower():
+        if move[-1:] == '+':
+            isCheck = True
+            move = move[:-1]
+            # pawnMove()
+    else:
             if move[:1] == 'Q':
                 if move[-1:] == '+':
                     isCheck = True
