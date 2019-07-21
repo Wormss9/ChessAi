@@ -332,9 +332,9 @@ function pawn(x, y, xs, ys, board, check) {
     var freedom = [];
     if (board[xs + d][ys] == null) {
         freedom.push("" + (xs + d) + (ys));
-    }
-    if (board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
-        freedom.push("" + (xs + 2 * d) + (ys));
+        if (board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
+            freedom.push("" + (xs + 2 * d) + (ys));
+        }
     }
     if (board[xs + d][ys + 1] != null) {
         if (board[xs + d][ys + 1].color != board[xs][ys].color) {
@@ -346,15 +346,16 @@ function pawn(x, y, xs, ys, board, check) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
     }
-    console.log((3.5 + 0.5 * d)+(board[xs][ys].color))
+    console.log("abc"+board[xs][ys + 1]+xs+(ys+1));
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys + 1] != null) {
-        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turn == turn||board[xs][ys + 1].turn == turn+1))  {
+        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turn == turn || board[xs][ys + 1].turn == (turn + 1))) {
             freedom.push("" + (xs + d) + (ys + 1));
             pas = true;
         }
     }
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys - 1] != null) {
-        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys + 1].turn == turn||board[xs][ys + 1].turn == turn+1)) {
+        console.log("ASDF"+board[xs][ys - 1].type == "pawn"+turn);
+        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys - 1].turn == turn || board[xs][ys - 1].turn == (turn + 1))) {
             freedom.push("" + (xs + d) + (ys - 1));
             pas = true;
         }
@@ -362,16 +363,19 @@ function pawn(x, y, xs, ys, board, check) {
     if (check == 2) {
         return freedom
     }
+    console.log("Turn add pawn: "+xs+ys+" "+x+y);
     if (movable(freedom, x, y, check)) {
-        if(check==0){
-            board[xs][ys].turn=turn;
+        console.log("Turn add pawn: "+board[xs][ys].type+" "+board[x][y])
+        if (check == 0) {
+            board[xs][ys].turn = turn;
         }
         if (x == (xs + d) && y == (ys + 1) && pas) {
-            board[xs][ys + 1]=null;
+            board[xs][ys + 1] = null;
         }
         if (x == (xs + d) && y == (ys - 1) && pas) {
-            board[xs][ys - 1]=null;
+            board[xs][ys - 1] = null;
         }
+        console.log(board[xs][ys].turn)
         return true;
     }
     else {
