@@ -36,13 +36,13 @@ var wp = {
     bn: "&#9817;",
     color: "White",
     type: "pawn",
-    turn: null
+    turns: null
 }
 var br = {
     bn: "&#9820;",
     color: "Black",
     type: "rook",
-    turn: null
+    turns: null
 }
 var bh = {
     bn: "&#9822;",
@@ -348,26 +348,25 @@ function pawn(x, y, xs, ys, board, check) {
     }
     console.log("abc" + board[xs][ys + 1] + xs + (ys + 1));
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys + 1] != null) {
-        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turn == turn || board[xs][ys + 1].turn == (turn + 1))) {
+        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turns == turn || board[xs][ys + 1].turns == (turn + 1))) {
             freedom.push("" + (xs + d) + (ys + 1));
             pas = true;
+            console.log("passant right")
         }
     }
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys - 1] != null) {
         console.log("ASDF" + board[xs][ys - 1].type == "pawn" + turn);
-        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys - 1].turn == turn || board[xs][ys - 1].turn == (turn + 1))) {
+        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys - 1].turns == turn || board[xs][ys - 1].turns == (turn + 1))) {
             freedom.push("" + (xs + d) + (ys - 1));
             pas = true;
+            console.log("passant left")
         }
-    }
-    if (check == 2) {
-        return freedom
     }
     console.log("Turn add pawn: " + xs + ys + " " + x + y);
     if (movable(freedom, x, y, check)) {
         console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
         if (check == 0) {
-            board[xs][ys].turn = turn;
+            board[xs][ys].turns = turns;
         }
         if (x == (xs + d) && y == (ys + 1) && pas) {
             board[xs][ys + 1] = null;
@@ -375,10 +374,13 @@ function pawn(x, y, xs, ys, board, check) {
         if (x == (xs + d) && y == (ys - 1) && pas) {
             board[xs][ys - 1] = null;
         }
-        console.log(board[xs][ys].turn)
+        console.log("turn :"+board[xs][ys].turn)
         return true;
     }
     else {
+        if (check == 2) {
+            return freedom
+        }
         return false
     }
 }
