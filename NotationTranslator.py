@@ -31,15 +31,55 @@ squareNumber = {
     "h": 7
 }
 
-def processMove(move):
-    for sign in move:
-        print(sign)
-        if sign.isLower():
-            # handle pawn movement
+def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
+    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
+    # or a capture move, this function will handle that logic,
+
+def processMove(move,turn):
+        if move[:1].isLower():
         else:
+            if move[:1] == 'Q':
+                if move[-1:] == '+':
+                    isCheck = True
+                    move = move[:-1]
+            if move[:1] == 'K':
+                if move[-1:] == '+':
+                    isCheck = True
+                    move = move[:-1]
+            if move[:1] == 'N':
+                if move[-1:] == '+':
+                    isCheck = True
+                    move = move[:-1]
+            if move[:1] == 'B':
+                if move[-1:] == '+':
+                    isCheck = True
+                    move = move[:-1]
+            if move[:1] == 'R':
+                if move[-1:] == '+':
+                    isCheck = True
+                    move = move[:-1]
             # make rules for movement of everything else, queen, king, rook, horse and bishop
         #TO-DO: translate algebraic notation to changes in an array
-
 
 # declaring variables
 data = ''
@@ -66,13 +106,13 @@ for i in contents:
                 print(data[1:6])
             elif '[' not in data:
                 for j in data.split():
-                    if j.endswith('.'):
-                        turn = j[:1]
-                    elif not j.endswith('.') and not re.match('^.+-.+$',j):
+                    if not j.endswith('.') and not re.match('^.+-.+$',j):
                         moves.append(j)
                 if moves!= []:
                     for move in moves:
-                        processMove(move)
+                        turn+=1
+                        processMove(move,turn)
+
         data = ''
     else:
         data+=i
