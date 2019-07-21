@@ -30,7 +30,8 @@ squareNumber = {
     "g": 6,
     "h": 7
 }
-
+#char(96+x)?
+#ord(char) - 96?
 def processMove(move):
     for sign in move:
         print(sign)
