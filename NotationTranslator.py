@@ -2,6 +2,14 @@ import json
 import re
 import numpy
 
+def sign(param):
+    if param > 0:
+        return 1
+    if param ==0:
+        return 0
+    else:
+        return -1
+
 # necessary functions
 def fillBoard():
     board[0,0] = board[0,7] = 1     #wr
@@ -30,34 +38,45 @@ squareNumber = {
     "g": 6,
     "h": 7
 }
-#char(96+x)?
-#ord(char) - 96?
-# wtf?
-#ftw!
 
 def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn):
     if turn%2 == 1:
         figs = numpy.where(board == 5)
+        figure_number = 5
     else:
         figs = numpy.where(board == 15)
+        figure_number = 15
     if from_coord_x != '' and from_coord_y != '':
-        board[squareNumber.get(from_coord_x),from_coord_y - 1]
-        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+        board[squareNumber.get(from_coord_x),from_coord_y - 1] = 0
+        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
     elif from_coord_x != '' and from_coord_y == '':
         for i in figs:
             if i[0] == squareNumber.get(from_coord_x):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     elif from_coord_x == '' and from_coord_y != '':
         for i in figs:
             if i[1] == squareNumber.get(from_coord_y):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     else:
         for i in figs:
-            if (i[0],i[1]) == (to_coord_x,to_coord_y):
+            dis_x = i[0] - squareNumber.get(to_coord_x)
+            dis_y = i[1] - to_coord_y - 1
+            repetitions = dis_x if dis_x>=dis_y else dis_y
+            x = i[0]
+            y = i[1]
+            for k in range(repetitions):
+                x = x + sign(dis_x)
+                y = y + sign(dis_y)
+                if board[x,y] != 0:
+                    break
+                if (x,y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
+                    board[i[0], i[1]] = 0
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+
 
 
 def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
