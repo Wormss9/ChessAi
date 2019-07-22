@@ -114,15 +114,12 @@ function change(x, y, z) {
             caseh = movePiece(x, y, board, z)
             info += turn;
             return caseh;
-
     }
 }
-
 /**
  * Select piece
  *
  */
-
 /**
  *  Array creator
  *
@@ -200,7 +197,6 @@ function check(board, color) {
         if (kx != -1) {
             break;
         }
-
     }
     //console.log("King is:" + kx + ky)
     for (i = 0; i < 8; i++) {
@@ -312,7 +308,6 @@ function diaMove(xs, ys, board) {
     }
     return freedom;
 }
-
 /**
  *  Pawn movability
  *
@@ -326,55 +321,66 @@ function diaMove(xs, ys, board) {
 function pawn(x, y, xs, ys, board, check) {
     var d = 1;
     var pas = false;
+    //Direction
     if (board[xs][ys].color == "Black") {
         d = -1;
     }
     var freedom = [];
+    //Move forward
     if (board[xs + d][ys] == null) {
         freedom.push("" + (xs + d) + (ys));
         if (board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
             freedom.push("" + (xs + 2 * d) + (ys));
         }
     }
+    //Take out Right
     if (board[xs + d][ys + 1] != null) {
         if (board[xs + d][ys + 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys + 1));
         }
     }
+    //Take out left
     if (board[xs + d][ys - 1] != null) {
         if (board[xs + d][ys - 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
     }
-    console.log("abc" + board[xs][ys + 1] + xs + (ys + 1));
+    //console.log("abc " + board[xs][ys + 1] +" "+ xs + (ys + 1));
+    // en passant right
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys + 1] != null) {
-        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turns == turn || board[xs][ys + 1].turns == (turn + 1))) {
+        if (board[xs][ys + 1].color != board[xs][ys].color && board[xs][ys + 1].type == "pawn" && (board[xs][ys + 1].turns == turns || board[xs][ys + 1].turns == (turns - 1))) {
             freedom.push("" + (xs + d) + (ys + 1));
             pas = true;
-            console.log("passant right")
         }
     }
+    // en passant left
     if ((xs == 3.5 + 0.5 * d) && board[xs][ys - 1] != null) {
-        console.log("ASDF" + board[xs][ys - 1].type == "pawn" + turn);
-        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys - 1].turns == turn || board[xs][ys - 1].turns == (turn + 1))) {
+        if (board[xs][ys - 1].color != board[xs][ys].color && board[xs][ys - 1].type == "pawn" && (board[xs][ys - 1].turns == turns || board[xs][ys - 1].turns == (turns - 1))) {
             freedom.push("" + (xs + d) + (ys - 1));
             pas = true;
-            console.log("passant left")
         }
     }
-    console.log("Turn add pawn: " + xs + ys + " " + x + y);
-    if (movable(freedom, x, y, check)) {
+    var placeholder = movable(freedom, x, y, check)
+    console.log("Passant possible?" + movable(freedom, x, y, check))
+    console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
+    
+    if (placeholder) {
         console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
+        // turn adder
         if (check == 0) {
+            console.log("Turn " + turns + " added to pawn" + xs + ys)
             board[xs][ys].turns = turns;
+            console.log("Pawn turn :" + board[xs][ys].turns)
         }
+        //MP takout right
         if (x == (xs + d) && y == (ys + 1) && pas) {
             board[xs][ys + 1] = null;
         }
+        //MP takout left
         if (x == (xs + d) && y == (ys - 1) && pas) {
             board[xs][ys - 1] = null;
         }
-        console.log("turn :"+board[xs][ys].turn)
+        console.log("turn :" + board[xs][ys].turns)
         return true;
     }
     else {
@@ -473,7 +479,6 @@ function bishop(x, y, xs, ys, board, check) {
     }
     return movable(diaMove(xs, ys, board), x, y, check);
 }
-
 /**
  * King movability
  * (not concerning itself with check)
@@ -637,7 +642,6 @@ function initialiseBoard() {
             board[i + 2][j] = null;
         }
     }
-
 }
 /**
  * Draws HTML board
@@ -708,7 +712,6 @@ function selectPiece(x, y, board) {
     }
     return ("" + xs + ys)
 }
-
 /**
  *  Moves selected piece
  *  (if movable)
@@ -748,7 +751,6 @@ function movePiece(x, y, board, z) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
-
         if (check(board, color[0])) {
             if (turn == 1) {
                 turn = 0;
@@ -771,9 +773,11 @@ function movePiece(x, y, board, z) {
         }
         else {
             turn = 0;
-            turns += 1;
+            if (z == 0) {
+                turns += 1;
+                console.log("Turn changed to " + turns)
+            }
         }
-
         // AAAAA
         //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
@@ -816,8 +820,6 @@ function movePiece(x, y, board, z) {
                 refresh();
             }
         }
-
-
         refresh();
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         jsonBoard = JSON.stringify(board);
@@ -840,7 +842,6 @@ function movePiece(x, y, board, z) {
     document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
     jsonBoard = JSON.stringify(board);
 }
-
 /**
  *Checks for checkmate
  *
@@ -863,7 +864,6 @@ function checkmate(board, color) {
         if (kx != -1) {
             break;
         }
-
     }
     //freedoms
     var pieces = [];
@@ -895,13 +895,11 @@ function checkmate(board, color) {
                 mate = false;
                 break;
             }
-
         }
         i++
     }
     return mate;
 }
-
 /*
   function pieceMove(xc, yc) {
     window.xs = xc;
@@ -917,7 +915,6 @@ function checkmate(board, color) {
     }
 }
  */
-
 /*function coordinates() {
     var input = document.getElementById("input").value;
     if (input.length !== 2) {
@@ -930,7 +927,6 @@ function checkmate(board, color) {
     }
     return "" + x + y;
 }*/
-
 /*
 pieceSelected = false;
 function pieceSelect(xc, yc) {
@@ -940,4 +936,17 @@ function pieceSelect(xc, yc) {
 function json() {
     info += "Status: " + additionalInfo;
     var infojs = JSON.stringify(info);
+}
+function readTextFile(file) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4) {
+            if (rawFile.status === 200 || rawFile.status == 0) {
+                var allText = rawFile.responseText;
+                alert(allText);
+            }
+        }
+    }
+    rawFile.send(null);
 }
