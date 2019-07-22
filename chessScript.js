@@ -72,18 +72,19 @@ var bp = {
     type: "pawn",
     turn: null
 }
-var board = createArray(8, 8)
-var boardBackup = createArray(8, 8)
-initialiseBoard()
+var board = createArray(8, 8);
+var boardBackup = createArray(8, 8);
+initialiseBoard();
 var jsonBoard = JSON.stringify(board);
-var turn = 0
+var turn = 0;
 drawBoard(0);
 refresh();
 var gameover = false;
-var xs
-var ys
+var xs;
+var ys;
 turn = 0;
 turns = 1;
+console.log("Turn "+turns);
 var info;
 var additionalInfo;
 /**
@@ -100,21 +101,21 @@ function change(x, y, z) {
     //console.log("Change " + x + y);
     switch (turn) {
         case 0:
-            var sel = selectPiece(x, y, board)
+            var sel = selectPiece(x, y, board);
             xs = sel[0];
             ys = sel[1];
             break;
         case 1:
-            caseh = movePiece(x, y, board, z)
+            caseh = movePiece(x, y, board, z);
             info += turn;
             return caseh;
         case 2:
-            var sel = selectPiece(x, y, board)
+            var sel = selectPiece(x, y, board);
             xs = sel[0];
             ys = sel[1];
             break;
         case 3:
-            caseh = movePiece(x, y, board, z)
+            caseh = movePiece(x, y, board, z);
             info += turn;
             return caseh;
     }
@@ -672,7 +673,6 @@ function drawBoard(turn) {
     boardtodraw += "</tr>";
 
     document.getElementById("table").innerHTML = boardtodraw;
-    console.log("Turn " + turn)
     if (turn == 0) {
         for (var i = 0; i < 8; i++) {
             document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
@@ -707,10 +707,10 @@ function selectPiece(x, y, board) {
     }
     var color;
     if (turn == 0) {
-        color = "White"
+        color = "White";
     }
     else {
-        color = "Black"
+        color = "Black";
     }
     if (board[x][y] != null && board[x][y].color == color) {
         document.getElementById("error").innerHTML = "&#8203";
@@ -744,12 +744,12 @@ function movePiece(x, y, board, z) {
     //console.log("Is the board fucked up?");
     //console.log(board[2][1] != null);
     if (turn == 1) {
-        color[0] = "White"
-        color[1] = "Black"
+        color[0] = "White";
+        color[1] = "Black";
     }
     else {
-        color[0] = "Black"
-        color[1] = "White"
+        color[0] = "Black";
+        color[1] = "White";
     }
     if (rule(x, y, xs, ys, board, z)) {
         document.getElementById("myButton1").value = color[1] + " Select";
@@ -787,20 +787,24 @@ function movePiece(x, y, board, z) {
         }
         if (turn == 1) {
             turn = 2;
+            if (z == 0) {
+                console.log(""+(parseInt(xs)+1)+(parseInt(ys)+1)+" "+(x+1)+(y+1));
+            }
+
         }
         else {
             turn = 0;
             if (z == 0) {
                 turns += 1;
+                console.log(""+(parseInt(xs)+1)+(parseInt(ys)+1)+" "+(x+1)+(y+1));
                 console.log("Turn " + turns)
             }
         }
-        // AAAAA
         //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
         //Board saving
         if (z == 0) {
-            info += "Board: \n"
+            info += "Board: \n";
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     info += " " + board[i][j];
@@ -812,7 +816,7 @@ function movePiece(x, y, board, z) {
         if (z == 0 && checkStatus) {
             if (checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Checkmate";
-                additionalInfo = "Checkmate"
+                additionalInfo = "Checkmate";
                 gameover = true;
             }
             else {
@@ -823,9 +827,9 @@ function movePiece(x, y, board, z) {
                     for (j = 0; j < 8; j++) {
                         if (board[i][j] != boardBackup[i][j]) {
                             if (board[i][j] != null) {
-                                tcolor = board[i][j].color
+                                tcolor = board[i][j].color;
                             }
-                            board[i][j] = boardBackup[i][j]
+                            board[i][j] = boardBackup[i][j];
                         }
                     }
                 }
@@ -845,7 +849,7 @@ function movePiece(x, y, board, z) {
         if (z == 0 && !checkStatus) {
             if (checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Stalemate";
-                additionalInfo = "Stalemate"
+                additionalInfo = "Stalemate";
                 gameover = true;
             }
             else {
@@ -856,7 +860,7 @@ function movePiece(x, y, board, z) {
                             if (board[i][j] != null) {
                                 tcolor = board[i][j].color
                             }
-                            board[i][j] = boardBackup[i][j]
+                            board[i][j] = boardBackup[i][j];
                         }
                     }
                 }
