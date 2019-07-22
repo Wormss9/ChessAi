@@ -35,60 +35,173 @@ squareNumber = {
 # wtf?
 #ftw!
 
-def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
+def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn):
+    if turn%2 == 1:
+        figs = numpy.where(board == 5)
+    else:
+        figs = numpy.where(board == 15)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x),from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0],i[1]) == (to_coord_x,to_coord_y):
 
-def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
 
-def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
+def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+    if turn % 2 == 1:
+        figs = numpy.where(board == 4)
+    else:
+        figs = numpy.where(board == 14)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x), from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+    if turn % 2 == 1:
+        figs = numpy.where(board == 3)
+    else:
+        figs = numpy.where(board == 13)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x), from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+    if turn % 2 == 1:
+        figs = numpy.where(board == 2)
+    else:
+        figs = numpy.where(board == 12)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x), from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+    if turn % 2 == 1:
+        figs = numpy.where(board == 1)
+    else:
+        figs = numpy.where(board == 11)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x), from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+    if turn % 2 == 1:
+        figs = numpy.where(board == 6)
+    else:
+        figs = numpy.where(board == 16)
+    if from_coord_x != '' and from_coord_y != '':
+        board[squareNumber.get(from_coord_x), from_coord_y - 1]
+        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+    elif from_coord_x != '' and from_coord_y == '':
+        for i in figs:
+            if i[0] == squareNumber.get(from_coord_x):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    elif from_coord_x == '' and from_coord_y != '':
+        for i in figs:
+            if i[1] == squareNumber.get(from_coord_y):
+                board[i[0], i[1]]
+                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                break
+    else:
+        for i in figs:
+            if (i[0], i[1]) == (to_coord_x, to_coord_y):
 
-def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
-
-def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
-
-def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check):
-    # every move is checked as if it was an entirely ambiguous capture move, then treated accordingly if it isn't ambiguous
-    # or a capture move, this function will handle that logic,
 
 def processMove(move,turn):
     isCheck = False
+    isCapture = False
+    if move[-1:] == '+':
+        isCheck = True
+        move = move[:-1]
+    if "x" in move:
+        isCapture = True
+        move.replace('x','')
+    x_to = move[-1:]
+    y_to = move[-2:-1]
+    x_from = move[-3:-2]
+    y_from = move[-4:-3]
     if move[:1].isLower():
-        if move[-1:] == '+':
-            isCheck = True
-            move = move[:-1]
-            # pawnMove()
-    else:
-            if move[:1] == 'Q':
-                if move[-1:] == '+':
-                    isCheck = True
-                    move = move[:-1]
-            if move[:1] == 'K':
-                if move[-1:] == '+':
-                    isCheck = True
-                    move = move[:-1]
-            if move[:1] == 'N':
-                if move[-1:] == '+':
-                    isCheck = True
-                    move = move[:-1]
-            if move[:1] == 'B':
-                if move[-1:] == '+':
-                    isCheck = True
-                    move = move[:-1]
-            if move[:1] == 'R':
-                if move[-1:] == '+':
-                    isCheck = True
-                    move = move[:-1]
-            # make rules for movement of everything else, queen, king, rook, horse and bishop
-        #TO-DO: translate algebraic notation to changes in an array
+        pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    if move[:1] == 'Q':
+        queenMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    if move[:1] == 'K':
+        kingMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    if move[:1] == 'N':
+        knightMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    if move[:1] == 'B':
+        bishopMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    if move[:1] == 'R':
+        rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
 
 # declaring variables
 data = ''
