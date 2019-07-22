@@ -1,9 +1,9 @@
 /*Ak chces vlozit vstup pridaj ho funkciou typu
 processClick(coordinates) alebo processButton()
 (change(x,y))
-vsetko by malo fungovat okrem rosady a en passantu
-a nevie zistovat pat ani mat
-ak to budes chciet skusit na zapasoch bez en passatu a rosad len hod na zaciatok checkmate() return false;
+vsetko by malo fungovat okrem rosady
+a nevie zistovat pat
+ak to budes chciet skusit na zapasoch bez rosad len hod na zaciatok checkmate() return false;
 */
 //Chess pieces
 var wr = {
