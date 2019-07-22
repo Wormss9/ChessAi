@@ -25,7 +25,8 @@ var wb = {
 var wk = {
     bn: "&#9812;",
     color: "White",
-    type: "king"
+    type: "king",
+    turn: null
 }
 var wq = {
     bn: "&#9813;",
@@ -42,7 +43,7 @@ var br = {
     bn: "&#9820;",
     color: "Black",
     type: "rook",
-    turns: null
+    turn: null
 }
 var bh = {
     bn: "&#9822;",
@@ -57,7 +58,8 @@ var bb = {
 var bk = {
     bn: "&#9818;",
     color: "Black",
-    type: "king"
+    type: "king",
+    turn: null
 }
 var bq = {
     bn: "&#9819;",
@@ -81,7 +83,7 @@ var gameover = false;
 var xs
 var ys
 turn = 0;
-turns = 0;
+turns = 1;
 var info;
 var additionalInfo;
 /**
@@ -95,7 +97,7 @@ var additionalInfo;
  */
 var caseh;
 function change(x, y, z) {
-    console.log("Change " + x + y);
+    //console.log("Change " + x + y);
     switch (turn) {
         case 0:
             var sel = selectPiece(x, y, board)
@@ -362,16 +364,16 @@ function pawn(x, y, xs, ys, board, check) {
         }
     }
     var placeholder = movable(freedom, x, y, check)
-    console.log("Passant possible?" + movable(freedom, x, y, check))
-    console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
+    //console.log("Passant possible?" + movable(freedom, x, y, check))
+    //console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
 
     if (placeholder) {
-        console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
+        //console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
         // turn adder
         if (check == 0) {
-            console.log("Turn " + turns + " added to pawn" + xs + ys)
+            //console.log("Turn " + turns + " added to pawn" + xs + ys)
             board[xs][ys].turns = turns;
-            console.log("Pawn turn :" + board[xs][ys].turns)
+            //console.log("Pawn turn :" + board[xs][ys].turns)
         }
         //MP takout right
         if (x == (xs + d) && y == (ys + 1) && pas) {
@@ -381,7 +383,7 @@ function pawn(x, y, xs, ys, board, check) {
         if (x == (xs + d) && y == (ys - 1) && pas) {
             board[xs][ys - 1] = null;
         }
-        console.log("turn :" + board[xs][ys].turns)
+        //console.log("turn :" + board[xs][ys].turns)
         return true;
     }
     else {
@@ -576,9 +578,9 @@ function rule(x, y, xs, ys, board, check) {
     y = parseInt(y);
     xs = parseInt(xs);
     ys = parseInt(ys);
-    if (!check) {
-        console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns);
-    }
+    /*if (!check) {
+        console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns + " From " + xs + ys + " to " + x + y);
+    }*/
     switch (board[xs][ys].type) {
         case "pawn":
             return pawn(x, y, xs, ys, board, check);
@@ -670,7 +672,7 @@ function drawBoard(turn) {
     boardtodraw += "</tr>";
 
     document.getElementById("table").innerHTML = boardtodraw;
-    console.log("Board turn" + turn)
+    console.log("Turn " + turn)
     if (turn == 0) {
         for (var i = 0; i < 8; i++) {
             document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
@@ -722,7 +724,7 @@ function selectPiece(x, y, board) {
             turn = 3;
         }
         document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
-        console.log("Case = 1 " + x + y);
+        //console.log("Case = 1 " + x + y);
     }
     else {
         document.getElementById("error").innerHTML = "Not Your Piece";
@@ -780,9 +782,7 @@ function movePiece(x, y, board, z) {
             document.getElementById("error").innerHTML = "Check";
             additionalInfo = "Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            console.log("MovePiece false backmove")
-            //console.log("Is the board fucked up?");
-            //console.log(board[2][1] != null);
+            //console.log("MovePiece false backmove")
             return false;
         }
         if (turn == 1) {
@@ -792,12 +792,13 @@ function movePiece(x, y, board, z) {
             turn = 0;
             if (z == 0) {
                 turns += 1;
-                console.log("Turn changed to " + turns)
+                console.log("Turn " + turns)
             }
         }
         // AAAAA
         //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
+        //Board saving
         if (z == 0) {
             info += "Board: \n"
             for (i = 0; i < 8; i++) {
@@ -807,6 +808,7 @@ function movePiece(x, y, board, z) {
                 }
             }
         }
+        //Checkmate
         if (z == 0 && checkStatus) {
             if (checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Checkmate";
@@ -814,7 +816,7 @@ function movePiece(x, y, board, z) {
                 gameover = true;
             }
             else {
-                console.log("No Checkmate");
+                //console.log("No Checkmate");
                 document.getElementById("error").innerHTML = "Check";
                 var tcolor = "null";
                 for (i = 0; i < 8; i++) {
@@ -831,14 +833,15 @@ function movePiece(x, y, board, z) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
-                    turn = 3;
+                    turn = 2;
                 }
                 //board = boardBackup;
                 //drawBoard(turn)
                 refresh();
             }
-        
+
         }
+        //Stalemate
         if (z == 0 && !checkStatus) {
             if (checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Stalemate";
@@ -846,8 +849,6 @@ function movePiece(x, y, board, z) {
                 gameover = true;
             }
             else {
-                console.log("No Checkmate");
-                document.getElementById("error").innerHTML = "Check";
                 var tcolor = "null";
                 for (i = 0; i < 8; i++) {
                     for (j = 0; j < 8; j++) {
@@ -863,13 +864,13 @@ function movePiece(x, y, board, z) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
-                    turn = 3;
+                    turn = 2;
                 }
                 //board = boardBackup;
                 //drawBoard(turn)
                 refresh();
             }
-        
+
         }
         //drawBoard(turn)
         refresh();
@@ -940,10 +941,10 @@ function checkmate(board, color) {
     var i = 0;
     while (mate == true && i < pieces.length) {
         for (j = 0; j < freedoms[i].length; j++) {
-            console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
+            //console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
             change(pieces[i][0], pieces[i][1], 1);
             if (change(freedoms[i][j][0], freedoms[i][j][1], 1)) {
-                console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
+                //console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
                 mate = false;
                 break;
             }
