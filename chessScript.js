@@ -75,7 +75,7 @@ var boardBackup = createArray(8, 8)
 initialiseBoard()
 var jsonBoard = JSON.stringify(board);
 var turn = 0
-drawBoard(turn);
+drawBoard(0);
 refresh();
 var gameover = false;
 var xs
@@ -236,7 +236,7 @@ function verMove(xs, ys, board) {
         i++;
     }
     //Take out
-    if (ys - i > 0 && board[xs][ys - i].color != board[xs][ys].color) {
+    if (ys - i >= 0 && board[xs][ys - i].color != board[xs][ys].color) {
         freedom.push("" + (xs) + (ys - i));
     }
     //Down
@@ -630,10 +630,10 @@ function initialiseBoard() {
     board[7][1] = board[7][6] = bh;
     board[0][2] = board[0][5] = wb;
     board[7][2] = board[7][5] = bb;
-    board[0][3] = wk;
-    board[0][4] = wq;
-    board[7][3] = bk;
-    board[7][4] = bq;
+    board[0][4] = wk;
+    board[0][3] = wq;
+    board[7][4] = bk;
+    board[7][3] = bq;
     for (i = 0; i < 8; i++) {
         board[1][i] = wp;
         board[6][i] = bp;
@@ -698,7 +698,7 @@ function selectPiece(x, y, board) {
         initialiseBoard();
         turn = 0;
         gameover = false;
-        drawBoard(turn);
+        drawBoard(0);
         refresh();
         document.getElementById("myButton1").value = "White Select";
         return false;
@@ -837,6 +837,39 @@ function movePiece(x, y, board, z) {
                 //drawBoard(turn)
                 refresh();
             }
+        
+        }
+        if (z == 0 && !checkStatus) {
+            if (checkmate(board, color[1])) {
+                document.getElementById("error").innerHTML = "Stalemate";
+                additionalInfo = "Stalemate"
+                gameover = true;
+            }
+            else {
+                console.log("No Checkmate");
+                document.getElementById("error").innerHTML = "Check";
+                var tcolor = "null";
+                for (i = 0; i < 8; i++) {
+                    for (j = 0; j < 8; j++) {
+                        if (board[i][j] != boardBackup[i][j]) {
+                            if (board[i][j] != null) {
+                                tcolor = board[i][j].color
+                            }
+                            board[i][j] = boardBackup[i][j]
+                        }
+                    }
+                }
+                if (tcolor == "White") {
+                    turn = 0;
+                }
+                if (tcolor == "Black") {
+                    turn = 3;
+                }
+                //board = boardBackup;
+                //drawBoard(turn)
+                refresh();
+            }
+        
         }
         //drawBoard(turn)
         refresh();
