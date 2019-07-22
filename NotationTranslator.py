@@ -28,6 +28,7 @@ def fillBoard():
     board[7, 2] = board[7, 5] = 13  #wb
     board[7, 3] = 15                #bq
     board[7, 4] = 14                #bk
+# Dictionary translating algebraic notation into "array notation", used mainly as a shorthand
 squareNumber = {
     "a": 0,
     "b": 1,
@@ -40,15 +41,20 @@ squareNumber = {
 }
 
 def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn):
+    # Checkes which color the queen should be and where the queen/queens are
     if turn%2 == 1:
         figs = numpy.where(board == 5)
         figure_number = 5
     else:
         figs = numpy.where(board == 15)
         figure_number = 15
+    # In case both starting and ending coordinates are defined, it's pretty straight forward, just with some conversions
+    # from chess format into array format
     if from_coord_x != '' and from_coord_y != '':
         board[squareNumber.get(from_coord_x),from_coord_y - 1] = 0
         board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+    # when only x starting coordinate is defined, it is checked which queen has the coresponding x coordinate and then
+    # the move is performed, the same applies for the next condition when only the y coordinate is defined
     elif from_coord_x != '' and from_coord_y == '':
         for i in figs:
             if i[0] == squareNumber.get(from_coord_x):
@@ -61,8 +67,14 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
+    # Lastly, when no starting coordinates are defined, the case is much more complex, each piece is checked whether
+    # anything is in the way and whether it can move to desired location
     else:
         for i in figs:
+            # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
+            # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
+            # sign() function, acting as a simple mathematical signum. Then over the entirety of the distance (dis)
+            # a loop is performed to check whether any pieces are in the way.
             dis_x = i[0] - squareNumber.get(to_coord_x)
             dis_y = i[1] - to_coord_y - 1
             repetitions = dis_x if dis_x>=dis_y else dis_y
@@ -102,6 +114,9 @@ def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     else:
         for i in figs:
             if (i[0], i[1]) == (to_coord_x, to_coord_y):
+
+
+
 def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 3)
