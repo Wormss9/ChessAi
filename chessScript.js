@@ -74,7 +74,8 @@ var board = createArray(8, 8)
 var boardBackup = createArray(8, 8)
 initialiseBoard()
 var jsonBoard = JSON.stringify(board);
-drawBoard()
+var turn = 0
+drawBoard(turn);
 refresh();
 var gameover = false;
 var xs
@@ -363,7 +364,7 @@ function pawn(x, y, xs, ys, board, check) {
     var placeholder = movable(freedom, x, y, check)
     console.log("Passant possible?" + movable(freedom, x, y, check))
     console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
-    
+
     if (placeholder) {
         console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
         // turn adder
@@ -647,25 +648,40 @@ function initialiseBoard() {
  * Draws HTML board
  *
  */
-function drawBoard() {
-    document.write('<table id="table">')
+function drawBoard(turn) {
+    var boardtodraw = "";
     for (var i = 0; i < 9; i++) {
-        document.write("<tr>");
+        boardtodraw += "<tr>";
         for (var j = 0; j < 9; j++) {
             if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
-                document.write("<td style='background-color:grey' class='sachovnica'>");
+                boardtodraw += "<td style='background-color:grey' class='sachovnica'>";
             }
             else {
-                document.write("<td class='sachovnica'>");
+                boardtodraw += "<td class='sachovnica'>";
             }
-            document.write("<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>");
+            if (turn == 0) {
+                boardtodraw += "<p id=" + (8 - i) + (j - 1) + " onclick='processClick(this.id)'></td>";
+            }
+            else {
+                boardtodraw += "<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>";
+            }
         }
-        document.write("</tr>");
     }
-    document.write("</table>");
-    for (var i = 0; i < 8; i++) {
-        document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
-        document.getElementById(i + "-1").innerHTML = i + 1;
+    boardtodraw += "</tr>";
+
+    document.getElementById("table").innerHTML = boardtodraw;
+    console.log("Board turn" + turn)
+    if (turn == 0) {
+        for (var i = 0; i < 8; i++) {
+            document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
+            document.getElementById(i + "-1").innerHTML = i + 1;
+        }
+    }
+    else {
+        for (var i = 0; i < 8; i++) {
+            document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
+            document.getElementById(i + "-1").innerHTML = i + 1;
+        }
     }
 }
 /**
@@ -682,6 +698,7 @@ function selectPiece(x, y, board) {
         initialiseBoard();
         turn = 0;
         gameover = false;
+        drawBoard(turn);
         refresh();
         document.getElementById("myButton1").value = "White Select";
         return false;
@@ -817,9 +834,11 @@ function movePiece(x, y, board, z) {
                     turn = 3;
                 }
                 //board = boardBackup;
+                //drawBoard(turn)
                 refresh();
             }
         }
+        //drawBoard(turn)
         refresh();
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         jsonBoard = JSON.stringify(board);
