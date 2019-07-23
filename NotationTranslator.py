@@ -90,56 +90,66 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
                     board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
 
 
-
+# There can be no more than one king of one color on board at once so we are not dealing with ambiguity
 def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 4)
+        figure_number = 4
     else:
         figs = numpy.where(board == 14)
-    if from_coord_x != '' and from_coord_y != '':
-        board[squareNumber.get(from_coord_x), from_coord_y - 1]
-        board[squareNumber.get(to_coord_x), to_coord_y - 1]
-    elif from_coord_x != '' and from_coord_y == '':
-        for i in figs:
-            if i[0] == squareNumber.get(from_coord_x):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
-                break
-    elif from_coord_x == '' and from_coord_y != '':
-        for i in figs:
-            if i[1] == squareNumber.get(from_coord_y):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
-                break
-    else:
-        for i in figs:
-            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+        figure_number = 14
+    for i in figs:
+        board[i[0],i[1]] = 0
+        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
 
 
 
 def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 3)
+        figure_number = 3
     else:
         figs = numpy.where(board == 13)
+        figure_number = 13
     if from_coord_x != '' and from_coord_y != '':
-        board[squareNumber.get(from_coord_x), from_coord_y - 1]
-        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+        board[squareNumber.get(from_coord_x), from_coord_y - 1] = 0
+        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
     elif from_coord_x != '' and from_coord_y == '':
         for i in figs:
             if i[0] == squareNumber.get(from_coord_x):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     elif from_coord_x == '' and from_coord_y != '':
         for i in figs:
             if i[1] == squareNumber.get(from_coord_y):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     else:
         for i in figs:
-            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+            # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
+            # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
+            # sign() function, acting as a simple mathematical signum. Then over the entirety of the distance (dis)
+            # a loop is performed to check whether any pieces are in the way.
+            dis_x = i[0] - squareNumber.get(to_coord_x)
+            dis_y = i[1] - to_coord_y - 1
+            if sign(dis_x)*sign(dis_y) == 0:
+                break
+            repetitions = dis_x if dis_x >= dis_y else dis_y
+            x = i[0]
+            y = i[1]
+            for k in range(repetitions):
+                x = x + sign(dis_x)
+                y = y + sign(dis_y)
+                if board[x, y] != 0:
+                    break
+                if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
+                    board[i[0], i[1]] = 0
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+
+
+
 def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 2)
@@ -163,29 +173,53 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
     else:
         for i in figs:
             if (i[0], i[1]) == (to_coord_x, to_coord_y):
+
+
 def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 1)
+        figure_number = 1
     else:
         figs = numpy.where(board == 11)
+        figure_number = 11
     if from_coord_x != '' and from_coord_y != '':
-        board[squareNumber.get(from_coord_x), from_coord_y - 1]
-        board[squareNumber.get(to_coord_x), to_coord_y - 1]
+        board[squareNumber.get(from_coord_x), from_coord_y - 1] = 0
+        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
     elif from_coord_x != '' and from_coord_y == '':
         for i in figs:
             if i[0] == squareNumber.get(from_coord_x):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     elif from_coord_x == '' and from_coord_y != '':
         for i in figs:
             if i[1] == squareNumber.get(from_coord_y):
-                board[i[0], i[1]]
-                board[squareNumber.get(to_coord_x), to_coord_y - 1]
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
                 break
     else:
         for i in figs:
-            if (i[0], i[1]) == (to_coord_x, to_coord_y):
+            # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
+            # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
+            # sign() function, acting as a simple mathematical signum. Then over the entirety of the distance (dis)
+            # a loop is performed to check whether any pieces are in the way.
+            dis_x = i[0] - squareNumber.get(to_coord_x)
+            dis_y = i[1] - to_coord_y - 1
+            if sign(dis_x) * sign(dis_y) != 0:
+                break
+            repetitions = dis_x if dis_x >= dis_y else dis_y
+            x = i[0]
+            y = i[1]
+            for k in range(repetitions):
+                x = x + sign(dis_x)
+                y = y + sign(dis_y)
+                if board[x, y] != 0:
+                    break
+                if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
+                    board[i[0], i[1]] = 0
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+
+
 def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     if turn % 2 == 1:
         figs = numpy.where(board == 6)
