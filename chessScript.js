@@ -101,7 +101,7 @@ function change(x, y, z) {
     switch (turn) {
         case 0:
             //console.log("Case 0 selected"+x+y)
-            var sel = selectPiece(x, y, board,z);
+            var sel = selectPiece(x, y, board, z);
             xs = sel[0];
             ys = sel[1];
             break;
@@ -111,7 +111,7 @@ function change(x, y, z) {
             return caseh;
         case 2:
             //console.log("Case 2 selected"+x+y)
-            var sel = selectPiece(x, y, board,z);
+            var sel = selectPiece(x, y, board, z);
             xs = sel[0];
             ys = sel[1];
             break;
@@ -158,7 +158,7 @@ function refresh() {
  * @param {*} y
  * @returns
  */
-function movable(freedom, x, y, check) {
+function movable(freedom, x, y, z) {
     i = 0;
     //var log = "Available: ";
     while (i < freedom.length) {
@@ -167,7 +167,7 @@ function movable(freedom, x, y, check) {
         i++;
     }
     //log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
-    if (!check) {
+    if (!z) {
         //console.log(log);
     }
     if (freedom.indexOf("" + x + y) > -1) {
@@ -200,9 +200,17 @@ function check(board, color) {
         }
     }
     //console.log("King is:" + kx + ky)
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].color != color && rule(kx, ky, i, j, board, 1)) {
+    return endangered(kx, ky, board, color);
+}
+function endangered(kx, ky, board, color) {
+    for (k = 0; k < 8; k++) {
+        //console.log("Endangered "+k)
+        for (l = 0; l < 8; l++) {
+            //console.log("Endangered "+k+l)
+            if (board[k][l] != null && board[k][l].color != color && rule(kx, ky, k, l, board, 1)) {
+                //console.log("Endamgered by" + k + l);
+                //console.log("Endamgered by" + board[k][l].color);
+                //console.log("Endamgered by" + color);
                 return true;
             }
         }
@@ -319,7 +327,7 @@ function diaMove(xs, ys, board) {
  * @param {*} board
  * @returns boolean
  */
-function pawn(x, y, xs, ys, board, check) {
+function pawn(x, y, xs, ys, board, z) {
     var d = 1;
     var pas = false;
     //Direction
@@ -364,10 +372,10 @@ function pawn(x, y, xs, ys, board, check) {
     //console.log("Passant possible?" + movable(freedom, x, y, check))
     //console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
 
-    if (movable(freedom, x, y, check)) {
+    if (movable(freedom, x, y, z)) {
         //console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
         // turn adder
-        if (check == 0) {
+        if (z == 0) {
             //console.log("Turn " + turns + " added to pawn" + xs + ys)
             board[xs][ys].turns = turns;
             //console.log("Pawn turn :" + board[xs][ys].turns)
@@ -384,7 +392,7 @@ function pawn(x, y, xs, ys, board, check) {
         return true;
     }
     else {
-        if (check == 2) {
+        if (z == 2) {
             return freedom
         }
         return false
@@ -400,12 +408,12 @@ function pawn(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function rook(x, y, xs, ys, board, check) {
-    if (check == 2) {
+function rook(x, y, xs, ys, board, z) {
+    if (z == 2) {
         return verMove(xs, ys, board);
     }
-    if (movable(verMove(xs, ys, board), x, y, check)) {
-        if (check == 0 && board[xs][ys].turns == null) {
+    if (movable(verMove(xs, ys, board), x, y, z)) {
+        if (z == 0 && board[xs][ys].turns == null) {
             board[xs][ys].turns = turns;
         }
         return true;
@@ -424,7 +432,7 @@ function rook(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function horse(x, y, xs, ys, board, check) {
+function horse(x, y, xs, ys, board, z) {
     var freedom = [];
     if (xs + 2 <= 7 && ys + 1 <= 7) {
         if (board[xs + 2][ys + 1] == null || board[xs + 2][ys + 1] != null && board[xs + 2][ys + 1].color != board[xs][ys].color) {
@@ -466,10 +474,10 @@ function horse(x, y, xs, ys, board, check) {
             freedom.push("" + (xs - 1) + (ys - 2));
         }
     }
-    if (check == 2) {
+    if (z == 2) {
         return freedom;
     }
-    return movable(freedom, x, y, check);
+    return movable(freedom, x, y, z);
 }
 /**
  *  Bishop movability
@@ -481,11 +489,11 @@ function horse(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function bishop(x, y, xs, ys, board, check) {
-    if (check == 2) {
+function bishop(x, y, xs, ys, board, z) {
+    if (z == 2) {
         return diaMove(xs, ys, board);
     }
-    return movable(diaMove(xs, ys, board), x, y, check);
+    return movable(diaMove(xs, ys, board), x, y, z);
 }
 /**
  * King movability
@@ -497,7 +505,7 @@ function bishop(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function king(x, y, xs, ys, board, check) {
+function king(x, y, xs, ys, board, z) {
     var freedom = [];
     //RightDown
     if ((xs + 1) < 8 && (ys + 1) < 8) {
@@ -547,10 +555,60 @@ function king(x, y, xs, ys, board, check) {
             freedom.push("" + (xs - 1) + (ys));
         }
     }
-    if (check == 2) {
+    if (z == 2) {
         return freedom;
     }
-    return movable(freedom, x, y, check);
+    //color
+    //console.log(z)
+    if (z == 0) {
+        if (xs == 0) {
+            colork = "White"
+        }
+        else {
+            colork = "Black"
+        }
+    }
+    //Kingside
+    var ks = false;
+    var qs = false;
+    if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][7] != null && board[xs][7].type == "rook" && board[xs][7].turns == null && board[xs][5] == null && board[xs][6] == null && !endangered(xs, 5, board, colork) && !endangered(xs, 6, board, colork)) {
+        freedom.push("" + (xs) + (ys + 2));
+        ks = true
+    }
+    //Queenside
+    if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][0] != null && board[xs][0].type == "rook" && board[xs][0].turns == null && board[xs][2] == null && board[xs][1] == null && board[xs][3] == null && !endangered(xs, 2, board, colork) && !endangered(xs, 3, board, colork)) {
+        freedom.push("" + (xs) + (ys - 2));
+        qs = true
+    }
+
+
+    if (movable(freedom, x, y, z)) {
+        //console.log("Turn add king: " + board[xs][ys].type + " " + board[x][y])
+        // turn adder
+        if (z == 0) {
+            //console.log("Turn " + turns + " added to king" + xs + ys)
+            board[xs][ys].turns = turns;
+            //console.log("King turn :" + board[xs][ys].turns)
+        }
+        //KS takout right
+        if (x == xs && y == (ys + 2) && ks) {
+            board[xs][ys + 1] = board[xs][ys + 3];
+            board[xs][ys + 3] = null;
+        }
+        //QS takout left
+        if (x == xs && y == (ys - 2) && qs) {
+            board[xs][ys - 1] = board[xs][ys - 4];
+            board[xs][ys - 4] = null;
+        }
+        //console.log("turn :" + board[xs][ys].turns)
+        return true;
+    }
+    else {
+        if (z == 2) {
+            return freedom
+        }
+        return false
+    }
 }
 /**
  * Queen movability
@@ -562,11 +620,11 @@ function king(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function queen(x, y, xs, ys, board, check) {
-    if (check == 2) {
+function queen(x, y, xs, ys, board, z) {
+    if (z == 2) {
         return diaMove(xs, ys, board).concat(verMove(xs, ys, board));
     }
-    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y, check);
+    return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y, z);
 }
 /**
  * Checks movability of selected piece
@@ -578,27 +636,27 @@ function queen(x, y, xs, ys, board, check) {
  * @param {*} board
  * @returns boolean
  */
-function rule(x, y, xs, ys, board, check) {
+function rule(x, y, xs, ys, board, z) {
     x = parseInt(x);
     y = parseInt(y);
     xs = parseInt(xs);
     ys = parseInt(ys);
     /*if (!check) {
-        console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns + " From " + xs + ys + " to " + x + y);
+        //console.log("Piece: " + board[xs][ys].color + " " + board[xs][ys].type + " turn:" + turns + " From " + xs + ys + " to " + x + y);
     }*/
     switch (board[xs][ys].type) {
         case "pawn":
-            return pawn(x, y, xs, ys, board, check);
+            return pawn(x, y, xs, ys, board, z);
         case "rook":
-            return rook(x, y, xs, ys, board, check);
+            return rook(x, y, xs, ys, board, z);
         case "horse":
-            return horse(x, y, xs, ys, board, check);
+            return horse(x, y, xs, ys, board, z);
         case "bishop":
-            return bishop(x, y, xs, ys, board, check);
+            return bishop(x, y, xs, ys, board, z);
         case "king":
-            return king(x, y, xs, ys, board, check);
+            return king(x, y, xs, ys, board, z);
         case "queen":
-            return queen(x, y, xs, ys, board, check);
+            return queen(x, y, xs, ys, board, z);
     }
     document.getElementById("error").innerHTML = "Unknown Piece";
 }
@@ -698,7 +756,7 @@ function drawBoard(turn) {
  * @param {*} board
  * @returns xs + ys
  */
-function selectPiece(x, y, board,z) {
+function selectPiece(x, y, board, z) {
     //console.log("Piece selected"+x+y)
     if (gameover) {
         document.getElementById("error").innerHTML = "Game over";
@@ -729,8 +787,8 @@ function selectPiece(x, y, board,z) {
             turn = 3;
         }
         //console.log("Bold"+x+y+" "+xs+ys)
-        if(z==0){
-        document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
+        if (z == 0) {
+            document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
         }
         //console.log("Case = 1 " + x + y);
     }
