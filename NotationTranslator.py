@@ -12,22 +12,22 @@ def sign(param):
 
 # necessary functions
 def fillBoard():
-    board[0,0] = board[0,7] = 1     #wr
-    board[0, 1] = board[0, 6] = 2   #wh
-    board[0,2] = board[0, 5] = 3    #wb
-    board[0,3] = 4                  #wk
-    board[0,4] = 5                  #wq
+    board[0,0] = board[7,0] = 1     #wr
+    board[1,0] = board[6, 0] = 2   #wh
+    board[2,0] = board[5, 0] = 3    #wb
+    board[3,0] = 4                  #wk
+    board[4,0] = 5                  #wq
     x = 0
     while x < 8:
-        board[1,x] = 6              #wp
-        board[6,x] = 16             #bp
+        board[x,1] = 6              #wp
+        board[x,6] = 16             #bp
         x+=1
 
-    board[7, 0] = board[7, 7] = 11  #br
-    board[7, 1] = board[7, 6] = 12  #wh
-    board[7, 2] = board[7, 5] = 13  #wb
-    board[7, 3] = 15                #bq
-    board[7, 4] = 14                #bk
+    board[0, 7] = board[7, 7] = 11  #br
+    board[1, 7] = board[6, 7] = 12  #wh
+    board[2, 7] = board[5, 7] = 13  #wb
+    board[3, 7] = 14                #bq
+    board[4, 7] = 15                #bk
 # Dictionary translating algebraic notation into "array notation", used mainly as a shorthand
 squareNumber = {
     "a": 0,
@@ -215,9 +215,14 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     figs = list(zip(figs[0], figs[1]))
     if not is_capture:
         for i in figs:
-            if i[0] == squareNumber.get(to_coord_x) + step and i[1] == to_coord_y - 1:
-                 board[i[0], i[1]] = 0
-                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+            print(i)
+            print(squareNumber.get(to_coord_x))
+            print(to_coord_y - 1)
+
+            if i[0]== squareNumber.get(to_coord_x) and i[1]+ step*2 == to_coord_y - 1:
+                print('moved')
+                board[i[0], i[1]] = 0
+                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
     else:
         if from_coord_x != '':
             for i in figs:
@@ -316,7 +321,7 @@ def processMove(move,turn):
 # declaring variables
 data = ''
 move = ''
-turn = 0;
+turn = 0
 moves = []
 
 # data structures
@@ -338,7 +343,7 @@ for i in contents:
                 print(data[1:6])
             elif '[' not in data:
                 for j in data.split():
-                    if not j.endswith('.') and not re.match('^.+-.+$',j):
+                    if not j.endswith('.') and (re.match('O-O-?O?',j) or re.match('[A-Z]?x?[a-z]?[1-9]?[a-z][1-9]',j)):
                         moves.append(j)
                 if moves!= []:
                     for move in moves:
