@@ -82,9 +82,8 @@ refresh();
 var gameover = false;
 var xs;
 var ys;
-turn = 0;
 turns = 1;
-console.log("Turn "+turns);
+console.log("Turn " + turns);
 var info;
 var additionalInfo;
 /**
@@ -98,9 +97,10 @@ var additionalInfo;
  */
 var caseh;
 function change(x, y, z) {
-    //console.log("Change " + x + y);
+    console.log("Change " + x + y);
     switch (turn) {
         case 0:
+            console.log("Case 0 selected"+x+y)
             var sel = selectPiece(x, y, board);
             xs = sel[0];
             ys = sel[1];
@@ -110,6 +110,7 @@ function change(x, y, z) {
             info += turn;
             return caseh;
         case 2:
+            console.log("Case 2 selected"+x+y)
             var sel = selectPiece(x, y, board);
             xs = sel[0];
             ys = sel[1];
@@ -120,10 +121,6 @@ function change(x, y, z) {
             return caseh;
     }
 }
-/**
- * Select piece
- *
- */
 /**
  *  Array creator
  *
@@ -364,11 +361,10 @@ function pawn(x, y, xs, ys, board, check) {
             pas = true;
         }
     }
-    var placeholder = movable(freedom, x, y, check)
     //console.log("Passant possible?" + movable(freedom, x, y, check))
     //console.log("Passant possible?" + freedom + " to " + x + y + "check" + check)
 
-    if (placeholder) {
+    if (movable(freedom, x, y, check)) {
         //console.log("Turn add pawn: " + board[xs][ys].type + " " + board[x][y])
         // turn adder
         if (check == 0) {
@@ -408,7 +404,15 @@ function rook(x, y, xs, ys, board, check) {
     if (check == 2) {
         return verMove(xs, ys, board);
     }
-    return movable(verMove(xs, ys, board), x, y, check);
+    if (movable(verMove(xs, ys, board), x, y, check)) {
+        if (check == 0 && board[xs][ys].turns == null) {
+            board[xs][ys].turns = turns;
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 /**
  * Horse movability
@@ -695,6 +699,7 @@ function drawBoard(turn) {
  * @returns xs + ys
  */
 function selectPiece(x, y, board) {
+    console.log("Piece selected"+x+y)
     if (gameover) {
         document.getElementById("error").innerHTML = "Game over";
         initialiseBoard();
@@ -723,6 +728,7 @@ function selectPiece(x, y, board) {
         else {
             turn = 3;
         }
+        console.log("Bold"+x+y+" "+xs+ys)
         document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
         //console.log("Case = 1 " + x + y);
     }
@@ -775,20 +781,22 @@ function movePiece(x, y, board, z) {
                 turn = 0;
             }
             else {
+                console.log("Case changed "+x+y)
                 turn = 2;
             }
             board[moving.x][moving.y] = moving.piece;
             board[moved.xs][moved.ys] = moved.piece;
             document.getElementById("error").innerHTML = "Check";
             additionalInfo = "Check";
-            document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+            document.getElementById("" + (7-xs) + ys).setAttribute("style", 'font-weight: normal;');
             //console.log("MovePiece false backmove")
             return false;
         }
         if (turn == 1) {
+            console.log("Case changed "+x+y)
             turn = 2;
             if (z == 0) {
-                console.log(""+(parseInt(xs)+1)+(parseInt(ys)+1)+" "+(x+1)+(y+1));
+                console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
             }
 
         }
@@ -796,7 +804,7 @@ function movePiece(x, y, board, z) {
             turn = 0;
             if (z == 0) {
                 turns += 1;
-                console.log(""+(parseInt(xs)+1)+(parseInt(ys)+1)+" "+(x+1)+(y+1));
+                console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
                 console.log("Turn " + turns)
             }
         }
@@ -820,7 +828,6 @@ function movePiece(x, y, board, z) {
                 gameover = true;
             }
             else {
-                //console.log("No Checkmate");
                 document.getElementById("error").innerHTML = "Check";
                 var tcolor = "null";
                 for (i = 0; i < 8; i++) {
@@ -837,6 +844,7 @@ function movePiece(x, y, board, z) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
+                    console.log("Case changed "+x+y)
                     turn = 2;
                 }
                 //board = boardBackup;
@@ -868,6 +876,7 @@ function movePiece(x, y, board, z) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
+                    console.log("Case changed "+x+y)
                     turn = 2;
                 }
                 //board = boardBackup;
@@ -878,7 +887,7 @@ function movePiece(x, y, board, z) {
         }
         //drawBoard(turn)
         refresh();
-        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+        document.getElementById("" + (7-xs) + ys).setAttribute("style", 'font-weight: normal;');
         jsonBoard = JSON.stringify(board);
         return true;
     }
@@ -887,12 +896,13 @@ function movePiece(x, y, board, z) {
             turn = 0;
         }
         else {
+            console.log("Case changed "+x+y)
             turn = 2;
         }
         additionalInfo = "Cant go there";
         document.getElementById("myButton1").value = color[0] + " Select";
         document.getElementById("error").innerHTML = "Cant go there";
-        document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
+        document.getElementById("" + (7-xs) + ys).setAttribute("style", 'font-weight: normal;');
         //console.log("MovePiece true? ")
         return true
     }
