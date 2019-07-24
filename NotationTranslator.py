@@ -39,6 +39,17 @@ squareNumber = {
     "g": 6,
     "h": 7
 }
+backToLetter = {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: 'e',
+    5: 'f',
+    6: 'g',
+    7: 'h'
+}
+
 
 def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn):
     to_coord_y = int(to_coord_y)
@@ -60,8 +71,6 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
-        print(i)
-        print(str(squareNumber.get(to_coord_x)) + ', ' + str(to_coord_y - 1))
         # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
         # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
         # sign() function, acting as a simple mathematical signum. Then over the entirety of the distance (dis)
@@ -77,6 +86,9 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                # Printing into file
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
             if board[x, y] != 0:
                 break
 
@@ -96,6 +108,8 @@ def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     for i in figs:
         board[i[0],i[1]] = 0
         board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+        with open('tahy.txt', 'a') as the_file:
+            the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 
 
@@ -135,6 +149,8 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
                 break
             if board[x, y] != 0:
                 break
@@ -161,6 +177,8 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
         if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[1]+1,i[1]-1) and to_coord_y-1 in (i[0]+2,i[0]-2)):
             board[i[0], i[1]] = 0
             board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+            with open('tahy.txt', 'a') as the_file:
+                the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 
 def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
@@ -198,6 +216,8 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
             if board[x, y] != 0:
                 break
 
@@ -223,6 +243,9 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
             if i[0] == squareNumber.get(to_coord_x) and to_coord_y - 1 <= step*k + i[1]:
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+
     else:
         if from_coord_x != '':
             for i in figs:
@@ -239,6 +262,8 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                     board[squareNumber.get(to_coord_x) - step, to_coord_y - 1] = 0
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 
 def castling(which):
@@ -271,6 +296,9 @@ def processMove(move,turn):
     if "x" in move:
         isCapture = True
         move = move.replace('x','')
+    if "#" in move:
+        isCapture = True
+        move = move.replace('#','')
     if move[:1] == 'Q':
         move = move.replace('Q','')
         y_to = move[-1:]
@@ -359,6 +387,9 @@ contents = file.read()
 with open("train-games.csv", "w") as output:
     output.close()
 
+with open('tahy.txt', 'w') as the_file:
+    output.close()
+
 bracketsOpen = False
 for i in contents:
     if i == '\n':
@@ -373,8 +404,13 @@ for i in contents:
                     for move in moves:
                         turn+=1
                         print(turn)
+                        with open('tahy.txt', 'a') as the_file:
+                            the_file.write(str(turn) +'. move: ' + move + '\n')
                         processMove(move,turn)
-
+                        if turn == 9:
+                            break
+                with open('tahy.txt', 'a') as the_file:
+                    the_file.write('...\n')
         data = ''
     else:
         data+=i
