@@ -15,8 +15,8 @@ def fillBoard():
     board[0,0] = board[7,0] = 1     #wr
     board[1,0] = board[6, 0] = 2    #wh
     board[2,0] = board[5, 0] = 3    #wb
-    board[3,0] = 4                  #wq
-    board[4,0] = 5                  #wk
+    board[3,0] = 5                  #wk
+    board[4,0] = 4                  #wq
     x = 0
     while x < 8:
         board[x,1] = 6              #wp
@@ -26,8 +26,8 @@ def fillBoard():
     board[0, 7] = board[7, 7] = 11  #br
     board[1, 7] = board[6, 7] = 12  #bh
     board[2, 7] = board[5, 7] = 13  #bb
-    board[3, 7] = 14                #bq
-    board[4, 7] = 15                #bk
+    board[3, 7] = 15                #bk
+    board[4, 7] = 14                #bq
 # Dictionary translating algebraic notation into "array notation", used mainly as a shorthand
 squareNumber = {
     "a": 0,
@@ -60,13 +60,15 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
+        print(i)
+        print(str(squareNumber.get(to_coord_x)) + ', ' + str(to_coord_y - 1))
         # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
         # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
         # sign() function, acting as a simple mathematical signum. Then over the entirety of the distance (dis)
         # a loop is performed to check whether any pieces are in the way.
-        dis_x = i[0] - squareNumber.get(to_coord_x)
-        dis_y = i[1] - to_coord_y - 1
-        repetitions = max[abs(dis_x),abs(dis_y)]
+        dis_x = int(i[0]) - int(squareNumber.get(to_coord_x))
+        dis_y = int(i[1]) - int(to_coord_y - 1)
+        repetitions = max(dis_x,dis_y)
         x = i[0]
         y = i[1]
         for k in range(repetitions):
@@ -122,10 +124,8 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
         # a loop is performed to check whether any pieces are in the way. For bishop we additionally require
         # that the difference between horizontal distance and vertical distance to be zero, to ensure the movement
         # is diagonal
-        print(i)
-        print(str(squareNumber.get(to_coord_x)) + ', ' + str(to_coord_y - 1))
-        dis_x = i[0] - squareNumber.get(to_coord_x)
-        dis_y = i[1] - to_coord_y - 1
+        dis_x = int(i[0]) - int(squareNumber.get(to_coord_x))
+        dis_y = int(i[1]) - int(to_coord_y - 1)
         repetitions = max(dis_x,dis_y)
         x = i[0]
         y = i[1]
@@ -159,7 +159,6 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 figs.remove(i)
     for i in figs:
         if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[1]+1,i[1]-1) and to_coord_y-1 in (i[0]+2,i[0]-2)):
-            print('moved')
             board[i[0], i[1]] = 0
             board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
 
@@ -167,9 +166,9 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
 def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
-        figure_number = 3
+        figure_number = 1
     else:
-        figure_number = 13
+        figure_number = 11
     figs = list(numpy.where(board == figure_number))
     figs = list(zip(figs[0], figs[1]))
     if from_coord_x != '':
@@ -188,16 +187,14 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         # a loop is performed to check whether any pieces are in the way. For rook, additional requirement is posed,
         # that the absolute difference between dis_x and dis_y has to be maximum of the values, ensuring one of them
         # is zero
-        dis_x = i[0] - squareNumber.get(to_coord_x)
-        dis_y = i[1] - to_coord_y - 1
-        if abs(dis_x - dis_y) == max(dis_x,dis_y):
-            break
-        repetitions = dis_x if dis_x >= dis_y else dis_y
+        dis_x = int(i[0]) - int(squareNumber.get(to_coord_x))
+        dis_y = int(i[1]) - int(to_coord_y - 1)
+        repetitions = max(dis_x,dis_y)
         x = i[0]
         y = i[1]
         for k in range(repetitions):
-            x = x + sign(dis_x)
-            y = y + sign(dis_y)
+            x = x - sign(dis_x)
+            y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
@@ -242,6 +239,26 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                     board[squareNumber.get(to_coord_x) - step, to_coord_y - 1] = 0
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+
+
+def castling(which):
+    if turn%2 == 1:
+        side = 0
+        row = 0
+    else:
+        side = 10
+        row = 7
+    if which == 'O-O':
+        print('castle')
+        board[3,row] = 0
+        board[1,row] = 5 + side
+        board[0,row] = 0
+        board[2,row] = 1+ side
+    elif which == 'O-O-O':
+        board[3,row] = 0
+        board[5, row] = 5 + side
+        board[7, row] = 0
+        board[4, row] = 1 + side
 
 
 def processMove(move,turn):
@@ -309,6 +326,10 @@ def processMove(move,turn):
             x_from = move[-3:-2]
             y_from = ''
         rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+    elif move == 'O-O':
+        castling(move)
+    elif move == 'O-O-O':
+        castling(move)
     else:
         y_to = move[-1:]
         x_to = move[-2:-1]
