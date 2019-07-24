@@ -13,10 +13,10 @@ def sign(param):
 # necessary functions
 def fillBoard():
     board[0,0] = board[7,0] = 1     #wr
-    board[1,0] = board[6, 0] = 2   #wh
+    board[1,0] = board[6, 0] = 2    #wh
     board[2,0] = board[5, 0] = 3    #wb
-    board[3,0] = 4                  #wk
-    board[4,0] = 5                  #wq
+    board[3,0] = 4                  #wq
+    board[4,0] = 5                  #wk
     x = 0
     while x < 8:
         board[x,1] = 6              #wp
@@ -24,8 +24,8 @@ def fillBoard():
         x+=1
 
     board[0, 7] = board[7, 7] = 11  #br
-    board[1, 7] = board[6, 7] = 12  #wh
-    board[2, 7] = board[5, 7] = 13  #wb
+    board[1, 7] = board[6, 7] = 12  #bh
+    board[2, 7] = board[5, 7] = 13  #bb
     board[3, 7] = 14                #bq
     board[4, 7] = 15                #bk
 # Dictionary translating algebraic notation into "array notation", used mainly as a shorthand
@@ -66,12 +66,12 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
         # a loop is performed to check whether any pieces are in the way.
         dis_x = i[0] - squareNumber.get(to_coord_x)
         dis_y = i[1] - to_coord_y - 1
-        repetitions = dis_x if dis_x >= dis_y else dis_y
+        repetitions = max[abs(dis_x),abs(dis_y)]
         x = i[0]
         y = i[1]
         for k in range(repetitions):
-            x = x + sign(dis_x)
-            y = y + sign(dis_y)
+            x = x - sign(dis_x)
+            y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
@@ -122,19 +122,20 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
         # a loop is performed to check whether any pieces are in the way. For bishop we additionally require
         # that the difference between horizontal distance and vertical distance to be zero, to ensure the movement
         # is diagonal
+        print(i)
+        print(str(squareNumber.get(to_coord_x)) + ', ' + str(to_coord_y - 1))
         dis_x = i[0] - squareNumber.get(to_coord_x)
         dis_y = i[1] - to_coord_y - 1
-        if dis_x - dis_y != 0:
-            break
         repetitions = max(dis_x,dis_y)
         x = i[0]
         y = i[1]
         for k in range(repetitions):
-            x = x + sign(dis_x)
-            y = y + sign(dis_y)
+            x = x - sign(dis_x)
+            y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                break
             if board[x, y] != 0:
                 break
 
@@ -144,7 +145,7 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
     if turn % 2 == 1:
         figure_number = 2
     else:
-        figure_number = 11
+        figure_number = 12
     figs = list(numpy.where(board == figure_number))
     figs = list(zip(figs[0], figs[1]))
     if from_coord_x != '':
@@ -157,7 +158,8 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
-        if (i[0]+2, i[1]+3) == (squareNumber.get(to_coord_x), to_coord_y-1) or (i[0]+2, i[1]+3) == (squareNumber.get(to_coord_x), to_coord_y-1):
+        if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[1]+1,i[1]-1) and to_coord_y-1 in (i[0]+2,i[0]-2)):
+            print('moved')
             board[i[0], i[1]] = 0
             board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
 
@@ -215,12 +217,13 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     figs = list(zip(figs[0], figs[1]))
     if not is_capture:
         for i in figs:
-            print(i)
-            print(squareNumber.get(to_coord_x))
-            print(to_coord_y - 1)
-
-            if i[0]== squareNumber.get(to_coord_x) and i[1]+ step*2 == to_coord_y - 1:
-                print('moved')
+            if turn % 2 == 1 and i[1] == 1:
+                k = 2
+            elif turn % 2 == 0 and i[1] == 6:
+                k = 2
+            else:
+                k = 1
+            if i[0] == squareNumber.get(to_coord_x) and to_coord_y - 1 <= step*k + i[1]:
                 board[i[0], i[1]] = 0
                 board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
     else:
@@ -343,11 +346,12 @@ for i in contents:
                 print(data[1:6])
             elif '[' not in data:
                 for j in data.split():
-                    if not j.endswith('.') and (re.match('O-O-?O?',j) or re.match('[A-Z]?x?[a-z]?[1-9]?[a-z][1-9]',j)):
+                    if not j.endswith('.') and (re.match('O-O-?O?',j) or re.match('[A-Z]?[a-z]?[1-9]?x?[a-z][1-9]',j)):
                         moves.append(j)
                 if moves!= []:
                     for move in moves:
                         turn+=1
+                        print(turn)
                         processMove(move,turn)
 
         data = ''
