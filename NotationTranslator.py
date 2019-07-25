@@ -62,12 +62,12 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
     # If an x starting coordinate is defined, every piece that has a different starting coordinate than the one defined
     # is poped, same applies for an y starting coordinate
     if from_coord_x != '':
-        for i in figs:
+        for i in figs.copy():
             if i[0] != squareNumber.get(from_coord_x):
                 figs.remove(i)
     if from_coord_y != '':
         from_coord_y = int(from_coord_y)
-        for i in figs:
+        for i in figs.copy():
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
@@ -105,7 +105,7 @@ def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         figs = numpy.where(board == 14)
         figure_number = 14
     figs = list(zip(figs[0], figs[1]))
-    for i in figs:
+    for i in figs.copy():
         board[i[0],i[1]] = 0
         board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
         with open('tahy.txt', 'a') as the_file:
@@ -123,12 +123,12 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
     figs = list(zip(figs[0], figs[1]))
     if from_coord_x != '':
         from_coord_x = int(from_coord_x)
-        for i in figs:
+        for i in figs.copy():
             if i[0] != squareNumber.get(from_coord_x):
                 figs.remove(i)
     if from_coord_y != '':
         from_coord_y = int(from_coord_y)
-        for i in figs:
+        for i in figs.copy():
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
@@ -165,12 +165,12 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
     figs = list(numpy.where(board == figure_number))
     figs = list(zip(figs[0], figs[1]))
     if from_coord_x != '':
-        for i in figs:
+        for i in figs.copy():
             if i[0] != squareNumber.get(from_coord_x):
                 figs.remove(i)
     if from_coord_y != '':
         from_coord_y = int(from_coord_y)
-        for i in figs:
+        for i in figs.copy():
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
@@ -191,12 +191,12 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     figs = list(numpy.where(board == figure_number))
     figs = list(zip(figs[0], figs[1]))
     if from_coord_x != '':
-        for i in figs:
+        for i in figs.copy():
             if i[0] != squareNumber.get(from_coord_x):
                 figs.remove(i)
     if from_coord_y != '':
         from_coord_y = int(from_coord_y)
-        for i in figs:
+        for i in figs.copy():
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
@@ -249,18 +249,18 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
 
     else:
         if from_coord_x != '':
-            print(figs)
-            for i in figs:
-                print(i)
+            for i in figs.copy():
                 if i[0] != squareNumber.get(from_coord_x):
                     figs.remove(i)
         if from_coord_y != '':
             from_coord_y = int(from_coord_y)
-            for i in figs:
+            for i in figs.copy():
                 if i[1] != from_coord_y-1:
                     figs.remove(i)
         for i in figs:
-            if i[0] - squareNumber.get(to_coord_x) == step and (i[1] - to_coord_y - 1 == 1 or i[1] - to_coord_y - 1 == -1):
+            print(to_coord_y - 1 - i[1])
+            print(squareNumber.get(to_coord_x) - i[0])
+            if to_coord_y - 1 - i[1] == step and (squareNumber.get(to_coord_x) - i[0] == 1 or squareNumber.get(to_coord_x) - i[0] == -1):
                 if board[squareNumber.get(to_coord_x), to_coord_y - 1] == 0:
                     board[squareNumber.get(to_coord_x) - step, to_coord_y - 1] = 0
                 board[i[0], i[1]] = 0
@@ -410,8 +410,8 @@ for i in contents:
                         with open('tahy.txt', 'a') as the_file:
                             the_file.write(str(turn) +'. move: ' + move + '\n')
                         processMove(move,turn)
-                        if turn == 11:
-                            exit()
+                        #if turn == 6:
+                        #    exit()
                 with open('tahy.txt', 'a') as the_file:
                     the_file.write('...\n')
         data = ''
