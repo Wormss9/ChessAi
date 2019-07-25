@@ -174,7 +174,8 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
             if i[1] != from_coord_y-1:
                 figs.remove(i)
     for i in figs:
-        if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[1]+1,i[1]-1) and to_coord_y-1 in (i[0]+2,i[0]-2)):
+
+        if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[0]+2,i[0]-2) and to_coord_y-1 in (i[1]+1,i[1]-1)):
             board[i[0], i[1]] = 0
             board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
             with open('tahy.txt', 'a') as the_file:
@@ -248,7 +249,9 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
 
     else:
         if from_coord_x != '':
+            print(figs)
             for i in figs:
+                print(i)
                 if i[0] != squareNumber.get(from_coord_x):
                     figs.remove(i)
         if from_coord_y != '':
@@ -407,8 +410,8 @@ for i in contents:
                         with open('tahy.txt', 'a') as the_file:
                             the_file.write(str(turn) +'. move: ' + move + '\n')
                         processMove(move,turn)
-                        if turn == 9:
-                            break
+                        if turn == 11:
+                            exit()
                 with open('tahy.txt', 'a') as the_file:
                     the_file.write('...\n')
         data = ''
