@@ -86,13 +86,14 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             x = x - sign(dis_x)
             y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
-                board[i[0], i[1]] = 0
-                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                # Printing into file
-                with open('tahy.txt', 'a') as the_file:
-                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
+                figure = i
             if board[x, y] != 0:
                 break
+        board[figure[0], figure[1]] = 0
+        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+        with open('tahy.txt', 'a') as the_file:
+            the_file.write(
+                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 # There can be no more than one king of one color on board at once so we are not dealing with ambiguity, therefore
 # wherever the king is found, it is moved to a required position, while the legality of move is left unchecked,
@@ -101,8 +102,8 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
 def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
-        figs = numpy.where(board == 15)
-        figure_number = 15
+        figs = numpy.where(board == 5)
+        figure_number = 5
     else:
         figs = numpy.where(board == 15)
         figure_number = 15
@@ -150,13 +151,14 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 x = x - sign(dis_x)
                 y = y - sign(dis_y)
                 if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
-                    board[i[0], i[1]] = 0
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
-                    break
+                    figure = i
                 if board[x, y] != 0:
                     break
+            board[figure[0], figure[1]] = 0
+            board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+            with open('tahy.txt', 'a') as the_file:
+                the_file.write(
+                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 
 def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
@@ -222,12 +224,13 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 x = x - sign(dis_x)
                 y = y - sign(dis_y)
                 if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
-                    board[i[0], i[1]] = 0
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1)+' , '+to_coord_x + str(to_coord_y)+'\n')
+                    figure = i
                 if board[x, y] != 0:
                     break
+    board[figure[0], figure[1]] = 0
+    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+    with open('tahy.txt', 'a') as the_file:
+        the_file.write(backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
 def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     to_coord_y = int(to_coord_y)
@@ -283,14 +286,14 @@ def castling(which):
         row = 7
     if which == 'O-O':
         with open('tahy.txt', 'a') as the_file:
-            the_file.write('e'+str(row)+' , g'+str(row)+'\n')
+            the_file.write('e'+str(row+1)+' , g'+str(row+1)+'\n')
         board[4,row] = 0
         board[6,row] = 5 + side
         board[7,row] = 0
         board[5,row] = 1+ side
     elif which == 'O-O-O':
         with open('tahy.txt', 'a') as the_file:
-            the_file.write('e'+str(row)+' , c'+str(row)+'\n')
+            the_file.write('e'+str(row+1)+' , c'+str(row+1)+'\n')
         board[4,row] = 0
         board[2, row] = 5 + side
         board[0, row] = 0
@@ -416,8 +419,8 @@ for i in contents:
                         with open('tahy.txt', 'a') as the_file:
                             the_file.write(str(turn) +'. move: ' + move + '\n')
                         processMove(move,turn)
-                        if turn == 14:
-                            exit()
+                        #if turn == 14:
+                        #    exit()
                 moves.clear()
                 with open('tahy.txt', 'a') as the_file:
                     the_file.write('...\n')
