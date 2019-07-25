@@ -31,6 +31,13 @@ def fillBoard():
     board[3, 7] = 14                #bq
     return board
 # Dictionary translating algebraic notation into "array notation", used mainly as a shorthand
+pieces = {
+    'R': 1,
+    'N': 2,
+    'B': 3,
+    'Q': 4,
+}
+
 squareNumber = {
     "a": 0,
     "b": 1,
@@ -232,16 +239,18 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
     with open('tahy.txt', 'a') as the_file:
         the_file.write(backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
 
-def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn, promotion):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
         figs = numpy.where(board == 6)
         step = 1
         figure_number = 6
+        k = 0
     else:
         figs = numpy.where(board == 16)
         step = -1
         figure_number = 16
+        k = 10
     figs = list(zip(figs[0], figs[1]))
     if not is_capture:
         for i in figs:
@@ -253,10 +262,16 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 k = 1
             if i[0] == squareNumber.get(to_coord_x) and abs(to_coord_y - 1 - i[1]) <= abs(step*k):
                 board[i[0], i[1]] = 0
-                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                with open('tahy.txt', 'a') as the_file:
-                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
-
+                if int(promotion) == 0:
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                    with open('tahy.txt', 'a') as the_file:
+                        the_file.write(
+                            backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                else:
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
+                    with open('tahy.txt', 'a') as the_file:
+                        the_file.write(
+                            backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + ' , ' + str(promotion + k) + '\n')
     else:
         if from_coord_x != '':
             for i in figs.copy():
@@ -272,9 +287,14 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 if board[squareNumber.get(to_coord_x), to_coord_y -1] == 0:
                     board[squareNumber.get(to_coord_x), to_coord_y - 1 - step] = 0
                 board[i[0], i[1]] = 0
-                board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                with open('tahy.txt', 'a') as the_file:
-                    the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                if int(promotion) == 0:
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                    with open('tahy.txt', 'a') as the_file:
+                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                else:
+                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
+                    with open('tahy.txt', 'a') as the_file:
+                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) +' , ' +str(promotion+k)+'\n')
 
 
 def castling(which):
@@ -304,6 +324,7 @@ def processMove(move,turn):
     print(move)
     isCheck = False
     isCapture = False
+    promotion = 0
     if move[-1:] == '+':
         isCheck = True
         move = move[:-1]
@@ -313,6 +334,12 @@ def processMove(move,turn):
     if "#" in move:
         isCapture = True
         move = move.replace('#','')
+    if "=" in move:
+        promotion = pieces.get(move[-1:])
+        move = move[:-1]
+        move = move.replace('=','')
+        print(move)
+        print(promotion)
     if move[:1] == 'Q':
         move = move.replace('Q','')
         y_to = move[-1:]
@@ -381,7 +408,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion)
     print(board)
 
 # declaring variables
