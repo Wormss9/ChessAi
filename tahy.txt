@@ -1980,7 +1980,6 @@ b8 , c6
 c1 , g5
 26. move: f6
 f5 , f6
-f7 , f6
 27. move: exf6
 e5 , f6
 28. move: gxf6
@@ -2776,12 +2775,11 @@ e2 , e3
 54. move: d5
 d6 , d5
 55. move: f4
-f2 , f4
 f3 , f4
 56. move: g4
 g5 , g4
 57. move: f3
-f4 , f3
+f2 , f3
 58. move: h5
 h7 , h5
 ...
@@ -3627,7 +3625,6 @@ a1 , e1
 40. move: Rae8
 a8 , e8
 41. move: c4
-c2 , c4
 c3 , c4
 42. move: b6
 b7 , b6
@@ -5968,7 +5965,6 @@ g7 , f6
 c3 , d5
 20. move: f5
 f6 , f5
-f7 , f5
 21. move: Bd3
 f1 , d3
 22. move: Be6
@@ -6546,7 +6542,6 @@ f2 , g3
 48. move: Bf5
 g6 , f5
 49. move: g4
-g2 , g4
 g3 , g4
 50. move: Bc2
 f5 , c2
@@ -9185,7 +9180,6 @@ h4 , g3
 52. move: Nh5
 f6 , h5
 53. move: f4
-f2 , f4
 f3 , f4
 54. move: Nxg3
 h5 , g3
@@ -9954,7 +9948,6 @@ c3 , e5
 56. move: Bxe5
 g7 , e5
 57. move: f4
-f2 , f4
 f3 , f4
 58. move: Kd6
 e6 , d6
@@ -10860,7 +10853,6 @@ d8 , c7
 a6 , b5
 90. move: f5
 f6 , f5
-f7 , f5
 91. move: a5
 a4 , a5
 92. move: Kb7
@@ -11066,7 +11058,6 @@ g5 , e7
 28. move: Bxe7
 d6 , e7
 29. move: f4
-f2 , f4
 f3 , f4
 30. move: g6
 g7 , g6
@@ -11718,7 +11709,6 @@ c8 , b7
 f1 , d3
 32. move: f5
 f6 , f5
-f7 , f5
 33. move: Qxf5
 h5 , f5
 34. move: Bc8
@@ -11726,9 +11716,11 @@ b7 , c8
 35. move: Qh5
 f5 , h5
 36. move: f5
+f7 , f5
 37. move: Ne3
 c2 , e3
 38. move: f4
+f5 , f4
 39. move: Nd5
 e3 , d5
 40. move: Qb7
@@ -11907,7 +11899,6 @@ a8 , c8
 c2 , b3
 44. move: b5
 b6 , b5
-b7 , b5
 45. move: Qxb5
 b3 , b5
 46. move: Rc5
@@ -11919,6 +11910,7 @@ e4 , d3
 49. move: Ba3
 c1 , a3
 50. move: b5
+b7 , b5
 51. move: Rxb5
 b1 , b5
 52. move: Rxb5
@@ -13538,7 +13530,6 @@ f8 , b4
 11. move: Bg5
 c1 , g5
 12. move: c5
-c4 , c5
 c7 , c5
 13. move: Bxc4
 f1 , c4
@@ -13839,7 +13830,6 @@ d4 , d6
 58. move: Kf7
 f6 , f7
 59. move: a4
-a2 , a4
 a3 , a4
 60. move: a6
 a7 , a6
@@ -14007,7 +13997,6 @@ g4 , h3
 g2 , h3
 50. move: f5
 f6 , f5
-f7 , f5
 51. move: Kh1
 g1 , h1
 52. move: Rae8

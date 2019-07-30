@@ -260,18 +260,27 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 k = 2
             else:
                 k = 1
-            if i[0] == squareNumber.get(to_coord_x) and abs(to_coord_y - 1 - i[1]) <= abs(step*k):
-                board[i[0], i[1]] = 0
-                if int(promotion) == 0:
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(
-                            backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
-                else:
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(
-                            backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + ' , ' + str(promotion + k) + '\n')
+            if i[0] == squareNumber.get(to_coord_x) and abs(to_coord_y - 1 - i[1]) <= abs(step*k): # fix on head stepping
+                print('pawnChecked')
+                onHeadStep = False
+                for j in range(abs(to_coord_y - 1 - i[1])):
+                    print(i[1]+(j+1)*step)
+                    print(board[i[0],i[1]+(j+1)*step])
+                    if board[i[0],i[1]+(j+1)*step] != 0:
+                        print('other pawn in the way')
+                        onHeadStep = True
+                if not onHeadStep:
+                    board[i[0], i[1]] = 0
+                    if int(promotion) == 0:
+                        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
+                        with open('tahy.txt', 'a') as the_file:
+                            the_file.write(
+                                backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                    else:
+                        board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
+                        with open('tahy.txt', 'a') as the_file:
+                            the_file.write(
+                                backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + ' , ' + str(promotion + k) + '\n')
     else:
         if from_coord_x != '':
             for i in figs.copy():
