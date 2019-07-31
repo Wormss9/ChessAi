@@ -332,7 +332,8 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 k = 2
             else:
                 k = 1
-            if i[0] == squareNumber.get(to_coord_x) and abs(to_coord_y - 1 - i[1]) <= abs(step*k):
+            print(to_coord_y - 1, i[1], step)
+            if i[0] == squareNumber.get(to_coord_x) and ((step * k >= to_coord_y - 1 - i[1] > 0 and step == 1) or (step * k <= to_coord_y - 1 - i[1] < 0 and step == -1)):
                 print('pawnChecked')
                 onHeadStep = False
                 for j in range(abs(to_coord_y - 1 - i[1])):
@@ -453,7 +454,6 @@ def processMove(move,turn):
         isCapture = True
         move = move.replace('x','')
     if "#" in move:
-        isCapture = True
         move = move.replace('#','')
     if "=" in move:
         promotion = pieces.get(move[-1:])
