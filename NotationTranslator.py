@@ -11,6 +11,43 @@ def sign(param):
         return -1
 
 # necessary functions
+def inCheck(args, turn):
+    if turn % 2 == 1:
+        figure_number = 5
+    else:
+        figure_number = 15
+    # rook, queen, bishop
+    aftermove = numpy.copy(board)
+    aftermove[args[0], args[1]] = 0
+    aftermove[args[2], args[3]] = args[4]
+    kings = list(numpy.where(board == figure_number))
+    kings = list(zip(kings[0], kings[1]))
+    print(kings)
+    for king in kings:
+        print(bishopMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove))
+        print(queenMove(False, '', '', backToLetter.get(king[0]), king[1] + 1, False, turn + 1, aftermove))
+        print(rookMove(False, '', '', backToLetter.get(king[0]), king[1] + 1, False, turn + 1, aftermove,1))
+        if bishopMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove) != False:
+            return True
+        elif queenMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove) != False:
+            return True
+        elif rookMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove,1) != False:
+            return True
+        else:
+            return False
+
+
+
+
+
+
+def movePiece(args):
+    board[args[0], args[1]] = 0
+    board[args[2], args[3]] = args[4]
+
+
+
+
 def fillBoard():
     board = numpy.zeros((8, 8))
     board[0,0] = board[7,0] = 1     #wr
@@ -59,8 +96,7 @@ backToLetter = {
     7: 'h'
 }
 
-
-def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn):
+def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_check, turn, board):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
         figure_number = 4
@@ -94,13 +130,18 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 figure = i
-            if board[x, y] != 0:
+            try:
+                if board[x, y] != 0:
+                    break
+            except IndexError:
                 break
-        board[figure[0], figure[1]] = 0
-        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-        with open('tahy.txt', 'a') as the_file:
-            the_file.write(
-                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        try:
+            with open('tahy.txt', 'a') as the_file:
+                the_file.write(
+                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+            return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+        except UnboundLocalError:
+            return False
 
 # There can be no more than one king of one color on board at once so we are not dealing with ambiguity, therefore
 # wherever the king is found, it is moved to a required position, while the legality of move is left unchecked,
@@ -116,14 +157,13 @@ def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         figure_number = 15
     figs = list(zip(figs[0], figs[1]))
     for i in figs.copy():
-        board[i[0],i[1]] = 0
-        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
         with open('tahy.txt', 'a') as the_file:
             the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
 
 
 
-def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn, board):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
         figure_number = 3
@@ -159,14 +199,18 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 y = y - sign(dis_y)
                 if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                     figure = i
-                if board[x, y] != 0:
+                try:
+                    if board[x, y] != 0:
+                        break
+                except IndexError:
                     break
-            board[figure[0], figure[1]] = 0
-            board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-            with open('tahy.txt', 'a') as the_file:
-                the_file.write(
-                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
-
+    try:
+        with open('tahy.txt', 'a') as the_file:
+            the_file.write(
+                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+            return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+    except UnboundLocalError:
+        return False
 
 def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
     to_coord_y = int(to_coord_y)
@@ -187,13 +231,12 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 figs.remove(i)
     for i in figs:
         if (squareNumber.get(to_coord_x) in (i[0]+1,i[0]-1) and to_coord_y-1 in (i[1]+2,i[1]-2)) or (squareNumber.get(to_coord_x) in (i[0]+2,i[0]-2) and to_coord_y-1 in (i[1]+1,i[1]-1)):
-            board[i[0], i[1]] = 0
-            board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
             with open('tahy.txt', 'a') as the_file:
                 the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+            return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
 
 
-def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn):
+def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn, board, calledby):
     to_coord_y = int(to_coord_y)
     if turn % 2 == 1:
         figure_number = 1
@@ -210,9 +253,6 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         for i in figs.copy():
             if i[1] != from_coord_y-1:
                 figs.remove(i)
-    print(figs)
-    print(squareNumber.get(to_coord_x))
-    print(to_coord_y - 1)
     for i in figs:
         # dis_x and dis_x act like a vector, not only defining distance for which the figure should move
         # but a direction as well, possible values in terms of directions are 1, 0, -1 which we get out of
@@ -222,7 +262,6 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         # is zero
         dis_x = int(i[0]) - int(squareNumber.get(to_coord_x))
         dis_y = int(i[1]) - int(to_coord_y - 1)
-        print(dis_x, dis_y)
         if 0 in (dis_x,dis_y):
             repetitions = max(abs(dis_x),abs(dis_y))
             x = i[0]
@@ -231,13 +270,23 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 x = x - sign(dis_x)
                 y = y - sign(dis_y)
                 if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
-                    figure = i
-                if board[x, y] != 0:
+                    candidate = i
+                    print(candidate[0], candidate[1])
+                try:
+                    if board[x, y] != 0:
+                        break
+                except IndexError:
                     break
-    board[figure[0], figure[1]] = 0
-    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-    with open('tahy.txt', 'a') as the_file:
-        the_file.write(backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        if calledby == 0:
+            if not inCheck((i[0],i[1],squareNumber.get(to_coord_x), to_coord_y - 1,figure_number),turn):
+                figure = candidate
+    try:
+        with open('tahy.txt', 'a') as the_file:
+            the_file.write(backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+    except UnboundLocalError:
+        return False
+
 
 def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_check, turn, promotion):
     to_coord_y = int(to_coord_y)
@@ -245,12 +294,12 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         figs = numpy.where(board == 6)
         step = 1
         figure_number = 6
-        k = 0
+        l = 0
     else:
         figs = numpy.where(board == 16)
         step = -1
         figure_number = 16
-        k = 10
+        l = 10
     figs = list(zip(figs[0], figs[1]))
     if not is_capture:
         for i in figs:
@@ -270,17 +319,22 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                         print('other pawn in the way')
                         onHeadStep = True
                 if not onHeadStep:
-                    board[i[0], i[1]] = 0
                     if int(promotion) == 0:
-                        board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                        with open('tahy.txt', 'a') as the_file:
-                            the_file.write(
-                                backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                        try:
+                            with open('tahy.txt', 'a') as the_file:
+                                the_file.write(
+                                    backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                            return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+                        except UnboundLocalError:
+                            return False
                     else:
-                        board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
-                        with open('tahy.txt', 'a') as the_file:
-                            the_file.write(
-                                backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + ' , ' + str(promotion + k) + '\n')
+                        try:
+                            with open('tahy.txt', 'a') as the_file:
+                                the_file.write(
+                                    backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + ' , ' + str(promotion + k) + '\n')
+                            return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, promotion + l
+                        except UnboundLocalError:
+                            return False
     else:
         if from_coord_x != '':
             for i in figs.copy():
@@ -295,17 +349,20 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
             if to_coord_y - 1 - i[1] == step and (squareNumber.get(to_coord_x) - i[0] == 1 or squareNumber.get(to_coord_x) - i[0] == -1):
                 if board[squareNumber.get(to_coord_x), to_coord_y -1] == 0:
                     board[squareNumber.get(to_coord_x), to_coord_y - 1 - step] = 0
-                board[i[0], i[1]] = 0
                 if int(promotion) == 0:
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = figure_number
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                    try:
+                        with open('tahy.txt', 'a') as the_file:
+                            the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                        return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+                    except UnboundLocalError:
+                        return False
                 else:
-                    board[squareNumber.get(to_coord_x), to_coord_y - 1] = promotion + k
-                    with open('tahy.txt', 'a') as the_file:
-                        the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) +' , ' +str(promotion+k)+'\n')
-
-
+                    try:
+                        with open('tahy.txt', 'a') as the_file:
+                            the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) +' , ' +str(promotion+k)+'\n')
+                        return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, promotion + l
+                    except UnboundLocalError:
+                        return False
 def castling(which):
     if turn%2 == 1:
         side = 0
@@ -347,8 +404,6 @@ def processMove(move,turn):
         promotion = pieces.get(move[-1:])
         move = move[:-1]
         move = move.replace('=','')
-        print(move)
-        print(promotion)
     if move[:1] == 'Q':
         move = move.replace('Q','')
         y_to = move[-1:]
@@ -359,7 +414,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        queenMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        movePiece(queenMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board))
     elif move[:1] == 'K':
         move = move.replace('K','')
         y_to = move[-1:]
@@ -370,7 +425,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        kingMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        movePiece(kingMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn))
     elif move[:1] == 'N':
         move = move.replace('N','')
         y_to = move[-1:]
@@ -381,7 +436,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        knightMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        movePiece(knightMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn))
     elif move[:1] == 'B':
         move = move.replace('B','')
         y_to = move[-1:]
@@ -392,7 +447,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        bishopMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        movePiece(bishopMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board))
     elif move[:1] == 'R':
         move = move.replace('R','')
         y_to = move[-1:]
@@ -403,7 +458,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn)
+        movePiece(rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board, 0))
     elif move == 'O-O':
         castling(move)
     elif move == 'O-O-O':
@@ -417,7 +472,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion)
+        movePiece(pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion))
     print(board)
 
 # declaring variables
