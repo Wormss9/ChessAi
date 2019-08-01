@@ -1,4 +1,5 @@
 import json
+import csv
 import re
 import numpy
 
@@ -22,23 +23,31 @@ def inCheck(args, turn):
     aftermove[args[2], args[3]] = args[4]
     kings = list(numpy.where(board == figure_number))
     kings = list(zip(kings[0], kings[1]))
-    print('kings ' + str(kings))
     for king in kings:
         if bishopMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove,1) != False:
             return True
-            print('fail')
         elif queenMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove,1) != False:
             return True
-            print('fail')
         elif rookMove(False,'','',backToLetter.get(king[0]),king[1]+1,False,turn+1,aftermove,1) != False:
             return True
-            print('fail')
         else:
             return False
-            print('pass')
 
 
-def movePiece(args):
+def movePiece(args,turn,magnus):
+    if turn%2 == magnus:
+        move = [args[0],args[1],args[2],args[3]]
+        arr = []
+        for i in range(8):
+            row = board[:,i].tolist()
+            arr.extend(row)
+        print(arr)
+        with open("training_data/train-boards.csv", "a") as fp:
+            wr = csv.writer(fp, dialect='excel')
+            wr.writerow(arr)
+        with open("training_data/train-moves.csv", "a") as fp:
+            wr = csv.writer(fp, dialect='excel')
+            wr.writerow(move)
     board[args[0], args[1]] = 0
     board[args[2], args[3]] = args[4]
 
@@ -435,7 +444,7 @@ def castling(which):
         board[3, row] = 1 + side
 
 
-def processMove(move,turn):
+def processMove(move,turn,magnus):
     isCheck = False
     isCapture = False
     promotion = 0
@@ -461,7 +470,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(queenMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board,0))
+        movePiece(queenMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board,0),turn,magnus)
     elif move[:1] == 'K':
         move = move.replace('K','')
         y_to = move[-1:]
@@ -472,7 +481,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(kingMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn))
+        movePiece(kingMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn),turn,magnus)
     elif move[:1] == 'N':
         move = move.replace('N','')
         y_to = move[-1:]
@@ -483,7 +492,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(knightMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn,0))
+        movePiece(knightMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn,0),turn,magnus)
     elif move[:1] == 'B':
         move = move.replace('B','')
         y_to = move[-1:]
@@ -494,7 +503,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(bishopMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board,0))
+        movePiece(bishopMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board,0),turn,magnus)
     elif move[:1] == 'R':
         move = move.replace('R','')
         y_to = move[-1:]
@@ -505,7 +514,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board, 0))
+        movePiece(rookMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, board, 0),turn,magnus)
     elif move == 'O-O':
         castling(move)
     elif move == 'O-O-O':
@@ -519,7 +528,7 @@ def processMove(move,turn):
         else:
             x_from = move[-3:-2]
             y_from = ''
-        movePiece(pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion,0))
+        movePiece(pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion,0),turn,magnus)
 
 # declaring variables
 data = ''
@@ -531,18 +540,24 @@ file = open('MagnusCarlsen.pgn','r')
 contents = file.read()
 
 # emptying the .csv file
-with open("train-games.csv", "w") as output:
-    output.close()
+with open("training_data/train-boards.csv", "w") as fp:
+    fp.close()
 
-with open('tahy.txt', 'w') as the_file:
-    output.close()
+with open("training_data/train-moves.csv", "w") as fp:
+    fp.close()
+
+with open('tahy.txt', 'w') as fp:
+    fp.close()
 
 bracketsOpen = False
 for i in contents:
     if i == '\n':
         if data != '':
             if 'Carlsen, Magnus' in data:
-                print(data[1:6])
+                if (data[1:6]) == 'White':
+                    magnus = 1
+                else:
+                    magnus = 0
             elif '[' not in data:
                 board = fillBoard()
                 turn = 0
@@ -555,7 +570,7 @@ for i in contents:
                         print(turn)
                         with open('tahy.txt', 'a') as the_file:
                             the_file.write(str(turn) +'. move: ' + move + '\n')
-                        processMove(move,turn)
+                        processMove(move,turn,magnus)
                         #if turn == 14:
                         #    exit()
                 moves.clear()
