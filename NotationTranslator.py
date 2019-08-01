@@ -125,7 +125,6 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             y = y - sign(dis_y)
             if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                 candidate = i
-                print(candidate[0], candidate[1])
                 if calledby == 0:
                     if not inCheck((i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number), turn):
                         figure = candidate
@@ -201,7 +200,6 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 y = y - sign(dis_y)
                 if (x, y) == (squareNumber.get(to_coord_x), to_coord_y - 1):
                     candidate = i
-                    print(candidate[0], candidate[1])
                     if calledby == 0:
                         if not inCheck((i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number), turn):
                             figure = candidate
@@ -332,15 +330,10 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 k = 2
             else:
                 k = 1
-            print(to_coord_y - 1, i[1], step)
             if i[0] == squareNumber.get(to_coord_x) and ((step * k >= to_coord_y - 1 - i[1] > 0 and step == 1) or (step * k <= to_coord_y - 1 - i[1] < 0 and step == -1)):
-                print('pawnChecked')
                 onHeadStep = False
                 for j in range(abs(to_coord_y - 1 - i[1])):
-                    print(i[1]+(j+1)*step)
-                    print(board[i[0],i[1]+(j+1)*step])
                     if board[i[0],i[1]+(j+1)*step] != 0:
-                        print('other pawn in the way')
                         onHeadStep = True
                 if not onHeadStep:
                     if int(promotion) == 0:
@@ -443,7 +436,6 @@ def castling(which):
 
 
 def processMove(move,turn):
-    print(move)
     isCheck = False
     isCapture = False
     promotion = 0
@@ -528,7 +520,6 @@ def processMove(move,turn):
             x_from = move[-3:-2]
             y_from = ''
         movePiece(pawnMove(isCapture, x_from, y_from, x_to, y_to, isCheck, turn, promotion,0))
-    print(board)
 
 # declaring variables
 data = ''
