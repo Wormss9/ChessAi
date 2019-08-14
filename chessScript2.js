@@ -75,6 +75,7 @@ drawBoard();
 refresh();
 
 function change(x, y) {
+    console.log("HC"+turn);
     var xs;
     var ys;
     switch (turn) {
@@ -83,10 +84,13 @@ function change(x, y) {
             xs = sel[0];
             ys = sel[1];
             turn=sel[2]
+            console.log("case 0"+turn)
             break;
         case 1:
             caseh = movePiece(x, y, board);
+            console.log("case 1"+turn)
             return caseh;
+
         case 2:
             var sel = selectPiece(x, y, board);
             xs = sel[0];
@@ -235,9 +239,9 @@ function selectPiece(x, y, board, turn) {
     }
     return ("" + xs + ys + turn)
 }
-function movePiece(x, y, board) {
+function movePiece(x, y, xs, ys, board) {
     var color = [];
-    //console.log("Is the board fucked up?");
+    console.log("Is the board fucked up?");
     //console.log(board[2][1] != null);
     if (turn == 1) {
         color[0] = "White";
@@ -273,7 +277,7 @@ function movePiece(x, y, board) {
                 turn = 0;
             }
             else {
-                //console.log("Case changed "+x+y)
+                console.log("Case changed "+x+y)
                 turn = 2;
             }
             board[moving.x][moving.y] = moving.piece;
@@ -281,11 +285,11 @@ function movePiece(x, y, board) {
             document.getElementById("error").innerHTML = "Check";
             additionalInfo = "Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            //console.log("MovePiece false backmove")
+            console.log("MovePiece false backmove")
             return false;
         }
         if (turn == 1) {
-            //console.log("Case changed "+x+y)
+            console.log("Case changed "+x+y)
             turn = 2;
             if (z == 0) {
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
@@ -300,7 +304,6 @@ function movePiece(x, y, board) {
                 console.log("Turn " + turns)
             }
         }
-        //console.log("Z: " + z)
         var checkStatus = check(board, color[1]);
         //Board saving
         if (z == 0) {
@@ -464,7 +467,8 @@ function processClick(coordinates) {
     //rozoberanie coordinates
     xc = coordinates.slice(0, 1);
     yc = coordinates.slice(1, 2);
-    change(parseInt(xc, 10), parseInt(yc, 10), 0);
+    change(parseInt(xc, 10), parseInt(yc, 10));
+    console.log(coordinates);
 }
 function sign(x) {
     if (x == 0) {
