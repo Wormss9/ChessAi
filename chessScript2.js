@@ -82,6 +82,7 @@ function change(x, y) {
             var sel = selectPiece(x, y, board);
             xs = sel[0];
             ys = sel[1];
+            turn=sel[2]
             break;
         case 1:
             caseh = movePiece(x, y, board);
@@ -142,14 +143,41 @@ function endangered(kx, ky, board, color) {
     return false;
 }
 
-function verMove(x, y, xs, ys, board){}
-function diaMove(x, y, xs, ys, board){}
-function pawn(x, y, xs, ys, board){}
-function rook(x, y, xs, ys, board){}
-function horse(x, y, xs, ys, board){}
-function bishop(x, y, xs, ys, board){}
-function king(x, y, xs, ys, board){}
-function queen(x, y, xs, ys, board){}
+function verMove(x, y, xs, ys, board) {
+    if (sign(xs - x) == 0 || sign(ys - y) == 0) {
+        return true;
+    }
+    else {
+        return false
+    }
+}
+function diaMove(x, y, xs, ys, board) {
+    if (abs(x - xs) == abs(y - ys)) {
+        return true;
+    }
+    else {
+        return false
+    }
+}
+function pawn(x, y, xs, ys, board) {
+    return true;
+ }
+function rook(x, y, xs, ys, board) {
+    return true; }
+function horse(x, y, xs, ys, board) {
+    return true; }
+function bishop(x, y, xs, ys, board) {
+    return true; }
+function king(x, y, xs, ys, board) {
+    if (abs(xs - x) <= 1 && abs(ys - y) <= 1 && (board[x][y] == null || (board[x][y].color !== board[xs][ys].color))) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+function queen(x, y, xs, ys, board) { 
+    return true;}
 
 function rule(x, y, xs, ys, board) {
     switch (board[xs][ys].type) {
@@ -170,7 +198,7 @@ function rule(x, y, xs, ys, board) {
     return false;
 }
 
-function selectPiece(x, y, board,turn) {
+function selectPiece(x, y, board, turn) {
     //console.log("Piece selected"+x+y)
     if (gameover) {
         document.getElementById("error").innerHTML = "Game over";
@@ -194,22 +222,18 @@ function selectPiece(x, y, board,turn) {
         document.getElementById("myButton1").value = color + " Move";
         var xs = x;
         var ys = y;
-        if (turn == 0) {
-            turn = 1;
-        }
-        else {
+        if (turn) {
             turn = 3;
         }
-        //console.log("Bold"+x+y+" "+xs+ys)
-        if (z == 0) {
-            document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
+        else {
+            turn = 1;
         }
-        //console.log("Case = 1 " + x + y);
+        document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
     }
     else {
         document.getElementById("error").innerHTML = "Not Your Piece";
     }
-    return ("" + xs + ys)
+    return ("" + xs + ys + turn)
 }
 function movePiece(x, y, board) {
     var color = [];
@@ -442,7 +466,25 @@ function processClick(coordinates) {
     yc = coordinates.slice(1, 2);
     change(parseInt(xc, 10), parseInt(yc, 10), 0);
 }
-
+function sign(x) {
+    if (x == 0) {
+        return 0;
+    }
+    if (x) {
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+function abs(x) {
+    if (x < 0) {
+        return -x;
+    }
+    else {
+        return x;
+    }
+}
 
 
 function initialiseBoard() {
@@ -478,8 +520,8 @@ function drawBoard() {
                 boardtodraw += "<td class='sachovnica'>";
             }
             boardtodraw += "<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>";
-            }
         }
+    }
     boardtodraw += "</tr>";
 
     document.getElementById("table").innerHTML = boardtodraw;
