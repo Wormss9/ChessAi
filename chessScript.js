@@ -68,7 +68,7 @@ var bp = {
 var board = createArray(8, 8);
 var boardBackup = createArray(8, 8);
 initialiseBoard();
-var jsonBoard = JSON.stringify(board);
+var jsonBoard; //= JSON.stringify(board);
 var turn = 0;
 drawBoard(0);
 refresh();
@@ -821,7 +821,7 @@ function movePiece(x, y, board, z, p) {
     if (rule(x, y, xs, ys, board, z)) {
         document.getElementById("myButton1").value = color[1] + " Select";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-        jsonBoard = JSON.stringify(board);
+        //jsonBoard = JSON.stringify(board);
         /*if (board[x][y] != null) {
             moved.x = x;
             moved.y = y;
@@ -900,7 +900,7 @@ function movePiece(x, y, board, z, p) {
             turn = 2;
             if (z == 0) {
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
-                boardJson(board);
+                jsonBoard=boardJson(board);
             }
 
         }
@@ -909,7 +909,7 @@ function movePiece(x, y, board, z, p) {
             if (z == 0) {
                 turns += 1;
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
-                boardJson(board);
+                jsonBoard=boardJson(board);
                 console.log("Turn " + turns)
             }
         }
@@ -1083,7 +1083,7 @@ function boardJson(board) {
             }
         }
     }
-    console.log(info);
+    //console.log(info);
     return JSON.stringify(info);
 }
 function translate(type,color){
