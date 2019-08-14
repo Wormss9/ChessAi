@@ -1,10 +1,3 @@
-/*Ak chces vlozit vstup pridaj ho funkciou typu
-processClick(coordinates) alebo processButton()
-(change(x,y))
-vsetko by malo fungovat okrem rosady
-a nevie zistovat pat
-ak to budes chciet skusit na zapasoch bez rosad len hod na zaciatok checkmate() return false;
-*/
 //Chess pieces
 var wr = {
     bn: "&#9814;",
@@ -86,6 +79,7 @@ turns = 1;
 console.log("Turn " + turns);
 var info;
 var additionalInfo;
+var caseh;
 /**
  * Gets input
  * selects piece
@@ -95,9 +89,8 @@ var additionalInfo;
  * @param {*} x
  * @param {*} y
  */
-var caseh;
 function change(x, y, z, p) {
-    p=0;
+    //p = 0;
     //console.log("Change " + x + y+z);
     switch (turn) {
         case 0:
@@ -851,7 +844,6 @@ function movePiece(x, y, board, z, p) {
         //console.log(x == 0 || x == 7);
         //console.log(p);
         if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
-            console.log("Edge" + p)
             if (x == 0) {
                 switch (p) {
                     case 0:
@@ -884,6 +876,7 @@ function movePiece(x, y, board, z, p) {
                         break;
                 }
             }
+            console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
         }
 
         if (check(board, color[0])) {
@@ -907,6 +900,7 @@ function movePiece(x, y, board, z, p) {
             turn = 2;
             if (z == 0) {
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                boardJson(board);
             }
 
         }
@@ -915,6 +909,7 @@ function movePiece(x, y, board, z, p) {
             if (z == 0) {
                 turns += 1;
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                boardJson(board);
                 console.log("Turn " + turns)
             }
         }
@@ -1076,53 +1071,38 @@ function checkmate(board, color) {
     }
     return mate;
 }
-/*
-  function pieceMove(xc, yc) {
-    window.xs = xc;
-    window.ys = yc;
-    //zabezpečuje že vieš označiť a odoznačiť figúrku
-    if ([window.xs, window.ys] != [window.x, window.y]) {
-        //console.log('move from: ' + [window.x, window.y] + ' to: ' + [window.xs, window.ys])
-        //<--tuto tá funkcia čo pohybuje týpkov s parametrami x,y,xs,ys,board,
-        // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
-        // TO-DO: ilegálne pohyby treba poriešiť ešte
-        // funguje tak že ak sa figúrka posunie na nejaké miesto odoznaci ju na tom mieste kde sa posunula
-        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever
-    }
-}
- */
-/*function coordinates() {
-    var input = document.getElementById("input").value;
-    if (input.length !== 2) {
-        return false;
-    }
-    x = input[0].charCodeAt(0) - 97;
-    y = input[1] - 1;
-    if (x < 0 || y < 0 || x > 7 || y > 7) {
-        return false;
-    }
-    return "" + x + y;
-}*/
-/*
-pieceSelected = false;
-function pieceSelect(xc, yc) {
-    window.x = xc;
-    window.y = yc;
-*/
-function json() {
-    info += "Status: " + additionalInfo;
-    var infojs = JSON.stringify(info);
-}
-function readTextFile(file) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-        if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-                var allText = rawFile.responseText;
-                alert(allText);
+function boardJson(board) {
+    var info = "";
+    for (m = 0; m < 8; m++) {
+        for (n = 0; n < 8; n++) {
+            if (board[m][n] == null) {
+                info += "0,"
+            }
+            else {
+                info += translate(board[m][n].type,board[m][n].color)+","
             }
         }
     }
-    rawFile.send(null);
+    console.log(info);
+    return JSON.stringify(info);
+}
+function translate(type,color){
+    c=0
+    if (color=="Black"){
+        c=10
+    }
+    switch (type) {
+        case "pawn":
+            return 6+c
+        case "rook":
+            return 1+c
+        case "horse":
+            return 2+c
+        case "bishop":
+            return 3+c
+        case "king":
+            return 5+c
+        case "queen":
+            return 4+c
+    }
 }
