@@ -96,7 +96,8 @@ var additionalInfo;
  * @param {*} y
  */
 var caseh;
-function change(x, y, z) {
+function change(x, y, z, p) {
+    p=0;
     //console.log("Change " + x + y+z);
     switch (turn) {
         case 0:
@@ -106,7 +107,7 @@ function change(x, y, z) {
             ys = sel[1];
             break;
         case 1:
-            caseh = movePiece(x, y, board, z);
+            caseh = movePiece(x, y, board, z, p);
             info += turn;
             return caseh;
         case 2:
@@ -116,7 +117,7 @@ function change(x, y, z) {
             ys = sel[1];
             break;
         case 3:
-            caseh = movePiece(x, y, board, z);
+            caseh = movePiece(x, y, board, z, p);
             info += turn;
             return caseh;
     }
@@ -336,20 +337,22 @@ function pawn(x, y, xs, ys, board, z) {
     }
     var freedom = [];
     //Move forward
-    if (board[xs + d][ys] == null) {
+    //console.log("" + (xs + d) + ys);
+    //console.log(0 <= (xs + d) && (xs + d) <= 7);
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys] == null) {
         freedom.push("" + (xs + d) + (ys));
-        if (board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
+        if (0 <= (xs + 2 * d) && (xs + 2 * d) <= 7 && board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
             freedom.push("" + (xs + 2 * d) + (ys));
         }
     }
     //Take out Right
-    if (board[xs + d][ys + 1] != null) {
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys + 1] != null) {
         if (board[xs + d][ys + 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys + 1));
         }
     }
     //Take out left
-    if (board[xs + d][ys - 1] != null) {
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys - 1] != null) {
         if (board[xs + d][ys - 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
@@ -667,11 +670,16 @@ function rule(x, y, xs, ys, board, z) {
  */
 function processButton() {
     var input = document.getElementById("input").value;
-    if (input.length !== 2) { return false; }
+    if (input.length !== 2 && input.length !== 3) { return false; }
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
+    p = 0;
+    if (input.length == 3) {
+        p = input[2] - 1;
+        console.log(p);
+    }
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y, 0);
+    change(x, y, 0, p);
 }
 /**
  *Processes click input
@@ -680,9 +688,9 @@ function processButton() {
  */
 function processClick(coordinates) {
     //rozoberanie coordinates
-    xc = coordinates.slice(0, 1);
-    yc = coordinates.slice(1, 2);
-    change(parseInt(xc, 10), parseInt(yc, 10), 0);
+    xc = parseInt(coordinates.slice(0, 1), 10);
+    yc = parseInt(coordinates.slice(1, 2), 10);
+    change(xc, yc, 0, 0);
 }
 /**
  * Initialises board
@@ -805,7 +813,7 @@ function selectPiece(x, y, board, z) {
  * @param {*} y
  * @param {*} board
  */
-function movePiece(x, y, board, z) {
+function movePiece(x, y, board, z, p) {
     var color = [];
     //console.log("Is the board fucked up?");
     //console.log(board[2][1] != null);
@@ -838,6 +846,46 @@ function movePiece(x, y, board, z) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
+        console.log(board[x][y].type == "pawn");
+        console.log(""+x+y)
+        console.log(x == 0 || x == 7);
+        console.log(p);
+        if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
+            console.log("Edge" + p)
+            if (x == 0) {
+                switch (p) {
+                    case 0:
+                        board[x][y] = bq
+                        break;
+                    case 1:
+                        board[x][y] = br
+                        break;
+                    case 2:
+                        board[x][y] = bb
+                        break;
+                    case 3:
+                        board[x][y] = bh
+                        break;
+                }
+            }
+            if (x == 7) {
+                switch (p) {
+                    case 0:
+                        board[x][y] = wq
+                        break;
+                    case 1:
+                        board[x][y] = wr
+                        break;
+                    case 2:
+                        board[x][y] = wb
+                        break;
+                    case 3:
+                        board[x][y] = wh
+                        break;
+                }
+            }
+        }
+
         if (check(board, color[0])) {
             if (turn == 1) {
                 turn = 0;
