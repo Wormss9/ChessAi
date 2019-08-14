@@ -846,10 +846,10 @@ function movePiece(x, y, board, z, p) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
-        console.log(board[x][y].type == "pawn");
-        console.log(""+x+y)
-        console.log(x == 0 || x == 7);
-        console.log(p);
+        //console.log(board[x][y].type == "pawn");
+        //console.log(""+x+y)
+        //console.log(x == 0 || x == 7);
+        //console.log(p);
         if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
             console.log("Edge" + p)
             if (x == 0) {
