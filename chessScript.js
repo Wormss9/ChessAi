@@ -567,6 +567,9 @@ function king(x, y, xs, ys, board, z) {
     //Kingside
     var ks = false;
     var qs = false;
+    if (z == 0) {
+        console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + ", 8: " + ((board[xs][6] == null)+0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
+    }
     if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][7] != null && board[xs][7].type == "rook" && board[xs][7].turns == null && board[xs][5] == null && board[xs][6] == null && !endangered(xs, 5, board, colork) && !endangered(xs, 6, board, colork)) {
         freedom.push("" + (xs) + (ys + 2));
         ks = true
@@ -690,19 +693,25 @@ function processClick(coordinates) {
  *
  */
 function initialiseBoard() {
-    board[0][0] = board[0][7] = wr;
-    board[7][0] = board[7][7] = br;
-    board[0][1] = board[0][6] = wh;
-    board[7][1] = board[7][6] = bh;
-    board[0][2] = board[0][5] = wb;
-    board[7][2] = board[7][5] = bb;
-    board[0][4] = wk;
-    board[0][3] = wq;
-    board[7][4] = bk;
-    board[7][3] = bq;
+    board[0][0] = clone(wr);
+    board[0][7] = clone(wr);
+    board[7][0] = clone(br);
+    board[7][7] = clone(br);
+    board[0][1] = clone(wh);
+    board[0][6] = clone(wh);
+    board[7][1] = clone(bh);
+    board[7][6] = clone(bh);
+    board[0][2] = clone(wb);
+    board[0][5] = clone(wb);
+    board[7][2] = clone(bb);
+    board[7][5] = clone(bb);
+    board[0][4] = clone(wk);
+    board[0][3] = clone(wq);
+    board[7][4] = clone(bk);
+    board[7][3] = clone(bq);
     for (i = 0; i < 8; i++) {
-        board[1][i] = wp;
-        board[6][i] = bp;
+        board[1][i] = clone(wp);
+        board[6][i] = clone(bp);
     }
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 8; j++) {
@@ -900,7 +909,7 @@ function movePiece(x, y, board, z, p) {
             turn = 2;
             if (z == 0) {
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
-                jsonBoard=boardJson(board);
+                jsonBoard = boardJson(board);
             }
 
         }
@@ -909,7 +918,7 @@ function movePiece(x, y, board, z, p) {
             if (z == 0) {
                 turns += 1;
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
-                jsonBoard=boardJson(board);
+                jsonBoard = boardJson(board);
                 console.log("Turn " + turns)
             }
         }
@@ -1079,30 +1088,63 @@ function boardJson(board) {
                 info += "0,"
             }
             else {
-                info += translate(board[m][n].type,board[m][n].color)+","
+                info += translate(board[m][n].type, board[m][n].color) + ","
             }
         }
     }
     //console.log(info);
     return JSON.stringify(info);
 }
-function translate(type,color){
-    c=0
-    if (color=="Black"){
-        c=10
+function translate(type, color) {
+    c = 0
+    if (color == "Black") {
+        c = 10
     }
     switch (type) {
         case "pawn":
-            return 6+c
+            return 6 + c
         case "rook":
-            return 1+c
+            return 1 + c
         case "horse":
-            return 2+c
+            return 2 + c
         case "bishop":
-            return 3+c
+            return 3 + c
         case "king":
-            return 5+c
+            return 5 + c
         case "queen":
-            return 4+c
+            return 4 + c
     }
+}
+function clone(obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }
