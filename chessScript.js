@@ -1,10 +1,3 @@
-/*Ak chces vlozit vstup pridaj ho funkciou typu
-processClick(coordinates) alebo processButton()
-(change(x,y))
-vsetko by malo fungovat okrem rosady
-a nevie zistovat pat
-ak to budes chciet skusit na zapasoch bez rosad len hod na zaciatok checkmate() return false;
-*/
 //Chess pieces
 var wr = {
     bn: "&#9814;",
@@ -75,7 +68,7 @@ var bp = {
 var board = createArray(8, 8);
 var boardBackup = createArray(8, 8);
 initialiseBoard();
-var jsonBoard = JSON.stringify(board);
+var jsonBoard; //= JSON.stringify(board);
 var turn = 0;
 drawBoard(0);
 refresh();
@@ -86,6 +79,7 @@ turns = 1;
 console.log("Turn " + turns);
 var info;
 var additionalInfo;
+var caseh;
 /**
  * Gets input
  * selects piece
@@ -95,8 +89,8 @@ var additionalInfo;
  * @param {*} x
  * @param {*} y
  */
-var caseh;
-function change(x, y, z) {
+function change(x, y, z, p) {
+    //p = 0;
     //console.log("Change " + x + y+z);
     switch (turn) {
         case 0:
@@ -106,7 +100,7 @@ function change(x, y, z) {
             ys = sel[1];
             break;
         case 1:
-            caseh = movePiece(x, y, board, z);
+            caseh = movePiece(x, y, board, z, p);
             info += turn;
             return caseh;
         case 2:
@@ -116,7 +110,7 @@ function change(x, y, z) {
             ys = sel[1];
             break;
         case 3:
-            caseh = movePiece(x, y, board, z);
+            caseh = movePiece(x, y, board, z, p);
             info += turn;
             return caseh;
     }
@@ -336,20 +330,22 @@ function pawn(x, y, xs, ys, board, z) {
     }
     var freedom = [];
     //Move forward
-    if (board[xs + d][ys] == null) {
+    //console.log("" + (xs + d) + ys);
+    //console.log(0 <= (xs + d) && (xs + d) <= 7);
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys] == null) {
         freedom.push("" + (xs + d) + (ys));
-        if (board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
+        if (0 <= (xs + 2 * d) && (xs + 2 * d) <= 7 && board[xs + d][ys] == null && board[xs + d * 2][ys] == null && (xs == 3.5 - 2.5 * d)) {
             freedom.push("" + (xs + 2 * d) + (ys));
         }
     }
     //Take out Right
-    if (board[xs + d][ys + 1] != null) {
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys + 1] != null) {
         if (board[xs + d][ys + 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys + 1));
         }
     }
     //Take out left
-    if (board[xs + d][ys - 1] != null) {
+    if (0 <= (xs + d) && (xs + d) <= 7 && board[xs + d][ys - 1] != null) {
         if (board[xs + d][ys - 1].color != board[xs][ys].color) {
             freedom.push("" + (xs + d) + (ys - 1));
         }
@@ -571,6 +567,9 @@ function king(x, y, xs, ys, board, z) {
     //Kingside
     var ks = false;
     var qs = false;
+    if (z == 0) {
+        console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + ", 8: " + ((board[xs][6] == null)+0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
+    }
     if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][7] != null && board[xs][7].type == "rook" && board[xs][7].turns == null && board[xs][5] == null && board[xs][6] == null && !endangered(xs, 5, board, colork) && !endangered(xs, 6, board, colork)) {
         freedom.push("" + (xs) + (ys + 2));
         ks = true
@@ -667,11 +666,16 @@ function rule(x, y, xs, ys, board, z) {
  */
 function processButton() {
     var input = document.getElementById("input").value;
-    if (input.length !== 2) { return false; }
+    if (input.length !== 2 && input.length !== 3) { return false; }
     y = input[0].charCodeAt(0) - 97;
     x = input[1] - 1;
+    p = 0;
+    if (input.length == 3) {
+        p = input[2] - 1;
+        console.log(p);
+    }
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y, 0);
+    change(x, y, 0, p);
 }
 /**
  *Processes click input
@@ -680,28 +684,34 @@ function processButton() {
  */
 function processClick(coordinates) {
     //rozoberanie coordinates
-    xc = coordinates.slice(0, 1);
-    yc = coordinates.slice(1, 2);
-    change(parseInt(xc, 10), parseInt(yc, 10), 0);
+    xc = parseInt(coordinates.slice(0, 1), 10);
+    yc = parseInt(coordinates.slice(1, 2), 10);
+    change(xc, yc, 0, 0);
 }
 /**
  * Initialises board
  *
  */
 function initialiseBoard() {
-    board[0][0] = board[0][7] = wr;
-    board[7][0] = board[7][7] = br;
-    board[0][1] = board[0][6] = wh;
-    board[7][1] = board[7][6] = bh;
-    board[0][2] = board[0][5] = wb;
-    board[7][2] = board[7][5] = bb;
-    board[0][4] = wk;
-    board[0][3] = wq;
-    board[7][4] = bk;
-    board[7][3] = bq;
+    board[0][0] = clone(wr);
+    board[0][7] = clone(wr);
+    board[7][0] = clone(br);
+    board[7][7] = clone(br);
+    board[0][1] = clone(wh);
+    board[0][6] = clone(wh);
+    board[7][1] = clone(bh);
+    board[7][6] = clone(bh);
+    board[0][2] = clone(wb);
+    board[0][5] = clone(wb);
+    board[7][2] = clone(bb);
+    board[7][5] = clone(bb);
+    board[0][4] = clone(wk);
+    board[0][3] = clone(wq);
+    board[7][4] = clone(bk);
+    board[7][3] = clone(bq);
     for (i = 0; i < 8; i++) {
-        board[1][i] = wp;
-        board[6][i] = bp;
+        board[1][i] = clone(wp);
+        board[6][i] = clone(bp);
     }
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 8; j++) {
@@ -805,7 +815,7 @@ function selectPiece(x, y, board, z) {
  * @param {*} y
  * @param {*} board
  */
-function movePiece(x, y, board, z) {
+function movePiece(x, y, board, z, p) {
     var color = [];
     //console.log("Is the board fucked up?");
     //console.log(board[2][1] != null);
@@ -820,7 +830,7 @@ function movePiece(x, y, board, z) {
     if (rule(x, y, xs, ys, board, z)) {
         document.getElementById("myButton1").value = color[1] + " Select";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-        jsonBoard = JSON.stringify(board);
+        //jsonBoard = JSON.stringify(board);
         /*if (board[x][y] != null) {
             moved.x = x;
             moved.y = y;
@@ -838,6 +848,46 @@ function movePiece(x, y, board, z) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
+        //console.log(board[x][y].type == "pawn");
+        //console.log(""+x+y)
+        //console.log(x == 0 || x == 7);
+        //console.log(p);
+        if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
+            if (x == 0) {
+                switch (p) {
+                    case 0:
+                        board[x][y] = bq
+                        break;
+                    case 1:
+                        board[x][y] = br
+                        break;
+                    case 2:
+                        board[x][y] = bb
+                        break;
+                    case 3:
+                        board[x][y] = bh
+                        break;
+                }
+            }
+            if (x == 7) {
+                switch (p) {
+                    case 0:
+                        board[x][y] = wq
+                        break;
+                    case 1:
+                        board[x][y] = wr
+                        break;
+                    case 2:
+                        board[x][y] = wb
+                        break;
+                    case 3:
+                        board[x][y] = wh
+                        break;
+                }
+            }
+            console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
+        }
+
         if (check(board, color[0])) {
             if (turn == 1) {
                 turn = 0;
@@ -859,6 +909,7 @@ function movePiece(x, y, board, z) {
             turn = 2;
             if (z == 0) {
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                jsonBoard = boardJson(board);
             }
 
         }
@@ -867,6 +918,7 @@ function movePiece(x, y, board, z) {
             if (z == 0) {
                 turns += 1;
                 console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                jsonBoard = boardJson(board);
                 console.log("Turn " + turns)
             }
         }
@@ -1028,53 +1080,71 @@ function checkmate(board, color) {
     }
     return mate;
 }
-/*
-  function pieceMove(xc, yc) {
-    window.xs = xc;
-    window.ys = yc;
-    //zabezpečuje že vieš označiť a odoznačiť figúrku
-    if ([window.xs, window.ys] != [window.x, window.y]) {
-        //console.log('move from: ' + [window.x, window.y] + ' to: ' + [window.xs, window.ys])
-        //<--tuto tá funkcia čo pohybuje týpkov s parametrami x,y,xs,ys,board,
-        // zatiaľ tu je len dummy funkcia čo vypíše ako by vyzeral ten move do konzoly.
-        // TO-DO: ilegálne pohyby treba poriešiť ešte
-        // funguje tak že ak sa figúrka posunie na nejaké miesto odoznaci ju na tom mieste kde sa posunula
-        // potom neviem ci chceš aby ostala oznacena keď niekto skúsi ilegálny move alebo nie.. whatever
-    }
-}
- */
-/*function coordinates() {
-    var input = document.getElementById("input").value;
-    if (input.length !== 2) {
-        return false;
-    }
-    x = input[0].charCodeAt(0) - 97;
-    y = input[1] - 1;
-    if (x < 0 || y < 0 || x > 7 || y > 7) {
-        return false;
-    }
-    return "" + x + y;
-}*/
-/*
-pieceSelected = false;
-function pieceSelect(xc, yc) {
-    window.x = xc;
-    window.y = yc;
-*/
-function json() {
-    info += "Status: " + additionalInfo;
-    var infojs = JSON.stringify(info);
-}
-function readTextFile(file) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-        if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-                var allText = rawFile.responseText;
-                alert(allText);
+function boardJson(board) {
+    var info = "";
+    for (m = 0; m < 8; m++) {
+        for (n = 0; n < 8; n++) {
+            if (board[m][n] == null) {
+                info += "0,"
+            }
+            else {
+                info += translate(board[m][n].type, board[m][n].color) + ","
             }
         }
     }
-    rawFile.send(null);
+    //console.log(info);
+    return JSON.stringify(info);
+}
+function translate(type, color) {
+    c = 0
+    if (color == "Black") {
+        c = 10
+    }
+    switch (type) {
+        case "pawn":
+            return 6 + c
+        case "rook":
+            return 1 + c
+        case "horse":
+            return 2 + c
+        case "bishop":
+            return 3 + c
+        case "king":
+            return 5 + c
+        case "queen":
+            return 4 + c
+    }
+}
+function clone(obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }
