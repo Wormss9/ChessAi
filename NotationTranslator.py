@@ -571,3 +571,4 @@ for i in contents:
 tahy.close()
 file_moves.close()
 file_boards.close()
+file.close()
