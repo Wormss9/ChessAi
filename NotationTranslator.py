@@ -526,29 +526,31 @@ data = ''
 move = ''
 turn = 0
 moves = []
-
-file = open('MagnusCarlsen.pgn','r')
+magnus = 0
+number=input('File number: ')
+file = open('PNG\KB'+number+'.pgn','r')
 contents = file.read()
 
 # emptying the .csv file
 a = time.time()
-file_boards = open("training_data/train-boards.csv", "w+")
+file_boards = open("training_data/train-boards"+number+".csv", "w+")
 
-file_moves = open("training_data/train-moves.csv", "w+")
+file_moves = open("training_data/train-moves"+number+".csv", "w+")
 
-tahy = open('tahy.txt', 'w+')
+tahy = open('tahy'+number+'.txt', 'w+')
 
 
 bracketsOpen = False
 for i in contents:
     if i == '\n':
         if data != '':
-            if 'Carlsen, Magnus' in data:
+            '''if 'Carlsen, Magnus' in data:
                 if (data[1:6]) == 'White':
                     magnus = 1
                 else:
                     magnus = 0
-            elif '[' not in data:
+            el'''
+            if '[' not in data:
                 board = fillBoard()
                 turn = 0
                 for j in data.split():
