@@ -568,3 +568,6 @@ for i in contents:
     else:
         data+=i
 
+tahy.close()
+file_moves.close()
+file_boards.close()
