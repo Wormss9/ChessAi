@@ -2,6 +2,7 @@ import json
 import csv
 import re
 import numpy
+import time
 
 def sign(param):
     if param > 0:
@@ -42,12 +43,13 @@ def movePiece(args,turn,magnus):
             row = board[:,i].tolist()
             arr.extend(row)
         print(arr)
-        with open("training_data/train-boards.csv", "a") as fp:
-            wr = csv.writer(fp, dialect='excel')
-            wr.writerow(arr)
-        with open("training_data/train-moves.csv", "a") as fp:
-            wr = csv.writer(fp, dialect='excel')
-            wr.writerow(move)
+
+        wr = csv.writer(file_boards, dialect='excel')
+        wr.writerow(arr)
+
+        wr = csv.writer(file_moves, dialect='excel')
+        wr.writerow(move)
+
     board[args[0], args[1]] = 0
     board[args[2], args[3]] = args[4]
 
@@ -145,10 +147,9 @@ def queenMove(is_capture,from_coord_x,from_coord_y,to_coord_x,to_coord_y,is_chec
             except IndexError:
                 break
     try:
-        with open('tahy.txt', 'a') as the_file:
-            if calledby == 0:
-                the_file.write(
-                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        if calledby == 0:
+            tahy.write(
+                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
         return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
     except UnboundLocalError:
         return False
@@ -167,8 +168,7 @@ def kingMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
         figure_number = 15
     figs = list(zip(figs[0], figs[1]))
     for i in figs.copy():
-        with open('tahy.txt', 'a') as the_file:
-            the_file.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        tahy.write(backToLetter.get(i[0]) + str(i[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
         return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
 
 
@@ -220,11 +220,10 @@ def bishopMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
                 except IndexError:
                     break
     try:
-        with open('tahy.txt', 'a') as the_file:
-            if calledby == 0:
-                the_file.write(
-                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
-            return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
+        if calledby == 0:
+            tahy.write(
+                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
     except UnboundLocalError:
         return False
 
@@ -254,10 +253,9 @@ def knightMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, i
             else:
                 figure = candidate
             try:
-                with open('tahy.txt', 'a') as the_file:
-                    if calledby == 0:
-                        the_file.write(
-                            backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+                if calledby == 0:
+                    tahy.write(
+                        backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
                 return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
             except UnboundLocalError:
                 continue
@@ -309,10 +307,9 @@ def rookMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                 except IndexError:
                     break
     try:
-        with open('tahy.txt', 'a') as the_file:
-            if calledby == 0:
-                the_file.write(
-                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
+        if calledby == 0:
+            tahy.write(
+                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(to_coord_y) + '\n')
         return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
     except UnboundLocalError:
         return False
@@ -354,11 +351,10 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                         else:
                             figure = candidate
                         try:
-                            with open('tahy.txt', 'a') as the_file:
-                                if calledby == 0:
-                                    the_file.write(
-                                        backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
-                                            to_coord_y) + '\n')
+                            if calledby == 0:
+                                tahy.write(
+                                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
+                                        to_coord_y) + '\n')
                             return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
                         except UnboundLocalError:
                             continue
@@ -371,11 +367,10 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                         else:
                             figure = candidate
                         try:
-                            with open('tahy.txt', 'a') as the_file:
-                                if calledby == 0:
-                                    the_file.write(
-                                        backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
-                                            to_coord_y) + ' , ' + str(promotion + l) + '\n')
+                            if calledby == 0:
+                                tahy.write(
+                                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
+                                        to_coord_y) + ' , ' + str(promotion + l) + '\n')
                             return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, promotion + l
                         except UnboundLocalError:
                             continue
@@ -401,11 +396,10 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
 
                 if int(promotion) == 0:
                     try:
-                        with open('tahy.txt', 'a') as the_file:
-                            if calledby == 0:
-                                the_file.write(
-                                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
-                                        to_coord_y) + '\n')
+                        if calledby == 0:
+                            tahy.write(
+                                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
+                                    to_coord_y) + '\n')
                         if board[squareNumber.get(to_coord_x), to_coord_y - 1] == 0:
                             board[squareNumber.get(to_coord_x), to_coord_y - 1 - step] = 0
                         return figure[0], figure[1], squareNumber.get(to_coord_x), to_coord_y - 1, figure_number
@@ -413,11 +407,10 @@ def pawnMove(is_capture, from_coord_x, from_coord_y, to_coord_x, to_coord_y, is_
                         return False
                 else:
                     try:
-                        with open('tahy.txt', 'a') as the_file:
-                            if calledby == 0:
-                                the_file.write(
-                                    backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
-                                        to_coord_y) + ' , ' +str(promotion+l)+'\n')
+                        if calledby == 0:
+                            tahy.write(
+                                backToLetter.get(figure[0]) + str(figure[1] + 1) + ' , ' + to_coord_x + str(
+                                    to_coord_y) + ' , ' +str(promotion+l)+'\n')
                         return i[0], i[1], squareNumber.get(to_coord_x), to_coord_y - 1, promotion + l
                     except UnboundLocalError:
                         return False
@@ -429,15 +422,13 @@ def castling(which):
         side = 10
         row = 7
     if which == 'O-O':
-        with open('tahy.txt', 'a') as the_file:
-            the_file.write('e'+str(row+1)+' , g'+str(row+1)+'\n')
+        tahy.write('e'+str(row+1)+' , g'+str(row+1)+'\n')
         board[4,row] = 0
         board[6,row] = 5 + side
         board[7,row] = 0
         board[5,row] = 1+ side
     elif which == 'O-O-O':
-        with open('tahy.txt', 'a') as the_file:
-            the_file.write('e'+str(row+1)+' , c'+str(row+1)+'\n')
+        tahy.write('e'+str(row+1)+' , c'+str(row+1)+'\n')
         board[4,row] = 0
         board[2, row] = 5 + side
         board[0, row] = 0
@@ -540,14 +531,13 @@ file = open('MagnusCarlsen.pgn','r')
 contents = file.read()
 
 # emptying the .csv file
-with open("training_data/train-boards.csv", "w") as fp:
-    fp.close()
+a = time.time()
+file_boards = open("training_data/train-boards.csv", "w+")
 
-with open("training_data/train-moves.csv", "w") as fp:
-    fp.close()
+file_moves = open("training_data/train-moves.csv", "w+")
 
-with open('tahy.txt', 'w') as fp:
-    fp.close()
+tahy = open('tahy.txt', 'w+')
+
 
 bracketsOpen = False
 for i in contents:
@@ -568,14 +558,12 @@ for i in contents:
                     for move in moves:
                         turn+=1
                         print(turn)
-                        with open('tahy.txt', 'a') as the_file:
-                            the_file.write(str(turn) +'. move: ' + move + '\n')
+                        tahy.write(str(turn) +'. move: ' + move + '\n')
                         processMove(move,turn,magnus)
                         #if turn == 14:
                         #    exit()
                 moves.clear()
-                with open('tahy.txt', 'a') as the_file:
-                    the_file.write('...\n')
+                tahy.write('...\n')
         data = ''
     else:
         data+=i
