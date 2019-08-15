@@ -539,6 +539,7 @@ moves = []
 file = open('MagnusCarlsen.pgn','r')
 contents = file.read()
 
+'''
 # emptying the .csv file
 with open("training_data/train-boards.csv", "w") as fp:
     fp.close()
@@ -548,17 +549,13 @@ with open("training_data/train-moves.csv", "w") as fp:
 
 with open('tahy.txt', 'w') as fp:
     fp.close()
-
+'''
+magnus = 0
 bracketsOpen = False
 for i in contents:
     if i == '\n':
         if data != '':
-            if 'Carlsen, Magnus' in data:
-                if (data[1:6]) == 'White':
-                    magnus = 1
-                else:
-                    magnus = 0
-            elif '[' not in data:
+            if '[' not in data:
                 board = fillBoard()
                 turn = 0
                 for j in data.split():
