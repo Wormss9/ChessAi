@@ -1,8 +1,27 @@
 import csv
 import re
 import numpy
+from typing import List
 from pandas import *
 import time
+
+
+class Game:
+    magnus_white: bool
+    result: str
+    moves: List[str]
+
+    def set_magnus_white(self, magnus_white):
+        self.magnus_white = magnus_white
+
+    def set_result(self, result):
+        self.result = result
+
+    def set_moves(self, moves):
+        self.moves = moves
+
+    def __repr__(self):
+        return str(self.__dict__)
 
 
 def find_direction(white):
@@ -68,8 +87,7 @@ pieces = {
     'N': 2,
     'B': 3,
     'Q': 4,
-    'K': 5,
-    '': 6
+    'K': 5
 }
 
 board = create_board()
@@ -80,7 +98,7 @@ def translate_piece(value):
 
 
 def square_letter_to_num(letter):
-    return pieces.get(letter)
+    return square_number.get(letter.lower())
 
 
 def move_piece(src_x, src_y, x, y, value, direction, in_board):
@@ -152,9 +170,10 @@ def knight_move(src_x: int, src_y: int, x: int, y: int, capture: bool, white: bo
         if (src_x is not None and i != src_x) or (src_y is not None and j != src_y):
             piece_pos.remove([i, j])
     for i,j in piece_pos:
-        if (abs(x-i) == 1 and abs(y-j) == 2) or (abs(x-i) == 2 and abs(y-j) == 1)
+        if (abs(x-i) == 1 and abs(y-j) == 2) or (abs(x-i) == 2 and abs(y-j) == 1):
             result_list.append((i,j))
     return result_list
+
 
 def generic_all_directions_move(src_x: int, src_y: int, x: int, y: int, in_board: numpy.ndarray, value: int):
     piece_pos = numpy.argwhere(in_board == value).tolist()
@@ -181,14 +200,68 @@ def generic_all_directions_move(src_x: int, src_y: int, x: int, y: int, in_board
     return result_list
 
 
-board = numpy.zeros((8, 8))
-board[1,1] = 4
-board[4,4] = -7
-print(DataFrame(board))
+def parse_games_in_file(filepath: str):
+    game = Game()
+    games = []
+    file = open(filepath)
+    line = file.readline()
+    metadata = True
+    moves = []
+    while line:
+        line = line.replace('\n', '')
+        if '[' in line and ']' in line and metadata:
+            if 'Carlsen' in line:
+                if 'WHITE' in line.upper():
+                    game.set_magnus_white(True)
+                else:
+                    game.set_magnus_white(False)
+        if line == '':
+            metadata = not metadata
+            if metadata:
+                game.set_moves(moves.copy())
+                games.append(game)
+                moves.clear()
+                game = Game()
+        if not metadata:
+            split_line = line.split()
+            for i in split_line[:-1]:
+                if '.' in i:
+                    moves.append(i.split('.')[1])
+                else:
+                    moves.append(i)
+            if split_line != []:
+                game.set_result(split_line[-1])
+        line = file.readline()
+    return games
+
+def translate_move(move: str, white: bool):
+    piece_num = 6
+    if move[0].isupper():
+        piece_num = translate_piece(move[0])
+        move = move[1:]
+    piece_num = piece_num if white else piece_num*-1
+    src_x = None
+    src_y = None
+    x = square_letter_to_num(move[-2])
+    y = int(move[-1])-1
+    capture = False
+    move = move[:-2]
+    for i in move:
+        if i.isdigit():
+            src_y = int(i)-1
+        elif i == 'x':
+            capture = True
+        else:
+            src_x = square_letter_to_num(i)
+
+    return piece_num, src_x, src_y, x, y, capture
+games = parse_games_in_file('../Carlsen.pgn')
 
 
-board = queen_move(1,1,4,4,False,True,board)
-print(board)
-
-
-
+for i in games:
+    white = True
+    for j in i.moves:
+        print(j)
+        print(translate_move(j, white))
+        white = not white
+    exit()
