@@ -1,4 +1,5 @@
 import csv
+import itertools
 import re
 import numpy
 from typing import List
@@ -118,9 +119,18 @@ def pawn_move(src_x: int, src_y: int, x: int, y: int, capture: bool, white: bool
         if (src_x is not None and i != src_x) or (src_y is not None and j != src_y):
             pawn_pos.remove([i, j])
     for i, j in pawn_pos:
-        if capture and y == j + direction and x in [i + 1, i - 1] and in_board[x, y] != 0:
+        #needs a major rewrite, hotfixes piling up now
+        if capture and y == j + direction and x in [i + 1, i - 1] and \
+                ((in_board[x, y] != 0 and sign(in_board[x,y]) == direction*-1) or
+                 (in_board[x,y-direction] != 0 and sign(in_board[x,y-direction]) == direction*-1)):
+            if in_board[x, y - direction] != 0 and sign(in_board[x,y-direction]) == direction*-1:
+                result_list.append((x, y-direction, 0))
             result_list.append((i, j))
-        elif j == starting_end + direction and x - i == 0 and y - j == 2 * direction and in_board[x, y] == 0:
+        elif j == starting_end + direction and \
+                x - i == 0 and \
+                y - j == 2 * direction and \
+                in_board[x, y] == 0 and \
+                in_board[i,j+direction] == 0:
             result_list.append((i, j))
         elif x - i == 0 and y - j == direction and in_board[x, y] == 0:
             result_list.append((i, j))
@@ -180,11 +190,11 @@ def knight_move(src_x: int, src_y: int, x: int, y: int, capture: bool, white: bo
 def generic_all_directions_move(src_x: int, src_y: int, x: int, y: int, in_board: numpy.ndarray, value: int):
     piece_pos = numpy.argwhere(in_board == value).tolist()
     result_list = []
-    append = True
     for i, j in piece_pos.copy():
         if (src_x is not None and i != src_x) or (src_y is not None and j != src_y):
             piece_pos.remove([i, j])
     for i, j in piece_pos.copy():
+        append = True
         if i - x == 0 or j - y == 0 or abs(i - x) == abs(j - y):
             start_x = i
             start_y = j
@@ -192,9 +202,8 @@ def generic_all_directions_move(src_x: int, src_y: int, x: int, y: int, in_board
                 append = False
             direction_x = sign(x - i)
             direction_y = sign(y - j)
-            while abs(x - i) - 1 > 0 and (y - j) - 1 > 0:
-                i += direction_x
-                j += direction_y
+            for i,j in zip(range(i+direction_x,x,direction_x) if direction_x!=0 else itertools.repeat(i),
+                           range(j+direction_y,y,direction_y) if direction_y != 0 else itertools.repeat(j)):
                 if in_board[i, j] != 0:
                     append = False
             if append:
@@ -295,6 +304,9 @@ def translate_move(move_to_translate: str, white: bool, in_board: numpy.ndarray)
             pieces = king_move(src_x, src_y, x, y, capture, white, in_board)
         elif abs(piece_num) == 6:
             pieces = pawn_move(src_x, src_y, x, y, capture, white, in_board)
+            if len(pieces) == 2:
+                return [(pieces[0][0], pieces[0][1], x, y, piece_num, direction, in_board, turn_into),
+                        (pieces[1][0], pieces[1][1], x, y, 0, direction, in_board, turn_into)]
         else:
             raise Exception('Unknown piece type')
         if len(pieces) > 1 and move_to_translate:
