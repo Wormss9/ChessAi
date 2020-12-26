@@ -2,7 +2,7 @@ import csv
 import itertools
 import re
 import numpy
-from typing import List
+from typing import List, Optional
 import _thread
 from pandas import *
 import time
@@ -105,9 +105,10 @@ def square_letter_to_num(letter):
 
 def move_piece(src_x: int, src_y: int, x: int, y: int, value: int, direction: int, in_board: numpy.ndarray,
                turn_into: int = None):
-    in_board[src_x, src_y] = 0
-    in_board[x, y] = value if not turn_into else turn_into * direction
-    return in_board
+    move_board = in_board.copy()
+    move_board[src_x, src_y] = 0
+    move_board[x, y] = value if not turn_into else turn_into * direction
+    return move_board
 
 
 def pawn_move(src_x: int, src_y: int, x: int, y: int, capture: bool, white: bool, in_board: numpy.ndarray):
@@ -119,21 +120,17 @@ def pawn_move(src_x: int, src_y: int, x: int, y: int, capture: bool, white: bool
         if (src_x is not None and i != src_x) or (src_y is not None and j != src_y):
             pawn_pos.remove([i, j])
     for i, j in pawn_pos:
-        #needs a major rewrite, hotfixes piling up now
-        if capture and y == j + direction and x in [i + 1, i - 1] and \
-                ((in_board[x, y] != 0 and sign(in_board[x,y]) == direction*-1) or
-                 (in_board[x,y-direction] != 0 and sign(in_board[x,y-direction]) == direction*-1)):
-            if in_board[x, y - direction] != 0 and sign(in_board[x,y-direction]) == direction*-1:
-                result_list.append((x, y-direction, 0))
-            result_list.append((i, j))
-        elif j == starting_end + direction and \
-                x - i == 0 and \
-                y - j == 2 * direction and \
-                in_board[x, y] == 0 and \
-                in_board[i,j+direction] == 0:
-            result_list.append((i, j))
-        elif x - i == 0 and y - j == direction and in_board[x, y] == 0:
-            result_list.append((i, j))
+        if capture and j + direction == y and x in [i + 1, i - 1]:
+            if sign(in_board[x, y]) == -1 * direction:
+                result_list.append((i, j))
+            elif sign(in_board[x, y]) == 0 and sign(in_board[x, j]) == -1 * direction:
+                result_list.append((i, j))
+                result_list.append((x, j, 0))
+        elif x == i:
+            if y == j + direction:
+                result_list.append((i,j))
+            if y == j + direction*2 and j == starting_end+direction and in_board[i,j+direction] == 0:
+                result_list.append((i,j))
     return result_list.copy()
 
 
@@ -202,8 +199,8 @@ def generic_all_directions_move(src_x: int, src_y: int, x: int, y: int, in_board
                 append = False
             direction_x = sign(x - i)
             direction_y = sign(y - j)
-            for i,j in zip(range(i+direction_x,x,direction_x) if direction_x!=0 else itertools.repeat(i),
-                           range(j+direction_y,y,direction_y) if direction_y != 0 else itertools.repeat(j)):
+            for i, j in zip(range(i + direction_x, x, direction_x) if direction_x != 0 else itertools.repeat(i),
+                            range(j + direction_y, y, direction_y) if direction_y != 0 else itertools.repeat(j)):
                 if in_board[i, j] != 0:
                     append = False
             if append:
@@ -222,6 +219,10 @@ def castling(in_board: numpy.ndarray, white: bool, king_side: bool):
             return [(4, starting_end, 2, starting_end, 5 * direction, direction, in_board),
                     (0, starting_end, 3, starting_end, direction, direction, in_board)]
     return Exception()
+
+def check_check(board, white):
+    pass
+
 
 
 def parse_games_in_file(filepath: str):
@@ -306,12 +307,11 @@ def translate_move(move_to_translate: str, white: bool, in_board: numpy.ndarray)
             pieces = pawn_move(src_x, src_y, x, y, capture, white, in_board)
             if len(pieces) == 2:
                 return [(pieces[0][0], pieces[0][1], x, y, piece_num, direction, in_board, turn_into),
-                        (pieces[1][0], pieces[1][1], x, y, 0, direction, in_board, turn_into)]
+                        (pieces[1][0], pieces[1][1], pieces[1][0], pieces[1][1], 0, direction, in_board, turn_into)]
         else:
             raise Exception('Unknown piece type')
         if len(pieces) > 1 and move_to_translate:
             raise Exception('Ambiguous piece')
-        print(pieces)
         src_x = pieces[0][0]
         src_y = pieces[0][1]
         return [(src_x, src_y, x, y, piece_num, direction, in_board, turn_into)]
@@ -319,13 +319,16 @@ def translate_move(move_to_translate: str, white: bool, in_board: numpy.ndarray)
 
 def process_game(game_in):
     board = create_board()
-    print(board)
     white_in = True
     magnus_white = game_in.magnus_white
     for move in game_in.moves:
         print(move)
         for translation in translate_move(move, white_in, board):
-            move_piece(*translation)
+            turn_into = None
+            if len(translation) == 8:
+                turn_into = translation[7]
+            src_x, src_y, x, y, piece_num, direction, in_board = translation[:7]
+            board = move_piece(src_x, src_y, x, y, piece_num, direction, board, turn_into)
         print(board)
         white_in = not white_in
 
@@ -333,7 +336,6 @@ def process_game(game_in):
 
 
 games = parse_games_in_file('../Carlsen.pgn')
-
 for game in games:
     process_game(game)
 
