@@ -5,6 +5,7 @@ from keras.optimizers import *
 import matplotlib.pyplot as plt
 import csv
 import h5py
+import numy as np
 
 print('Reading Input:')
 boards = np.loadtxt("./training_data/train-boards.csv",delimiter=",")
@@ -36,4 +37,4 @@ model.add(Dense(output_shape, kernel_initializer='uniform', activation='relu'))
 model.compile(Adam(lr = 0.001), loss='mse', metrics=['acc'])
 # Fitting model
 history = model.fit(boards,moves, batch_size=int(input_shape), callbacks=[early_stopping], validation_split=0.2, epochs=100, verbose = 2)
-model.save('./model3.h5')
+model.save('.models/theModel.h5')
