@@ -5,7 +5,10 @@ from keras.optimizers import *
 import matplotlib.pyplot as plt
 import csv
 import h5py
-import numy as np
+import numpy as np
+import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 print('Reading Input:')
 boards = np.loadtxt("./training_data/train-boards.csv",delimiter=",")
