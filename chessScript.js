@@ -94,7 +94,8 @@ function change(x, y, z, p) {
     //console.log("Change " + x + y+z);
     switch (turn) {
         case 0:
-            //console.log("Case 0 selected"+x+y)
+            console.log("Case 0 selected"+x+y)
+            console.log(board)
             var sel = selectPiece(x, y, board, z);
             xs = sel[0];
             ys = sel[1];
@@ -112,6 +113,7 @@ function change(x, y, z, p) {
         case 3:
             caseh = movePiece(x, y, board, z, p);
             info += turn;
+            predict(board)
             return caseh;
     }
 }
@@ -677,6 +679,18 @@ function processButton() {
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
     change(x, y, 0, p);
 }
+
+async function predict(board) {
+    boardPredict = board.map(x => x.map( y => translateFigure(y)+Math.random()-0.5)).flat()
+    console.log({state:boardPredict.join(", ")})
+    console.log(boardPredict.join(", "))
+    var response
+    await $.post(url="http://127.0.0.1:8888/prediction", data=JSON.stringify({"state":boardPredict.reverse()}), function (data) {
+            console.log(data.AITurn)
+            change(data.AITurn[1], data.AITurn[0], 0, 1);
+            change(data.AITurn[3], data.AITurn[2], 0, 1);
+        });
+}
 /**
  *Processes click input
  *
@@ -1115,6 +1129,12 @@ function translate(type, color) {
             return 4 + c
     }
 }
+function translateFigure(piece){
+    if(piece == null){
+        return 0
+    } 
+    return translate(piece.type, piece.color)
+}
 function clone(obj) {
     var copy;
 
@@ -1148,3 +1168,10 @@ function clone(obj) {
 
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
+async function play(){
+    await predict(board)
+    play()
+
+}
+
+play()
