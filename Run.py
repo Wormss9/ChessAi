@@ -63,7 +63,8 @@ def transform2(board1,board2):
             tot=[[8,5]]
             fromt=[[8,3]]
     elif len(tot)==2:
-        print("Unknown: \n"+str(board1)+"\n"+str(board2))
+        with open('data/error.txt', 'a') as file:
+            file.write("Unknown: \n"+str(board1)+"\n"+str(board2))
         return 0
     save(board1,[fromt[0][0],fromt[0][1],tot[0][0],tot[0][1]])
 
@@ -79,16 +80,21 @@ def transformall(moves):
         else:
             transform2(transformtoarray(board1),transformtoarray(pgnConverter.getFullFen()))
         x=x+1
+        #print("Move: "+move)
         pgnConverter.move(move)
 
 def translate(path: str,white_won: bool):
+    global y
     if white_won:
         victory="1-0"
     else:
         victory="0-1"
     for filename in glob.glob(os.path.join(path, '*.pgn')):
      with open(os.path.join(os.getcwd(), filename), 'r') as file:
-        print(filename)
+        y+=1
+        gameno=1
+        global errors
+        print("File "+str(y)+"/1303 "+filename)
         line = file.readline()
         while line:
             line = line.replace('\n', '')
@@ -100,16 +106,28 @@ def translate(path: str,white_won: bool):
                 while line not in ('\n', '\r\n'):
                     moves+=line
                     line = file.readline()
-                #print("Game: ")
-                transformall(moves)
+                gameno+=1
+                #print("Game: "+moves)
+                try:
+                    transformall(moves)
+                except:
+                    errors.append("Error: "+filename+" game: "+str(gameno))
             line = file.readline()
 
 def save(board,move):
-    with open('testb.cvs', 'a') as file:
-        file.write(str(board))
-    with open('testm.cvs', 'a') as file:
-        file.write(str(move))
+    global x
+    x+=1
+    filenumber=str(int(round(x/3500000+0.5,0)))
+    with open('data/board'+filenumber+'.csv', 'a') as file:
+        file.write((str(board)[1:-1].replace("\n","").replace(".",".0,").replace(" ","")+"\n").replace(",\n","\n"))
+    with open('data/moves'+filenumber+'.csv', 'a') as file:
+        file.write((str(move)[1:-1]+"\n").replace(" ",""))
 
 start = time.time()
+errors=[]
+x=0
+y=0
 translate("PGN/",True)
 print("Translated in %.0f" % ((time.time()-start)/60)+" minutes and %.2f" % ((time.time()-start)%60)+" seconds")
+with open('errors.csv', 'a') as file:
+        file.write(str(errors))
