@@ -64,8 +64,8 @@ def transform2(board1,board2):
             tot=[[8,5]]
             fromt=[[8,3]]
     elif len(tot)==2:
-        with open('data/error.txt', 'a') as file:
-            file.write("Unknown: \n"+str(board1)+"\n"+str(board2))
+        #with open('data/error.txt', 'a') as file:
+        #    file.write("Unknown: \n"+str(board1)+"\n"+str(board2))
         return 0
     save(board1,[fromt[0][0],fromt[0][1],tot[0][0],tot[0][1]])
 
@@ -95,7 +95,6 @@ def translate(path: str,white_won: bool):
      with open(os.path.join(os.getcwd(), filename), 'r') as file:
         y+=1
         gameno=1
-        global errors
         duration=time.time()-opened
         print("File "+str(y)+"/1303 "+filename+". Last file in "+ str(math.floor(duration/60))+" minutes "+ str(round(duration%60,2)) +" seconds.")
         opened = time.time()
@@ -115,7 +114,7 @@ def translate(path: str,white_won: bool):
                 try:
                     transformall(moves)
                 except:
-                    errors.append("Error: "+filename+" game: "+str(gameno))
+                    pass
             line = file.readline()
 
 def save(board,move):
@@ -128,10 +127,7 @@ def save(board,move):
         file.write((str(move)[1:-1]+"\n").replace(" ",""))
 
 start = time.time()
-errors=[]
 x=0
 y=0
 translate("PGN/",True)
 print("Translated in %.0f" % ((time.time()-start)/60)+" minutes and %.2f" % ((time.time()-start)%60)+" seconds")
-with open('errors.csv', 'a') as file:
-        file.write(str(errors))
