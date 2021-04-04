@@ -4,6 +4,7 @@ import glob
 import os
 import re
 import numpy as np
+import math
 
 #translate() filters and cuts games for transformall(). transformall() gives transform2() the fenboard. transform2 generates moves and gives them with the boards to save().
 
@@ -89,12 +90,15 @@ def translate(path: str,white_won: bool):
         victory="1-0"
     else:
         victory="0-1"
+    opened = time.time()
     for filename in glob.glob(os.path.join(path, '*.pgn')):
      with open(os.path.join(os.getcwd(), filename), 'r') as file:
         y+=1
         gameno=1
         global errors
-        print("File "+str(y)+"/1303 "+filename)
+        duration=time.time()-opened
+        print("File "+str(y)+"/1303 "+filename+". Last file in "+ str(math.floor(duration/60))+" minutes "+ str(duration%60) +" seconds.")
+        opened = time.time()
         line = file.readline()
         while line:
             line = line.replace('\n', '')
