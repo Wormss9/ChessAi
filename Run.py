@@ -97,7 +97,7 @@ def translate(path: str,white_won: bool):
         gameno=1
         global errors
         duration=time.time()-opened
-        print("File "+str(y)+"/1303 "+filename+". Last file in "+ str(math.floor(duration/60))+" minutes "+ str(duration%60) +" seconds.")
+        print("File "+str(y)+"/1303 "+filename+". Last file in "+ str(math.floor(duration/60))+" minutes "+ str(round(duration%60,2)) +" seconds.")
         opened = time.time()
         line = file.readline()
         while line:
