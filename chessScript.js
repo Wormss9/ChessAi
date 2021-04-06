@@ -72,6 +72,8 @@ var jsonBoard; //= JSON.stringify(board);
 var turn = 0;
 drawBoard(0);
 refresh();
+var whiteAI = true
+var blackAi = false
 var gameover = false;
 var xs;
 var ys;
@@ -80,6 +82,7 @@ console.log("Turn " + turns);
 var info;
 var additionalInfo;
 var caseh;
+var movecomb = []
 /**
  * Gets input
  * selects piece
@@ -89,21 +92,49 @@ var caseh;
  * @param {*} x
  * @param {*} y
  */
-function change(x, y, z, p) {
+
+async function change(x, y, z, p) {
     //p = 0;
     //console.log("Change " + x + y+z);
     switch (turn) {
         case 0:
-            console.log("Case 0 selected"+x+y)
-            console.log(board)
-            var sel = selectPiece(x, y, board, z);
-            xs = sel[0];
-            ys = sel[1];
-            break;
+            if (whiteAI) {
+                //movecomb=await Promise.resolve(predict(board, true))
+                promise = new Promise(() => {
+                    setTimeout(() => {
+                        predict(board, true);
+                    }, 50000)
+                })
+                promise
+                    .then(data => {
+                        print("Kokotko: " + data);
+                        movecomb = data;
+                    })
+
+                console.log("MoveComb:" + movecomb)
+                console.log("Case 0 selected" + movecomb[0] + movecomb[1])
+                //console.log(board)
+                var sel = selectPiece(movecomb[0], movecomb[1], board, z);
+                xs = sel[0];
+                ys = sel[1];
+            } else {
+                console.log("Case 0 selected" + x + y)
+                //console.log(board)
+                var sel = selectPiece(x, y, board, z);
+                xs = sel[0];
+                ys = sel[1];
+                break;
+            }
         case 1:
-            caseh = movePiece(x, y, board, z, p);
-            info += turn;
-            return caseh;
+            if (whiteAI) {
+                caseh = movePiece(movecomb[2], movecomb[3], board, z, p);
+                info += turn;
+                return caseh;
+            } else {
+                caseh = movePiece(x, y, board, z, p);
+                info += turn;
+                return caseh;
+            }
         case 2:
             //console.log("Case 2 selected"+x+y)
             var sel = selectPiece(x, y, board, z);
@@ -113,7 +144,6 @@ function change(x, y, z, p) {
         case 3:
             caseh = movePiece(x, y, board, z, p);
             info += turn;
-            predict(board)
             return caseh;
     }
 }
@@ -570,7 +600,9 @@ function king(x, y, xs, ys, board, z) {
     var ks = false;
     var qs = false;
     if (z == 0) {
-        console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + ", 8: " + ((board[xs][6] == null)+0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
+        console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + 
+        ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + 
+        ", 8: " + ((board[xs][6] == null) + 0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
     }
     if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][7] != null && board[xs][7].type == "rook" && board[xs][7].turns == null && board[xs][5] == null && board[xs][6] == null && !endangered(xs, 5, board, colork) && !endangered(xs, 6, board, colork)) {
         freedom.push("" + (xs) + (ys + 2));
@@ -680,16 +712,32 @@ function processButton() {
     change(x, y, 0, p);
 }
 
-async function predict(board) {
-    boardPredict = board.map(x => x.map( y => translateFigure(y)+Math.random()-0.5)).flat()
-    console.log({state:boardPredict.join(", ")})
-    console.log(boardPredict.join(", "))
-    var response
-    await $.post(url="http://127.0.0.1:8888/prediction", data=JSON.stringify({"state":boardPredict.reverse()}), function (data) {
+async function predict(board, white) {
+    boardPredict = board.map(x => x.map(y => translateFigureReverse(y))).flat()
+    //+Math.random()-0.5
+    //console.log(boardPredict)
+    console.log({ state: boardPredict.join(", ") })
+    //console.log(boardPredict.join(", "))
+    if (white) {
+        answer = []
+        await $.post(url = "http://127.0.0.1:8888/whiteprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
+            console.log("Important: " + (9 - data.AITurn[0]) + "" + (data.AITurn[1]))
+            console.log("Important: " + (9 - data.AITurn[2]) + "" + (data.AITurn[3]))
+            answer.push(9 - data.AITurn[0])
+            answer.push(data.AITurn[1])
+            answer.push(9 - data.AITurn[2])
+            answer.push(data.AITurn[3])
+            return answer
+
+        });
+    }
+    /**else {
+        await $.post(url = "http://127.0.0.1:8888/blackprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
             console.log(data.AITurn)
             change(data.AITurn[1], data.AITurn[0], 0, 1);
             change(data.AITurn[3], data.AITurn[2], 0, 1);
         });
+    }**/
 }
 /**
  *Processes click input
@@ -700,6 +748,7 @@ function processClick(coordinates) {
     //rozoberanie coordinates
     xc = parseInt(coordinates.slice(0, 1), 10);
     yc = parseInt(coordinates.slice(1, 2), 10);
+    console.log("Important" + xc + yc)
     change(xc, yc, 0, 0);
 }
 /**
@@ -1129,12 +1178,25 @@ function translate(type, color) {
             return 4 + c
     }
 }
-function translateFigure(piece){
-    if(piece == null){
+function translateFigure(piece) {
+    if (piece == null) {
         return 0
-    } 
+    }
+
     return translate(piece.type, piece.color)
 }
+
+function translateFigureReverse(piece) {
+    if (piece == null) {
+        return 0
+    }
+    pcolor = "White"
+    if (piece.color == "White") {
+        pcolor = "Black"
+    }
+    return translate(piece.type, pcolor)
+}
+
 function clone(obj) {
     var copy;
 
@@ -1168,10 +1230,3 @@ function clone(obj) {
 
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
-async function play(){
-    await predict(board)
-    play()
-
-}
-
-play()
