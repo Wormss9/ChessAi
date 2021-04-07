@@ -1,4 +1,4 @@
-//Chess pieces
+//#region Chess pieces
 var wr = {
     bn: "&#9814;",
     color: "White",
@@ -65,6 +65,11 @@ var bp = {
     type: "pawn",
     turn: null
 }
+//#endregion
+
+//#region Set variables and start game
+whiteAI = true
+blackAI = true
 var board = createArray(8, 8);
 var boardBackup = createArray(8, 8);
 initialiseBoard();
@@ -72,8 +77,6 @@ var jsonBoard; //= JSON.stringify(board);
 var turn = 0;
 drawBoard(0);
 refresh();
-var whiteAI = true
-var blackAi = false
 var gameover = false;
 var xs;
 var ys;
@@ -82,167 +85,12 @@ console.log("Turn " + turns);
 var info;
 var additionalInfo;
 var caseh;
-var movecomb = []
-/**
- * Gets input
- * selects piece
- * moves piece (if possible)
- * knows whos move it curently is
- *
- * @param {*} x
- * @param {*} y
- */
+if (whiteAI) {
+    changeWhite(0, 0)
+}
+//#endregion
 
-async function change(x, y, z, p) {
-    //p = 0;
-    //console.log("Change " + x + y+z);
-    switch (turn) {
-        case 0:
-            if (whiteAI) {
-                //movecomb=await Promise.resolve(predict(board, true))
-                promise = new Promise(() => {
-                    setTimeout(() => {
-                        predict(board, true);
-                    }, 50000)
-                })
-                promise
-                    .then(data => {
-                        print("Kokotko: " + data);
-                        movecomb = data;
-                    })
-
-                console.log("MoveComb:" + movecomb)
-                console.log("Case 0 selected" + movecomb[0] + movecomb[1])
-                //console.log(board)
-                var sel = selectPiece(movecomb[0], movecomb[1], board, z);
-                xs = sel[0];
-                ys = sel[1];
-            } else {
-                console.log("Case 0 selected" + x + y)
-                //console.log(board)
-                var sel = selectPiece(x, y, board, z);
-                xs = sel[0];
-                ys = sel[1];
-                break;
-            }
-        case 1:
-            if (whiteAI) {
-                caseh = movePiece(movecomb[2], movecomb[3], board, z, p);
-                info += turn;
-                return caseh;
-            } else {
-                caseh = movePiece(x, y, board, z, p);
-                info += turn;
-                return caseh;
-            }
-        case 2:
-            //console.log("Case 2 selected"+x+y)
-            var sel = selectPiece(x, y, board, z);
-            xs = sel[0];
-            ys = sel[1];
-            break;
-        case 3:
-            caseh = movePiece(x, y, board, z, p);
-            info += turn;
-            return caseh;
-    }
-}
-/**
- *  Array creator
- *
- * @param {*} dimensions of a square array
- * @returns a 2 dimensional array
- */
-function createArray(length) {
-    var arr = new Array(length || 0),
-        i = length;
-    if (arguments.length > 1) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
-    }
-    return arr;
-}
-/**
- *  Refreshes the <table> acording to the board[][]
- *
- */
-function refresh() {
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            if (board[i][j] != null) {
-                document.getElementById("" + i + j).innerHTML = board[i][j].bn;
-            }
-            else document.getElementById("" + i + j).innerHTML = null;
-        }
-    }
-}
-/**
- *  Compare freedom to selected move
- *
- * @param {*} freedom
- * @param {*} x
- * @param {*} y
- * @returns
- */
-function movable(freedom, x, y, z) {
-    i = 0;
-    //var log = "Available: ";
-    while (i < freedom.length) {
-        var a = "" + freedom[i];
-        //log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
-        i++;
-    }
-    //log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
-    if (!z) {
-        //console.log(log);
-    }
-    if (freedom.indexOf("" + x + y) > -1) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-/**
- * Checks whether you are in check or not
- *
- * @param {*} board
- * @param {*} color
- * @returns
- */
-function check(board, color) {
-    var kx = -1;
-    var ky;
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
-                kx = i;
-                ky = j;
-                break;
-            }
-        }
-        if (kx != -1) {
-            break;
-        }
-    }
-    //console.log("King is:" + kx + ky)
-    return endangered(kx, ky, board, color);
-}
-function endangered(kx, ky, board, color) {
-    for (k = 0; k < 8; k++) {
-        //console.log("Endangered "+k)
-        for (l = 0; l < 8; l++) {
-            //console.log("Endangered "+k+l)
-            if (board[k][l] != null && board[k][l].color != color && rule(kx, ky, k, l, board, 1)) {
-                //console.log("Endamgered by" + k + l);
-                //console.log("Endamgered by" + board[k][l].color);
-                //console.log("Endamgered by" + color);
-                return true;
-            }
-        }
-    }
-    return false;
-}
+//#region Movements
 /**
  *  Checks vertical/horizontal movability
  *  used by rook and queen
@@ -600,9 +448,7 @@ function king(x, y, xs, ys, board, z) {
     var ks = false;
     var qs = false;
     if (z == 0) {
-        console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + 
-        ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + 
-        ", 8: " + ((board[xs][6] == null) + 0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
+        //console.log("1: " + ((z == 0) + 0) + ", 2: " + ((board[xs][ys].turns == null) + 0) + ", 3: " + ((!endangered(xs, ys, board, colork)) + 0) + ", 4: " + ((board[xs][7] != null) + 0) + ", 5: " + ((board[xs][7].type == "rook") + 0) + ", 6: " + ((board[xs][7].turns == null) + 0) + ", 7: " + ((board[xs][5] == null) + 0) + ", 8: " + ((board[xs][6] == null) + 0) + ", 9: " + ((!endangered(xs, 5, board, colork)) + 0) + ", 10: " + ((!endangered(xs, 6, board, colork)) + 0))
     }
     if (z == 0 && board[xs][ys].turns == null && !endangered(xs, ys, board, colork) && board[xs][7] != null && board[xs][7].type == "rook" && board[xs][7].turns == null && board[xs][5] == null && board[xs][6] == null && !endangered(xs, 5, board, colork) && !endangered(xs, 6, board, colork)) {
         freedom.push("" + (xs) + (ys + 2));
@@ -659,6 +505,212 @@ function queen(x, y, xs, ys, board, z) {
     }
     return movable(diaMove(xs, ys, board).concat(verMove(xs, ys, board)), x, y, z);
 }
+//#endregion
+
+//#region Process move
+async function changeWhite() {
+    console.log(board)
+    boardPredict = board.map(x => x.map(y => (translateFigureReverse(y)+(Math.random()-0.5)/2))).flat()
+    //+Math.random()-0.5
+    //console.log(boardPredict)
+    console.log(JSON.stringify({ "state": boardPredict }))
+    //console.log(boardPredict.join(", "))
+    moved = false
+    while (turn==0) {
+        await $.post(url = "http://127.0.0.1:8888/whiteprediction", data = JSON.stringify({ "state": boardPredict.reverse()}), function (data) {
+            //console.log("Data: "+data.AITurn)
+            console.log("From: " +data.AITurn[0] + "" + data.AITurn[1])
+            console.log("To: " + data.AITurn[2] + "" + data.AITurn[3])
+            moved = false
+            //console.log("White beg:" +turn)
+            var sel = selectPiece(8 - data.AITurn[0], data.AITurn[1], board, 0);
+            xs = sel[0];
+            ys = sel[1];
+            if(turn==1)
+            return movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
+
+        })
+    };
+    if(blackAI){
+        changeBlack()
+    }else{
+        return true
+    }
+}
+async function changeBlack() {
+    console.log(board)
+    boardPredict = board.map(x => x.map(y => translateFigureReverse(y))).flat()
+    //+Math.random()-0.5
+    //console.log(boardPredict)
+    console.log(JSON.stringify({ "state": boardPredict }))
+    //console.log(boardPredict.join(", "))
+    moved = false
+    while (turn==0) {
+        await $.post(url = "http://127.0.0.1:8888/blackprediction", data = JSON.stringify({ "state": boardPredict.reverse()}), function (data) {
+            //console.log("Data: "+data.AITurn)
+            //console.log("Important: " + (8 - data.AITurn[0]) + "" + (data.AITurn[1]))
+            //console.log("Important: " + (8 - data.AITurn[2]) + "" + (data.AITurn[3]))
+            moved = false
+            //console.log("Black beg:" +turn)
+            var sel = selectPiece(8 - data.AITurn[0], data.AITurn[1], board, 0);
+            xs = sel[0];
+            ys = sel[1];
+            if(turn==1)
+            return movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
+
+        })
+    };
+    if(whiteAI){
+        changeWhite()
+    }else{
+        return true
+    }
+}
+/**
+ *  Processes button input
+ *
+ * @returns changes board
+ */
+ function processButton() {
+    var input = document.getElementById("input").value;
+    if (input.length !== 2 && input.length !== 3) { return false; }
+    y = input[0].charCodeAt(0) - 97;
+    x = input[1] - 1;
+    p = 0;
+    if (input.length == 3) {
+        p = input[2] - 1;
+        console.log(p);
+    }
+    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    change(x, y, 0, p);
+}
+/**
+ *Processes click input
+ *
+ * @param {*} coordinates
+ */
+function processClick(coordinates) {
+    //rozoberanie coordinates
+    xc = parseInt(coordinates.slice(0, 1), 10);
+    yc = parseInt(coordinates.slice(1, 2), 10);
+    change(xc, yc, 0, 0);
+}
+//#endregion
+
+//#region Movability
+
+/**
+ * Gets input
+ * selects piece
+ * moves piece (if possible)
+ * knows who's move it curently is
+ *
+ * @param {*} x
+ * @param {*} y
+ */
+ function change(x, y, z, p) {
+    //p = 0;
+    //console.log("Change " + x + y+z);
+    switch (turn) {
+        case 0:
+            //console.log("Case 0 selected"+x+y)
+            var sel = selectPiece(x, y, board, z);
+            xs = sel[0];
+            ys = sel[1];
+            break;
+        case 1:
+            caseh = movePiece(x, y, board, z, p);
+            info += turn;
+            if (blackAI) {
+                return changeBlack()
+            }
+            return caseh;
+        case 2:
+            //console.log("Case 2 selected"+x+y)
+            var sel = selectPiece(x, y, board, z);
+            xs = sel[0];
+            ys = sel[1];
+            break;
+        case 3:
+            caseh = movePiece(x, y, board, z, p);
+            info += turn;
+            if (whiteAI) {
+                return changeWhite()
+            }
+            return caseh;
+    }
+}
+
+/**
+ *  Compare freedom to selected move
+ *
+ * @param {*} freedom
+ * @param {*} x
+ * @param {*} y
+ * @returns
+ */
+function movable(freedom, x, y, z) {
+    i = 0;
+    //var log = "Available: ";
+    while (i < freedom.length) {
+        var a = "" + freedom[i];
+        //log = "" + log + String.fromCharCode((a % 10) + 97) + (Math.floor(a / 10) + 1) + ", ";
+        i++;
+    }
+    //log = log + "\n Selected: " + String.fromCharCode(y + 97) + (x + 1);
+    if (!z) {
+        //console.log(log);
+    }
+    if (freedom.indexOf("" + x + y) > -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/**
+ * Checks whether you are in check or not
+ *
+ * @param {*} board
+ * @param {*} color
+ * @returns
+ */
+function check(board, color) {
+    var kx = -1;
+    var ky;
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
+                kx = i;
+                ky = j;
+                break;
+            }
+        }
+        if (kx != -1) {
+            break;
+        }
+    }
+    //console.log("King is:" + kx + ky)
+    return endangered(kx, ky, board, color);
+}
+
+function endangered(kx, ky, board, color) {
+    for (k = 0; k < 8; k++) {
+        //console.log("Endangered "+k)
+        for (l = 0; l < 8; l++) {
+            //console.log("Endangered "+k+l)
+            if (board[k][l] != null && board[k][l].color != color && rule(kx, ky, k, l, board, 1)) {
+                //console.log("Endamgered by" + k + l);
+                //console.log("Endamgered by" + board[k][l].color);
+                //console.log("Endamgered by" + color);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 /**
  * Checks movability of selected piece
  * Adds very modularity, much readable, not spagetti
@@ -693,134 +745,7 @@ function rule(x, y, xs, ys, board, z) {
     }
     document.getElementById("error").innerHTML = "Unknown Piece";
 }
-/**
- *  Processes button input
- *
- * @returns changes board
- */
-function processButton() {
-    var input = document.getElementById("input").value;
-    if (input.length !== 2 && input.length !== 3) { return false; }
-    y = input[0].charCodeAt(0) - 97;
-    x = input[1] - 1;
-    p = 0;
-    if (input.length == 3) {
-        p = input[2] - 1;
-        console.log(p);
-    }
-    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y, 0, p);
-}
 
-async function predict(board, white) {
-    boardPredict = board.map(x => x.map(y => translateFigureReverse(y))).flat()
-    //+Math.random()-0.5
-    //console.log(boardPredict)
-    console.log({ state: boardPredict.join(", ") })
-    //console.log(boardPredict.join(", "))
-    if (white) {
-        answer = []
-        await $.post(url = "http://127.0.0.1:8888/whiteprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
-            console.log("Important: " + (9 - data.AITurn[0]) + "" + (data.AITurn[1]))
-            console.log("Important: " + (9 - data.AITurn[2]) + "" + (data.AITurn[3]))
-            answer.push(9 - data.AITurn[0])
-            answer.push(data.AITurn[1])
-            answer.push(9 - data.AITurn[2])
-            answer.push(data.AITurn[3])
-            return answer
-
-        });
-    }
-    /**else {
-        await $.post(url = "http://127.0.0.1:8888/blackprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
-            console.log(data.AITurn)
-            change(data.AITurn[1], data.AITurn[0], 0, 1);
-            change(data.AITurn[3], data.AITurn[2], 0, 1);
-        });
-    }**/
-}
-/**
- *Processes click input
- *
- * @param {*} coordinates
- */
-function processClick(coordinates) {
-    //rozoberanie coordinates
-    xc = parseInt(coordinates.slice(0, 1), 10);
-    yc = parseInt(coordinates.slice(1, 2), 10);
-    console.log("Important" + xc + yc)
-    change(xc, yc, 0, 0);
-}
-/**
- * Initialises board
- *
- */
-function initialiseBoard() {
-    board[0][0] = clone(wr);
-    board[0][7] = clone(wr);
-    board[7][0] = clone(br);
-    board[7][7] = clone(br);
-    board[0][1] = clone(wh);
-    board[0][6] = clone(wh);
-    board[7][1] = clone(bh);
-    board[7][6] = clone(bh);
-    board[0][2] = clone(wb);
-    board[0][5] = clone(wb);
-    board[7][2] = clone(bb);
-    board[7][5] = clone(bb);
-    board[0][4] = clone(wk);
-    board[0][3] = clone(wq);
-    board[7][4] = clone(bk);
-    board[7][3] = clone(bq);
-    for (i = 0; i < 8; i++) {
-        board[1][i] = clone(wp);
-        board[6][i] = clone(bp);
-    }
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 8; j++) {
-            board[i + 2][j] = null;
-        }
-    }
-}
-/**
- * Draws HTML board
- *
- */
-function drawBoard(turn) {
-    var boardtodraw = "";
-    for (var i = 0; i < 9; i++) {
-        boardtodraw += "<tr>";
-        for (var j = 0; j < 9; j++) {
-            if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
-                boardtodraw += "<td style='background-color:grey' class='sachovnica'>";
-            }
-            else {
-                boardtodraw += "<td class='sachovnica'>";
-            }
-            if (turn == 0) {
-                boardtodraw += "<p id=" + (8 - i) + (j - 1) + " onclick='processClick(this.id)'></td>";
-            }
-            else {
-                boardtodraw += "<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>";
-            }
-        }
-    }
-    boardtodraw += "</tr>";
-
-    document.getElementById("table").innerHTML = boardtodraw;
-    if (turn == 0) {
-        for (var i = 0; i < 8; i++) {
-            document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
-            document.getElementById(i + "-1").innerHTML = i + 1;
-        }
-    }
-    else {
-        for (var i = 0; i < 8; i++) {
-            document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
-            document.getElementById(i + "-1").innerHTML = i + 1;
-        }
-    }
-}
 /**
  *  Selects and saves piece
  *  (if selectable)
@@ -831,8 +756,10 @@ function drawBoard(turn) {
  */
 function selectPiece(x, y, board, z) {
     //console.log("Piece selected"+x+y)
+    console.log("Selected: " + x + "" + y)
     if (gameover) {
         document.getElementById("error").innerHTML = "Game over";
+        console.log(board);
         initialiseBoard();
         turn = 0;
         gameover = false;
@@ -915,6 +842,7 @@ function movePiece(x, y, board, z, p) {
         //console.log(""+x+y)
         //console.log(x == 0 || x == 7);
         //console.log(p);
+        //#region Transform to queen
         if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
             if (x == 0) {
                 switch (p) {
@@ -950,6 +878,7 @@ function movePiece(x, y, board, z, p) {
             }
             console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
         }
+        //#endregion
 
         if (check(board, color[0])) {
             if (turn == 1) {
@@ -1143,58 +1072,24 @@ function checkmate(board, color) {
     }
     return mate;
 }
-function boardJson(board) {
-    var info = "";
-    for (m = 0; m < 8; m++) {
-        for (n = 0; n < 8; n++) {
-            if (board[m][n] == null) {
-                info += "0,"
-            }
-            else {
-                info += translate(board[m][n].type, board[m][n].color) + ","
-            }
-        }
-    }
-    //console.log(info);
-    return JSON.stringify(info);
-}
-function translate(type, color) {
-    c = 0
-    if (color == "Black") {
-        c = 10
-    }
-    switch (type) {
-        case "pawn":
-            return 6 + c
-        case "rook":
-            return 1 + c
-        case "horse":
-            return 2 + c
-        case "bishop":
-            return 3 + c
-        case "king":
-            return 5 + c
-        case "queen":
-            return 4 + c
-    }
-}
-function translateFigure(piece) {
-    if (piece == null) {
-        return 0
-    }
 
-    return translate(piece.type, piece.color)
-}
+//#endregion
 
-function translateFigureReverse(piece) {
-    if (piece == null) {
-        return 0
+//#region Additional functions
+/**
+ *  Array creator
+ *
+ * @param {*} dimensions of a square array
+ * @returns a 2 dimensional array
+ */
+ function createArray(length) {
+    var arr = new Array(length || 0),
+        i = length;
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
     }
-    pcolor = "White"
-    if (piece.color == "White") {
-        pcolor = "Black"
-    }
-    return translate(piece.type, pcolor)
+    return arr;
 }
 
 function clone(obj) {
@@ -1230,3 +1125,152 @@ function clone(obj) {
 
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
+
+function boardJson(board) {
+    var info = "";
+    for (m = 0; m < 8; m++) {
+        for (n = 0; n < 8; n++) {
+            if (board[m][n] == null) {
+                info += "0,"
+            }
+            else {
+                info += translate(board[m][n].type, board[m][n].color) + ","
+            }
+        }
+    }
+    //console.log(info);
+    return JSON.stringify(info);
+}
+
+function translate(type, color) {
+    c = 0
+    if (color == "Black") {
+        c = 10
+    }
+    switch (type) {
+        case "pawn":
+            return 6 + c
+        case "rook":
+            return 1 + c
+        case "horse":
+            return 2 + c
+        case "bishop":
+            return 3 + c
+        case "king":
+            return 5 + c
+        case "queen":
+            return 4 + c
+    }
+}
+
+function translateFigureReverse(figure) {
+    if (figure == null) {
+        return 0
+    }
+    c = 10
+    if (figure.color == "White") {
+        c = 0
+    }
+    switch (figure.type) {
+        case "pawn":
+            return 6 + c
+        case "rook":
+            return 1 + c
+        case "horse":
+            return 2 + c
+        case "bishop":
+            return 3 + c
+        case "king":
+            return 4 + c
+        case "queen":
+            return 5 + c
+    }
+}
+
+/**
+ * Draws HTML board
+ *
+ */
+ function drawBoard(turn) {
+    var boardtodraw = "";
+    for (var i = 0; i < 9; i++) {
+        boardtodraw += "<tr>";
+        for (var j = 0; j < 9; j++) {
+            if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
+                boardtodraw += "<td style='background-color:grey' class='sachovnica'>";
+            }
+            else {
+                boardtodraw += "<td class='sachovnica'>";
+            }
+            if (turn == 0) {
+                boardtodraw += "<p id=" + (8 - i) + (j - 1) + " onclick='processClick(this.id)'></td>";
+            }
+            else {
+                boardtodraw += "<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>";
+            }
+        }
+    }
+    boardtodraw += "</tr>";
+
+    document.getElementById("table").innerHTML = boardtodraw;
+    if (turn == 0) {
+        for (var i = 0; i < 8; i++) {
+            document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
+            document.getElementById(i + "-1").innerHTML = i + 1;
+        }
+    }
+    else {
+        for (var i = 0; i < 8; i++) {
+            document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
+            document.getElementById(i + "-1").innerHTML = i + 1;
+        }
+    }
+}
+
+/**
+ *  Refreshes the <table> acording to the board[][]
+ *
+ */
+ function refresh() {
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            if (board[i][j] != null) {
+                document.getElementById("" + i + j).innerHTML = board[i][j].bn;
+            }
+            else document.getElementById("" + i + j).innerHTML = null;
+        }
+    }
+}
+
+/**
+ * Initialises board
+ *
+ */
+ function initialiseBoard() {
+    board[0][0] = clone(wr);
+    board[0][7] = clone(wr);
+    board[7][0] = clone(br);
+    board[7][7] = clone(br);
+    board[0][1] = clone(wh);
+    board[0][6] = clone(wh);
+    board[7][1] = clone(bh);
+    board[7][6] = clone(bh);
+    board[0][2] = clone(wb);
+    board[0][5] = clone(wb);
+    board[7][2] = clone(bb);
+    board[7][5] = clone(bb);
+    board[0][4] = clone(wk);
+    board[0][3] = clone(wq);
+    board[7][4] = clone(bk);
+    board[7][3] = clone(bq);
+    for (i = 0; i < 8; i++) {
+        board[1][i] = clone(wp);
+        board[6][i] = clone(bp);
+    }
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 8; j++) {
+            board[i + 2][j] = null;
+        }
+    }
+}
+//#endregion
