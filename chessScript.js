@@ -69,7 +69,7 @@ var bp = {
 
 //#region Set variables and start game
 whiteAI = true
-blackAI = true
+blackAI = false
 var board = createArray(8, 8);
 var boardBackup = createArray(8, 8);
 initialiseBoard();
@@ -509,69 +509,97 @@ function queen(x, y, xs, ys, board, z) {
 
 //#region Process move
 async function changeWhite() {
-    console.log(board)
-    boardPredict = board.map(x => x.map(y => (translateFigureReverse(y)+(Math.random()-0.5)/2))).flat()
+    //console.log(board)
+  
     //+Math.random()-0.5
     //console.log(boardPredict)
-    console.log(JSON.stringify({ "state": boardPredict }))
+    //console.log(JSON.stringify({ "state": boardPredict }))
     //console.log(boardPredict.join(", "))
     moved = false
-    while (turn==0) {
-        await $.post(url = "http://127.0.0.1:8888/whiteprediction", data = JSON.stringify({ "state": boardPredict.reverse()}), function (data) {
+    while (turn == 0) {
+        boardPredict = board.map(x => x.map(y => {
+            translating = translateFigureReverse(y)
+            translating += (Math.random() - 0.5)
+            return translating
+        })).flat()
+        await $.post(url = "http://127.0.0.1:8888/whiteprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
             //console.log("Data: "+data.AITurn)
-            console.log("From: " +data.AITurn[0] + "" + data.AITurn[1])
-            console.log("To: " + data.AITurn[2] + "" + data.AITurn[3])
+            console.log("White")
+            console.log("From: " + (9 - data.AITurn[0]) + "" + String.fromCharCode(97 + data.AITurn[1]))
+            console.log("To: " + (9 - data.AITurn[2]) + "" + String.fromCharCode(97 + data.AITurn[3]))
             moved = false
             //console.log("White beg:" +turn)
             var sel = selectPiece(8 - data.AITurn[0], data.AITurn[1], board, 0);
+            //console.log("Case: " + turn);
             xs = sel[0];
             ys = sel[1];
-            if(turn==1)
-            return movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
-
+            if (turn == 1) {
+                caseh = movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
+            }
         })
     };
-    if(blackAI){
+    /**case 0:
+        //console.log("Case 0 selected"+x+y)
+        var sel = selectPiece(x, y, board, z);
+        xs = sel[0];
+        ys = sel[1];
+        break;
+    case 1:
+        caseh = movePiece(x, y, board, z, p);
+        info += turn;
+        if (blackAI) {
+            return changeBlack()
+        }
+        return caseh;
+        **/
+    /**if(blackAI){
         changeBlack()
     }else{
         return true
-    }
+    }**/
 }
 async function changeBlack() {
-    console.log(board)
-    boardPredict = board.map(x => x.map(y => translateFigureReverse(y))).flat()
+    //console.log(board)
+  
     //+Math.random()-0.5
     //console.log(boardPredict)
-    console.log(JSON.stringify({ "state": boardPredict }))
+    //console.log(JSON.stringify({ "state": boardPredict }))
     //console.log(boardPredict.join(", "))
     moved = false
-    while (turn==0) {
-        await $.post(url = "http://127.0.0.1:8888/blackprediction", data = JSON.stringify({ "state": boardPredict.reverse()}), function (data) {
+    while (turn == 2) {
+        boardPredict = board.map(x => x.map(y => {
+            translating = translateFigureReverse(y)
+            translating += (Math.random() - 0.5)
+            return translating
+        })).flat()
+        await $.post(url = "http://127.0.0.1:8888/blackprediction", data = JSON.stringify({ "state": boardPredict.reverse() }), function (data) {
             //console.log("Data: "+data.AITurn)
-            //console.log("Important: " + (8 - data.AITurn[0]) + "" + (data.AITurn[1]))
-            //console.log("Important: " + (8 - data.AITurn[2]) + "" + (data.AITurn[3]))
+            console.log("Black")
+            console.log("From: " + (9 - data.AITurn[0]) + "" + String.fromCharCode(97 + data.AITurn[1]))
+            console.log("To: " + (9 - data.AITurn[2]) + "" + String.fromCharCode(97 + data.AITurn[3]))
             moved = false
-            //console.log("Black beg:" +turn)
+            //console.log("White beg:" +turn)
             var sel = selectPiece(8 - data.AITurn[0], data.AITurn[1], board, 0);
+            //console.log("Case: " + turn);
             xs = sel[0];
             ys = sel[1];
-            if(turn==1)
-            return movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
-
+            if (turn == 3) {
+                caseh = movePiece(8 - data.AITurn[2], data.AITurn[3], board, 0, 0);
+            }
         })
     };
-    if(whiteAI){
+    /**if(whiteAI){
         changeWhite()
     }else{
         return true
-    }
+    }**/
 }
 /**
  *  Processes button input
  *
  * @returns changes board
  */
- function processButton() {
+function processButton() {
     var input = document.getElementById("input").value;
     if (input.length !== 2 && input.length !== 3) { return false; }
     y = input[0].charCodeAt(0) - 97;
@@ -608,7 +636,7 @@ function processClick(coordinates) {
  * @param {*} x
  * @param {*} y
  */
- function change(x, y, z, p) {
+function change(x, y, z, p) {
     //p = 0;
     //console.log("Change " + x + y+z);
     switch (turn) {
@@ -756,7 +784,7 @@ function rule(x, y, xs, ys, board, z) {
  */
 function selectPiece(x, y, board, z) {
     //console.log("Piece selected"+x+y)
-    console.log("Selected: " + x + "" + y)
+    //console.log("Selected: " + x + "" + y)
     if (gameover) {
         document.getElementById("error").innerHTML = "Game over";
         console.log(board);
@@ -1082,7 +1110,7 @@ function checkmate(board, color) {
  * @param {*} dimensions of a square array
  * @returns a 2 dimensional array
  */
- function createArray(length) {
+function createArray(length) {
     var arr = new Array(length || 0),
         i = length;
     if (arguments.length > 1) {
@@ -1191,7 +1219,7 @@ function translateFigureReverse(figure) {
  * Draws HTML board
  *
  */
- function drawBoard(turn) {
+function drawBoard(turn) {
     var boardtodraw = "";
     for (var i = 0; i < 9; i++) {
         boardtodraw += "<tr>";
@@ -1231,7 +1259,7 @@ function translateFigureReverse(figure) {
  *  Refreshes the <table> acording to the board[][]
  *
  */
- function refresh() {
+function refresh() {
     for (var i = 0; i < 8; i++) {
         for (var j = 0; j < 8; j++) {
             if (board[i][j] != null) {
@@ -1246,7 +1274,7 @@ function translateFigureReverse(figure) {
  * Initialises board
  *
  */
- function initialiseBoard() {
+function initialiseBoard() {
     board[0][0] = clone(wr);
     board[0][7] = clone(wr);
     board[7][0] = clone(br);
