@@ -115,19 +115,9 @@ function endangered(kx, ky, board, color) {
 }
 
 function movePiece(x, y, board, z, p) {
-    var color = [];
-    //console.log("Is the board fucked up?");
-    //console.log(board[2][1] );
-    if (turn == 1) {
-        color[0] = "White";
-        color[1] = "Black";
-    }
-    else {
-        color[0] = "Black";
-        color[1] = "White";
-    }
+    const color = turn == 1;
     if (rule(x, y, xs, ys, board, z, turns)) {
-        document.querySelector('#button').value = color[1] + " Select";
+        document.querySelector('#button').value = `${pieceColor[!color]} select`;
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         //jsonBoard = JSON.stringify(board);
         /*if (board[x][y] ) {
@@ -185,11 +175,11 @@ function movePiece(x, y, board, z, p) {
                         break;
                 }
             }
-            console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
+            //console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
         }
         //#endregion
 
-        if (check(board, color[0])) {
+        if (check(board, color)) {
             if (turn == 1) {
                 turn = 0;
             }
@@ -209,7 +199,7 @@ function movePiece(x, y, board, z, p) {
             //console.log("Case changed "+x+y)
             turn = 2;
             if (z == 0) {
-                console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                //console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
                 jsonBoard = boardJson(board);
             }
 
@@ -224,7 +214,7 @@ function movePiece(x, y, board, z, p) {
             }
         }
         //console.log("Z: " + z)
-        var checkStatus = check(board, color[1]);
+        var checkStatus = check(board, !color);
         //Board saving
         if (z == 0) {
             info += "Board: \n";
@@ -237,7 +227,7 @@ function movePiece(x, y, board, z, p) {
         }
         //Checkmate
         if (z == 0 && checkStatus) {
-            if (checkmate(board, color[1])) {
+            if (checkmate(board, !color)) {
                 document.getElementById("error").innerHTML = "Checkmate";
                 additionalInfo = "Checkmate";
                 gameover = true;
@@ -270,7 +260,7 @@ function movePiece(x, y, board, z, p) {
         }
         //Stalemate
         if (z == 0 && !checkStatus) {
-            if (false && checkmate(board, color[1])) {
+            if (false && checkmate(board, !color)) {
                 document.getElementById("error").innerHTML = "Stalemate";
                 additionalInfo = "Stalemate";
                 gameover = true;
@@ -314,10 +304,9 @@ function movePiece(x, y, board, z, p) {
             turn = 2;
         }
         additionalInfo = "Cant go there";
-        document.querySelector('#button').value = color[0] + " Select";
+        document.querySelector('#button').value = `${pieceColor[color]} select`;
         document.getElementById("error").innerHTML = "Cant go there";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-        //console.log("MovePiece true? ")
         return true
     }
     document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
@@ -381,13 +370,13 @@ function selectPiece(x, y, board, z) {
         gameover = false;
         drawBoard(0);
         refresh(board);
-        document.querySelector('#button').value = "White Select";
+        document.querySelector('#button').value = "White select";
         return false;
     }
     const color = turn == 0
     if (board[x][y]  && board[x][y].color == color) {
         document.getElementById("error").innerHTML = "&#8203";
-        document.querySelector('#button').value = pieceColor[color] + " move";
+        document.querySelector('#button').value = `${pieceColor[color]} move`;
         xs = x;
         ys = y;
         if (turn == 0) {
