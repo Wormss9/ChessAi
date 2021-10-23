@@ -7,8 +7,8 @@ window.processClick=processClick
 
 //#region Variables
 var gameover = false;
-//whiteAI = true
-//blackAI = false
+let whiteAI = false
+let blackAI = false
 var jsonBoard; //= JSON.stringify(board);
 var turn = 0;
 var xs;
@@ -45,8 +45,8 @@ function processButton() {
 
 function processClick(coordinates) {
     //rozoberanie coordinates
-    xc = parseInt(coordinates.slice(0, 1), 10);
-    yc = parseInt(coordinates.slice(1, 2), 10);
+    let xc = parseInt(coordinates.slice(0, 1), 10);
+    let yc = parseInt(coordinates.slice(1, 2), 10);
     change(xc, yc, 0, 0);
 }
 
@@ -269,7 +269,7 @@ function movePiece(x, y, board, z, p) {
                 }
                 //board = boardBackup;
                 //drawBoard(turn)
-                refresh();
+                refresh(board);
             }
 
         }
@@ -301,12 +301,12 @@ function movePiece(x, y, board, z, p) {
                 }
                 //board = boardBackup;
                 //drawBoard(turn)
-                refresh();
+                refresh(board);
             }
 
         }
         //drawBoard(turn)
-        refresh();
+        refresh(board);
 
         return true;
     }
@@ -391,7 +391,7 @@ function selectPiece(x, y, board, z) {
         turn = 0;
         gameover = false;
         drawBoard(0);
-        refresh();
+        refresh(board);
         document.querySelector('#button').value = "White Select";
         return false;
     }
