@@ -1,4 +1,4 @@
-import {pieces} from './pieces.js'
+import { pieces } from './pieces.js'
 
 function createArray(length) {
     var arr = new Array(length || 0),
@@ -9,21 +9,14 @@ function createArray(length) {
     }
     return arr;
 }
-
 function clone(obj) {
     var copy;
-
-    // Handle the 3 simple types, and null or undefined
     if (null == obj || "object" != typeof obj) return obj;
-
-    // Handle Date
     if (obj instanceof Date) {
         copy = new Date();
         copy.setTime(obj.getTime());
         return copy;
     }
-
-    // Handle Array
     if (obj instanceof Array) {
         copy = [];
         for (let i = 0, len = obj.length; i < len; i++) {
@@ -31,8 +24,6 @@ function clone(obj) {
         }
         return copy;
     }
-
-    // Handle Object
     if (obj instanceof Object) {
         copy = {};
         for (let attr in obj) {
@@ -40,31 +31,20 @@ function clone(obj) {
         }
         return copy;
     }
-
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 function boardJson(board) {
-    var info = "";
-    for (let m = 0; m < 8; m++) {
-        for (let n = 0; n < 8; n++) {
-            if (board[m][n] == null) {
-                info += "0,"
-            }
-            else {
-                info += translate(board[m][n].type, board[m][n].color) + ","
-            }
-        }
-    }
-    //console.log(info);
-    return JSON.stringify(info);
+    return board.flat().flat().map(field => {
+        return (`${translate(field)},`)
+    })
 }
-
-function translate(type, color) {
+function translate(field) {
+    if (!field) { return 0 }
     let c = 0
-    if (color == "Black") {
+    if (field.color == "Black") {
         c = 10
     }
-    switch (type) {
+    switch (field.type) {
         case "pawn":
             return 6 + c
         case "rook":
@@ -77,80 +57,43 @@ function translate(type, color) {
             return 5 + c
         case "queen":
             return 4 + c
+        default:
+            throw `${field.type} is not a valid piece`
     }
 }
-
-function translateFigureReverse(figure) {
-    if (figure == null) {
-        return 0
-    }
-    c = 10
-    if (figure.color == "White") {
-        c = 0
-    }
-    switch (figure.type) {
-        case "pawn":
-            return 6 + c
-        case "rook":
-            return 1 + c
-        case "horse":
-            return 2 + c
-        case "bishop":
-            return 3 + c
-        case "king":
-            return 4 + c
-        case "queen":
-            return 5 + c
-    }
-}
-
-function drawBoard(turn) {
-    var boardtodraw = "";
+function drawBoard() {
+    let board = "";
     for (let i = 0; i < 9; i++) {
-        boardtodraw += "<tr>";
+        board += "<tr>";
         for (let j = 0; j < 9; j++) {
             if ((i + j + 1) % 2 == 0 && i > 0 && j > 0) {
-                boardtodraw += "<td style='background-color:grey' class='sachovnica'>";
+                board += "<td style='background-color:grey' class='square'>";
             }
             else {
-                boardtodraw += "<td class='sachovnica'>";
+                board += "<td class='square'>";
             }
-            if (turn == 0) {
-                boardtodraw += "<p id=" + (8 - i) + (j - 1) + " onclick='processClick(this.id)'></td>";
-            }
-            else {
-                boardtodraw += "<p id=" + (i - 1) + (j - 1) + " onclick='processClick(this.id)'></td>";
-            }
+            board += `<p id=${8 - i}${j - 1} onclick='processClick(this.id)'></td>`;
         }
     }
-    boardtodraw += "</tr>";
+    board += "</tr>";
 
-    document.getElementById("table").innerHTML = boardtodraw;
-    if (turn == 0) {
-        for (let i = 0; i < 8; i++) {
-            document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
-            document.getElementById(i + "-1").innerHTML = i + 1;
-        }
-    }
-    else {
-        for (let i = 0; i < 8; i++) {
-            document.getElementById("-1" + i).innerHTML = String.fromCharCode(97 + i);
-            document.getElementById(i + "-1").innerHTML = i + 1;
-        }
+    document.getElementById("table").innerHTML = board;
+    for (let i = 0; i < 8; i++) {
+        document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
+        document.getElementById(i + "-1").innerHTML = i + 1;
     }
 }
-
 function refresh(board) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] != null) {
-                document.getElementById("" + i + j).innerHTML = board[i][j].bn;
+            const element = document.getElementById("" + i + j)
+            if (board[i][j]) {
+                element.innerHTML = board[i][j].bn;
             }
-            else document.getElementById("" + i + j).innerHTML = null;
+            else element.innerHTML = null;
         }
     }
 }
-
 function initialiseBoard(board) {
     board[0][0] = clone(pieces.wr);
     board[0][7] = clone(pieces.wr);
@@ -179,4 +122,4 @@ function initialiseBoard(board) {
     }
 }
 
-export{createArray,initialiseBoard,drawBoard,refresh,boardJson}
+export { createArray, initialiseBoard, drawBoard, refresh, boardJson }
