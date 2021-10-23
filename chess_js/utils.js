@@ -34,32 +34,17 @@ function clone(obj) {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 function boardJson(board) {
-    return board.flat().flat().map(field => {
-        return (`${translate(field)},`)
+    return board.flat().flat().map(square => {
+        return (`${translate(square)},`)
     })
 }
-function translate(field) {
-    if (!field) { return 0 }
+function translate(square) {
+    if (!square) { return 0 }
     let c = 0
-    if (field.color == "Black") {
+    if (!square.color) {
         c = 10
     }
-    switch (field.type) {
-        case "pawn":
-            return 6 + c
-        case "rook":
-            return 1 + c
-        case "horse":
-            return 2 + c
-        case "bishop":
-            return 3 + c
-        case "king":
-            return 5 + c
-        case "queen":
-            return 4 + c
-        default:
-            throw `${field.type} is not a valid piece`
-    }
+    return c + square.type
 }
 function drawBoard() {
     let board = "";
