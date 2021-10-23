@@ -43,7 +43,7 @@ function verMove(x, y, board) {
     return freedom;
 }
 function diaMove(x, y, board) {
-    var freedom = [];
+    let freedom = [];
     // RightDown
     for (let i = 1; i < 8 - x && i < 8 - y; i++) {
         if (!board[x + i][y + i]) {
@@ -87,14 +87,13 @@ function diaMove(x, y, board) {
     return freedom;
 }
 function pawn(x, y, xInit, yInit, board, z, turns) {
-    var d = 1;
+    let d = 1;
     if (!board[xInit][yInit].color) {
         d = -1;
     }
-    var pas = false;
-    var freedom = [];
+    let freedom = [];
+    let pas = false;
     // Move forward
-
     if (0 <= (xInit + d) && (xInit + d) <= 7 && !board[xInit + d][yInit]) {
         freedom.push("" + (xInit + d) + (yInit));
         if (0 <= (xInit + 2 * d) && (xInit + 2 * d) <= 7 && !board[xInit + d][yInit] && !board[xInit + d * 2][yInit] && (xInit == 3.5 - 2.5 * d)) {
@@ -165,7 +164,7 @@ function rook(x, y, xInit, yInit, board, z, turns) {
     }
 }
 function horse(x, y, xInit, yInit, board, z) {
-    var freedom = [];
+    let freedom = [];
     if (xInit + 2 <= 7 && yInit + 1 <= 7) {
         if (!board[xInit + 2][yInit + 1] || board[xInit + 2][yInit + 1] && board[xInit + 2][yInit + 1].color != board[xInit][yInit].color) {
             freedom.push("" + (xInit + 2) + (yInit + 1));
@@ -218,7 +217,8 @@ function bishop(x, y, xInit, yInit, board, z) {
     return movable(diaMove(xInit, yInit, board), x, y);
 }
 function king(x, y, xInit, yInit, board, z, turns) {
-    var freedom = [];
+    let freedom = [];
+    let color = true
     // RightDown
     if ((xInit + 1) < 8 && (yInit + 1) < 8) {
         if ((!board[xInit + 1][yInit + 1]) || (board[xInit + 1][yInit + 1]) && board[xInit + 1][yInit + 1].color != board[xInit][yInit].color) {
@@ -271,17 +271,17 @@ function king(x, y, xInit, yInit, board, z, turns) {
         return freedom;
     }
     if (z == 0) {
-        colork = xInit == 0
+        color = xInit == 0
     }
     // Kingside
-    var ks = false;
-    var qs = false;
-    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, colork) && board[xInit][7] && board[xInit][7].type == "rook" && !board[xInit][7].turns && !board[xInit][5] && !board[xInit][6] && !endangered(xInit, 5, board, colork) && !endangered(xInit, 6, board, colork)) {
+    let ks = false;
+    let qs = false;
+    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][7] && board[xInit][7].type == "rook" && !board[xInit][7].turns && !board[xInit][5] && !board[xInit][6] && !endangered(xInit, 5, board, color) && !endangered(xInit, 6, board, color)) {
         freedom.push("" + (xInit) + (yInit + 2));
         ks = true
     }
     // Queenside
-    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, colork) && board[xInit][0] && board[xInit][0].type == "rook" && !board[xInit][0].turns && !board[xInit][2] && !board[xInit][1] && !board[xInit][3] && !endangered(xInit, 2, board, colork) && !endangered(xInit, 3, board, colork)) {
+    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][0] && board[xInit][0].type == "rook" && !board[xInit][0].turns && !board[xInit][2] && !board[xInit][1] && !board[xInit][3] && !endangered(xInit, 2, board, color) && !endangered(xInit, 3, board, color)) {
         freedom.push("" + (xInit) + (yInit - 2));
         qs = true
     }
@@ -318,10 +318,6 @@ function queen(x, y, xInit, yInit, board, z) {
     return movable(diaMove(xInit, yInit, board).concat(verMove(xInit, yInit, board)), x, y);
 }
 function rule(x, y, xs, ys, board, z, turns) {
-    x = parseInt(x);
-    y = parseInt(y);
-    xs = parseInt(xs);
-    ys = parseInt(ys);
     switch (board[xs][ys].type) {
         case 6:
             return pawn(x, y, xs, ys, board, z, turns);
@@ -335,15 +331,11 @@ function rule(x, y, xs, ys, board, z, turns) {
             return queen(x, y, xs, ys, board, z);
         case 5:
             return king(x, y, xs, ys, board, z, turns);
+        default:
+            document.getElementById("error").innerHTML = "Unknown Piece";
     }
-    document.getElementById("error").innerHTML = "Unknown Piece";
 }
 function movable(freedom, x, y) {
-    if (freedom.indexOf("" + x + y) > -1) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return freedom.indexOf("" + x + y) > -1
 }
 export { rule }

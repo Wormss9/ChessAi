@@ -2,39 +2,20 @@ import { createArray, initialiseBoard, drawBoard, refresh, boardJson } from './u
 import { pieces, pieceColor } from './pieces.js'
 import { rule } from './movement.js'
 
-window.processButton = () => {
-    const input = document.getElementById("input").value;
-    if (input.length !== 2 && input.length !== 3) { return false; }
-    let y = input[0].charCodeAt(0) - 97;
-    let x = input[1] - 1;
-    let p = 0;
-    if (input.length == 3) {
-        p = input[2] - 1;
-        console.log(p);
-    }
-    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y, 0, p);
-}
-window.processClick = (coordinates) => {
-    let xc = parseInt(coordinates.slice(0, 1), 10);
-    let yc = parseInt(coordinates.slice(1, 2), 10);
-    change(xc, yc, 0, 1);
-}
-
 //#region Variables
-var gameover = false;
+let gameover = false;
 let whiteAI = false
 let blackAI = false
-var jsonBoard; //= JSON.stringify(board);
-var turn = 0;
-var xs;
-var ys;
-var info;
-var additionalInfo;
-var caseh;
-var board = createArray(8, 8);
-var boardBackup = createArray(8, 8);
-var turns = 1;
+let jsonBoard; //= JSON.stringify(board);
+let turn = 0;
+let xs;
+let ys;
+let info;
+let additionalInfo;
+let caseh;
+let board = createArray(8, 8);
+let boardBackup = createArray(8, 8);
+let turns = 1;
 //#endregion
 
 
@@ -56,7 +37,7 @@ function change(x, y, z, p) {
             ys = sel[1];
             break;
         case 1:
-            caseh = movePiece(x, y, board, z, p);
+            caseh = movePiece(x, y, board, z, p, turns);
             info += turn;
             if (blackAI) {
                 return changeBlack()
@@ -69,7 +50,7 @@ function change(x, y, z, p) {
             ys = sel[1];
             break;
         case 3:
-            caseh = movePiece(x, y, board, z, p);
+            caseh = movePiece(x, y, board, z, p, turns);
             info += turn;
             if (whiteAI) {
                 return changeWhite()
@@ -114,7 +95,7 @@ function endangered(kx, ky, board, color) {
     return false;
 }
 
-function movePiece(x, y, board, z, p) {
+function movePiece(x, y, board, z, p, turns) {
     const color = turn == 1;
     if (rule(x, y, xs, ys, board, z, turns)) {
         document.querySelector('#button').value = `${pieceColor[!color]} select`;
@@ -137,10 +118,6 @@ function movePiece(x, y, board, z, p) {
         }
         board[x][y] = board[xs][ys];
         board[xs][ys] = null;
-        //console.log(board[x][y].type == "pawn");
-        //console.log(""+x+y)
-        //console.log(x == 0 || x == 7);
-        //console.log(p);
         //#region Transform to queen
         if (board[x][y].type == "pawn" && (x == 0 || x == 7)) {
             if (x == 0) {
@@ -175,7 +152,6 @@ function movePiece(x, y, board, z, p) {
                         break;
                 }
             }
-            //console.log("" + (x + 1) + (y + 1) + " " + board[x][y].type)
         }
         //#endregion
 
@@ -199,7 +175,7 @@ function movePiece(x, y, board, z, p) {
             //console.log("Case changed "+x+y)
             turn = 2;
             if (z == 0) {
-                //console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                //console.log("" + (xs) + 1) + (ys) + 1) + " " + (x + 1) + (y + 1));
                 jsonBoard = boardJson(board);
             }
 
@@ -208,7 +184,7 @@ function movePiece(x, y, board, z, p) {
             turn = 0;
             if (z == 0) {
                 turns += 1;
-                console.log("" + (parseInt(xs) + 1) + (parseInt(ys) + 1) + " " + (x + 1) + (y + 1));
+                console.log("" + (xs + 1) + (ys + 1) + " " + (x + 1) + (y + 1));
                 jsonBoard = boardJson(board);
                 console.log("Turn " + turns)
             }
@@ -395,4 +371,23 @@ function selectPiece(x, y, board, z) {
         document.getElementById("error").innerHTML = "Not your piece!";
     }
     return ("" + xs + ys)
+}
+
+window.processButton = () => {
+    const input = document.getElementById("input").value;
+    if (input.length !== 2 && input.length !== 3) { return false; }
+    let y = input[0].charCodeAt(0) - 97;
+    let x = input[1] - 1;
+    let p = 0;
+    if (input.length == 3) {
+        p = input[2] - 1;
+        console.log(p);
+    }
+    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    change(parseInt(x), parseInt(y), 0, parseInt(p));
+}
+window.processClick = (coordinates) => {
+    let x = parseInt(coordinates.slice(0, 1), 10);
+    let y = parseInt(coordinates.slice(1, 2), 10);
+    change(x, y, 0, 1);
 }
