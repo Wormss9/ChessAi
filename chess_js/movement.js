@@ -25,7 +25,7 @@ function verMove(x, y, board) {
         if (!board[x - i][y]) {
             freedom.push("" + (x - i) + (y));
         } else {
-            if (board[x - i][x].color != board[x][y].color) {
+            if (board[x - i][y].color != board[x][y].color) {
                 freedom.push("" + (x - i) + (y));
             } else { break }
         }
