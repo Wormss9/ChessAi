@@ -1,9 +1,9 @@
-import {createArray,initialiseBoard,drawBoard,refresh,boardJson} from './utils.js'
-import {pieces} from './pieces.js'
-import {rule} from './movement.js'
+import { createArray, initialiseBoard, drawBoard, refresh, boardJson } from './utils.js'
+import { pieces, pieceColor } from './pieces.js'
+import { rule } from './movement.js'
 
-window.processButton=processButton
-window.processClick=processClick
+window.processButton = processButton
+window.processClick = processClick
 
 //#region Variables
 var gameover = false;
@@ -89,7 +89,7 @@ function check(board, color) {
     for (
         let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
+            if (board[i][j]  && board[i][j].type == "king" && board[i][j].color == color) {
                 kx = i;
                 ky = j;
                 break;
@@ -108,7 +108,7 @@ function endangered(kx, ky, board, color) {
         //console.log("Endangered "+k)
         for (let l = 0; l < 8; l++) {
             //console.log("Endangered "+k+l)
-            if (board[k][l] != null && board[k][l].color != color && rule(kx, ky, k, l, board, 1,turns)) {
+            if (board[k][l]  && board[k][l].color != color && rule(kx, ky, k, l, board, 1, turns)) {
                 //console.log("Endamgered by" + k + l);
                 //console.log("Endamgered by" + board[k][l].color);
                 //console.log("Endamgered by" + color);
@@ -122,7 +122,7 @@ function endangered(kx, ky, board, color) {
 function movePiece(x, y, board, z, p) {
     var color = [];
     //console.log("Is the board fucked up?");
-    //console.log(board[2][1] != null);
+    //console.log(board[2][1] );
     if (turn == 1) {
         color[0] = "White";
         color[1] = "Black";
@@ -131,11 +131,11 @@ function movePiece(x, y, board, z, p) {
         color[0] = "Black";
         color[1] = "White";
     }
-    if (rule(x, y, xs, ys, board, z,turns)) {
+    if (rule(x, y, xs, ys, board, z, turns)) {
         document.querySelector('#button').value = color[1] + " Select";
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         //jsonBoard = JSON.stringify(board);
-        /*if (board[x][y] != null) {
+        /*if (board[x][y] ) {
             moved.x = x;
             moved.y = y;
             moved.piece = board[x][y];
@@ -253,7 +253,7 @@ function movePiece(x, y, board, z, p) {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
                         if (board[i][j] != boardBackup[i][j]) {
-                            if (board[i][j] != null) {
+                            if (board[i][j] ) {
                                 tcolor = board[i][j].color;
                             }
                             board[i][j] = boardBackup[i][j];
@@ -275,7 +275,7 @@ function movePiece(x, y, board, z, p) {
         }
         //Stalemate
         if (z == 0 && !checkStatus) {
-            if (checkmate(board, color[1])) {
+            if (false && checkmate(board, color[1])) {
                 document.getElementById("error").innerHTML = "Stalemate";
                 additionalInfo = "Stalemate";
                 gameover = true;
@@ -285,7 +285,7 @@ function movePiece(x, y, board, z, p) {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
                         if (board[i][j] != boardBackup[i][j]) {
-                            if (board[i][j] != null) {
+                            if (board[i][j] ) {
                                 tcolor = board[i][j].color
                             }
                             board[i][j] = boardBackup[i][j];
@@ -335,7 +335,7 @@ function checkmate(board, color) {
     var ky;
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].type == "king" && board[i][j].color == color) {
+            if (board[i][j]  && board[i][j].type == "king" && board[i][j].color == color) {
                 kx = i;
                 ky = j;
                 break;
@@ -348,18 +348,13 @@ function checkmate(board, color) {
     //freedoms
     var pieces = [];
     var freedoms = [];
-    if (color == "White") {
-        color = "Black";
-    }
-    else {
-        color = "White";
-    }
+    color = !color
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] != null && board[i][j].color != color) {
-                if (rule(0, 0, i, j, board, 2,turns).length != 0) {
+            if (board[i][j]  && board[i][j].color != color) {
+                if (rule(0, 0, i, j, board, 2, turns).length != 0) {
                     pieces.push("" + i + j);
-                    freedoms.push(rule(0, 0, i, j, board, 2,turns));
+                    freedoms.push(rule(0, 0, i, j, board, 2, turns));
                 }
             }
         }
@@ -382,9 +377,8 @@ function checkmate(board, color) {
 }
 
 function selectPiece(x, y, board, z) {
-    //console.log("Piece selected"+x+y)
-    //console.log("Selected: " + x + "" + y)
     if (gameover) {
+        console.log(gameover)
         document.getElementById("error").innerHTML = "Game over";
         console.log(board);
         initialiseBoard();
@@ -395,16 +389,10 @@ function selectPiece(x, y, board, z) {
         document.querySelector('#button').value = "White Select";
         return false;
     }
-    var color;
-    if (turn == 0) {
-        color = "White";
-    }
-    else {
-        color = "Black";
-    }
-    if (board[x][y] != null && board[x][y].color == color) {
+    const color = turn == 0
+    if (board[x][y]  && board[x][y].color == color) {
         document.getElementById("error").innerHTML = "&#8203";
-        document.querySelector('#button').value = color + " Move";
+        document.querySelector('#button').value = pieceColor[color] + " move";
         xs = x;
         ys = y;
         if (turn == 0) {
@@ -420,7 +408,7 @@ function selectPiece(x, y, board, z) {
         //console.log("Case = 1 " + x + y);
     }
     else {
-        document.getElementById("error").innerHTML = "Not Your Piece";
+        document.getElementById("error").innerHTML = "Not your piece!";
     }
     return ("" + xs + ys)
 }
