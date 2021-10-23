@@ -18,7 +18,7 @@ window.processButton = () => {
 window.processClick = (coordinates) => {
     let xc = parseInt(coordinates.slice(0, 1), 10);
     let yc = parseInt(coordinates.slice(1, 2), 10);
-    change(xc, yc, 0, 0);
+    change(xc, yc, 0, 1);
 }
 
 //#region Variables
@@ -136,13 +136,13 @@ function movePiece(x, y, board, z, p) {
             moved.piece = board[x][y];
         }*/
         var moving = {
-            x: x,
-            y: y,
+            x,
+            y,
             piece: board[x][y],
         }
         var moved = {
-            xs: xs,
-            ys: ys,
+            xs,
+            ys,
             piece: board[xs][ys],
         }
         board[x][y] = board[xs][ys];
