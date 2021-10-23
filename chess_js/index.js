@@ -2,8 +2,24 @@ import { createArray, initialiseBoard, drawBoard, refresh, boardJson } from './u
 import { pieces, pieceColor } from './pieces.js'
 import { rule } from './movement.js'
 
-window.processButton = processButton
-window.processClick = processClick
+window.processButton = () => {
+    const input = document.getElementById("input").value;
+    if (input.length !== 2 && input.length !== 3) { return false; }
+    let y = input[0].charCodeAt(0) - 97;
+    let x = input[1] - 1;
+    let p = 0;
+    if (input.length == 3) {
+        p = input[2] - 1;
+        console.log(p);
+    }
+    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
+    change(x, y, 0, p);
+}
+window.processClick = (coordinates) => {
+    let xc = parseInt(coordinates.slice(0, 1), 10);
+    let yc = parseInt(coordinates.slice(1, 2), 10);
+    change(xc, yc, 0, 0);
+}
 
 //#region Variables
 var gameover = false;
@@ -28,27 +44,6 @@ initialiseBoard(board);
 drawBoard(0);
 refresh(board);
 //#endregion
-
-function processButton() {
-    const input = document.getElementById("input").value;
-    if (input.length !== 2 && input.length !== 3) { return false; }
-    let y = input[0].charCodeAt(0) - 97;
-    let x = input[1] - 1;
-    let p = 0;
-    if (input.length == 3) {
-        p = input[2] - 1;
-        console.log(p);
-    }
-    if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(x, y, 0, p);
-}
-
-function processClick(coordinates) {
-    //rozoberanie coordinates
-    let xc = parseInt(coordinates.slice(0, 1), 10);
-    let yc = parseInt(coordinates.slice(1, 2), 10);
-    change(xc, yc, 0, 0);
-}
 
 function change(x, y, z, p) {
     //p = 0;
