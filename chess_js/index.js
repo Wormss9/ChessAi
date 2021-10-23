@@ -8,8 +8,6 @@ let whiteAI = false
 let blackAI = false
 let jsonBoard; //= JSON.stringify(board);
 let turn = 0;
-let xs;
-let ys;
 let info;
 let additionalInfo;
 let caseh;
@@ -18,46 +16,54 @@ let boardBackup = createArray(8, 8);
 let turns = 1;
 //#endregion
 
+class Change {
+    constructor() {
+        let xs
+        let ys
+    }
+    change = (x, y, z, p) => {
+        let sel
+        //p = 0;
+        //console.log("Change " + x + y+z);
+        switch (turn) {
+            case 0:
+                //console.log("Case 0 selected"+x+y)
+                sel = selectPiece(x, y, board, z);
+                this.xs = sel[0];
+                this.ys = sel[1];
+                break;
+            case 1:
+                caseh = movePiece(x, y, this.xs, this.ys, board, z, p, turns);
+                info += turn;
+                if (blackAI) {
+                    return changeBlack();
+                }
+                return caseh;
+            case 2:
+                //console.log("Case 2 selected"+x+y)
+                sel = selectPiece(x, y, board, z);
+                this.xs = sel[0];
+                this.ys = sel[1];
+                break;
+            case 3:
+                caseh = movePiece(x, y, this.xs, this.ys, board, z, p, turns);
+                info += turn;
+                if (whiteAI) {
+                    return changeWhite();
+                }
+                return caseh;
+        }
+    }
+
+}
 
 
 //#region Initialization
 initialiseBoard(board);
 drawBoard(0);
 refresh(board);
+const change = new Change().change
 //#endregion
-
-function change(x, y, z, p) {
-    //p = 0;
-    //console.log("Change " + x + y+z);
-    switch (turn) {
-        case 0:
-            //console.log("Case 0 selected"+x+y)
-            var sel = selectPiece(x, y, board, z);
-            xs = sel[0];
-            ys = sel[1];
-            break;
-        case 1:
-            caseh = movePiece(x, y, board, z, p, turns);
-            info += turn;
-            if (blackAI) {
-                return changeBlack()
-            }
-            return caseh;
-        case 2:
-            //console.log("Case 2 selected"+x+y)
-            var sel = selectPiece(x, y, board, z);
-            xs = sel[0];
-            ys = sel[1];
-            break;
-        case 3:
-            caseh = movePiece(x, y, board, z, p, turns);
-            info += turn;
-            if (whiteAI) {
-                return changeWhite()
-            }
-            return caseh;
-    }
-}
 
 function check(board, color) {
     var kx = -1;
@@ -65,7 +71,7 @@ function check(board, color) {
     for (
         let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j]  && board[i][j].type == "king" && board[i][j].color == color) {
+            if (board[i][j] && board[i][j].type == "king" && board[i][j].color == color) {
                 kx = i;
                 ky = j;
                 break;
@@ -84,7 +90,7 @@ function endangered(kx, ky, board, color) {
         //console.log("Endangered "+k)
         for (let l = 0; l < 8; l++) {
             //console.log("Endangered "+k+l)
-            if (board[k][l]  && board[k][l].color != color && rule(kx, ky, k, l, board, 1, turns)) {
+            if (board[k][l] && board[k][l].color != color && rule(kx, ky, k, l, board, 1, turns)) {
                 //console.log("Endamgered by" + k + l);
                 //console.log("Endamgered by" + board[k][l].color);
                 //console.log("Endamgered by" + color);
@@ -95,7 +101,7 @@ function endangered(kx, ky, board, color) {
     return false;
 }
 
-function movePiece(x, y, board, z, p, turns) {
+function movePiece(x, y, xs, ys, board, z, p, turns) {
     const color = turn == 1;
     if (rule(x, y, xs, ys, board, z, turns)) {
         document.querySelector('#button').value = `${pieceColor[!color]} select`;
@@ -214,7 +220,7 @@ function movePiece(x, y, board, z, p, turns) {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
                         if (board[i][j] != boardBackup[i][j]) {
-                            if (board[i][j] ) {
+                            if (board[i][j]) {
                                 tcolor = board[i][j].color;
                             }
                             board[i][j] = boardBackup[i][j];
@@ -246,7 +252,7 @@ function movePiece(x, y, board, z, p, turns) {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
                         if (board[i][j] != boardBackup[i][j]) {
-                            if (board[i][j] ) {
+                            if (board[i][j]) {
                                 tcolor = board[i][j].color
                             }
                             board[i][j] = boardBackup[i][j];
@@ -295,7 +301,7 @@ function checkmate(board, color) {
     var ky;
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j]  && board[i][j].type == "king" && board[i][j].color == color) {
+            if (board[i][j] && board[i][j].type == "king" && board[i][j].color == color) {
                 kx = i;
                 ky = j;
                 break;
@@ -311,7 +317,7 @@ function checkmate(board, color) {
     color = !color
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j]  && board[i][j].color != color) {
+            if (board[i][j] && board[i][j].color != color) {
                 if (rule(0, 0, i, j, board, 2, turns).length != 0) {
                     pieces.push("" + i + j);
                     freedoms.push(rule(0, 0, i, j, board, 2, turns));
@@ -350,11 +356,9 @@ function selectPiece(x, y, board, z) {
         return false;
     }
     const color = turn == 0
-    if (board[x][y]  && board[x][y].color == color) {
+    if (board[x][y] && board[x][y].color == color) {
         document.getElementById("error").innerHTML = "&#8203";
         document.querySelector('#button').value = `${pieceColor[color]} move`;
-        xs = x;
-        ys = y;
         if (turn == 0) {
             turn = 1;
         }
@@ -369,8 +373,9 @@ function selectPiece(x, y, board, z) {
     }
     else {
         document.getElementById("error").innerHTML = "Not your piece!";
+        return false
     }
-    return ("" + xs + ys)
+    return ([x,y])
 }
 
 window.processButton = () => {
