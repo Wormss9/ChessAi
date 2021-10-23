@@ -1,42 +1,47 @@
 function verMove(x, y, board) {
     let freedom = [];
+    let direction
     // Right
     for (let i = 1; i < 8 - y; i++) {
+        direction = `${x}${y + i}`
         if (!board[x][y + i]) {
-            freedom.push("" + (x) + (y + i))
+            freedom.push(direction)
         } else {
             if (board[x][y + i].color != board[x][y].color) {
-                freedom.push("" + (x) + (y + i));
+                freedom.push(direction);
             } else { break }
         }
     }
     // Left
     for (let i = 1; i <= y; i++) {
+        direction = `${x}${y + i}`
         if (!board[x][y - i]) {
-            freedom.push("" + (x) + (y - i));
+            freedom.push(direction);
         } else {
             if (board[x][y - i].color != board[x][y].color) {
-                freedom.push("" + (x) + (y - i));
+                freedom.push(direction);
             } else { break }
         }
     }
     // Up
     for (let i = 1; i <= x; i++) {
+        direction = `${x - i}${y}`
         if (!board[x - i][y]) {
-            freedom.push("" + (x - i) + (y));
+            freedom.push(direction);
         } else {
             if (board[x - i][y].color != board[x][y].color) {
-                freedom.push("" + (x - i) + (y));
+                freedom.push(direction);
             } else { break }
         }
     }
     // Down
     for (let i = 1; i < 8 - x; i++) {
+        direction = `${x + i}${y}`
         if (x + i < 8 && !board[x + i][y]) {
-            freedom.push("" + (x + i) + (y));
+            freedom.push(direction);
         } else {
             if (x + i <= 7 && board[x + i][y].color != board[x][y].color) {
-                freedom.push("" + (x + i) + (y));
+                freedom.push(direction);
             } else { break }
         }
     }
@@ -44,43 +49,48 @@ function verMove(x, y, board) {
 }
 function diaMove(x, y, board) {
     let freedom = [];
+    let direction
     // RightDown
-    for (let i = 1; i < 8 - x && i < 8 - y; i++) {
+    for (let i = 1; i < 8 - x && i < 8 - y; i++) { 
+        direction= `${x+i}${y+i}`
         if (!board[x + i][y + i]) {
-            freedom.push("" + (x + i) + (y + i))
+            freedom.push(direction)
         } else {
             if (board[x + i][y + i].color != board[x][y].color) {
-                freedom.push("" + (x + i) + (y + i));
+                freedom.push(direction);
             } else { break }
         }
     }
     // LeftUp
     for (let i = 1; i <= x && i <= y; i++) {
+        direction=`${x-i}${y-i}`
         if (!board[x - i][y - i]) {
-            freedom.push("" + (x - i) + (y - i));
+            freedom.push(direction);
         } else {
             if (board[x - i][y - i].color != board[x][y].color) {
-                freedom.push("" + (x - i) + (y - i));
+                freedom.push(direction);
             } else { break }
         }
     }
     // RightUp
     for (let i = 1; i <= x && i < 8 - y; i++) {
+        direction=`${x-i}${y+i}`
         if (!board[x - i][y + i]) {
-            freedom.push("" + (x - i) + (y + i));
+            freedom.push(direction);
         } else {
             if (board[x - i][y + i].color != board[x][y].color) {
-                freedom.push("" + (x - i) + (y + i))
+                freedom.push(direction)
             } else { break }
         }
     }
     // LeftDown
     for (let i = 1; i < 8 - x && i <= y; i++) {
+        direction=`${x+i}${y-i}`
         if (!board[x + i][y - i]) {
-            freedom.push("" + (x + i) + (y - i));
+            freedom.push(direction);
         } else {
             if (board[x + i][y - i].color != board[x][y].color) {
-                freedom.push("" + (x + i) + (y - i))
+                freedom.push(direction)
             } else { break }
         }
     }
@@ -95,34 +105,34 @@ function pawn(x, y, xInit, yInit, board, z, turns) {
     let pas = false;
     // Move forward
     if (0 <= (xInit + d) && (xInit + d) <= 7 && !board[xInit + d][yInit]) {
-        freedom.push("" + (xInit + d) + (yInit));
+        freedom.push(`${xInit + d}${yInit}`);
         if (0 <= (xInit + 2 * d) && (xInit + 2 * d) <= 7 && !board[xInit + d][yInit] && !board[xInit + d * 2][yInit] && (xInit == 3.5 - 2.5 * d)) {
-            freedom.push("" + (xInit + 2 * d) + (yInit));
+            freedom.push(`${xInit + 2 * d}${yInit}`);
         }
     }
     // Take out Right
     if (0 <= (xInit + d) && (xInit + d) <= 7 && board[xInit + d][yInit + 1]) {
         if (board[xInit + d][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + d) + (yInit + 1));
+            freedom.push(`${xInit + d}${yInit + 1}`);
         }
     }
     // Take out left
     if (0 <= (xInit + d) && (xInit + d) <= 7 && board[xInit + d][yInit - 1]) {
         if (board[xInit + d][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + d) + (yInit - 1));
+            freedom.push(`${xInit + d}${yInit - 1}`);
         }
     }
     // En passant right
     if ((xInit == 3.5 + 0.5 * d) && board[xInit][yInit + 1]) {
         if (board[xInit][yInit + 1].color != board[xInit][yInit].color && board[xInit][yInit + 1].type == "pawn" && (board[xInit][yInit + 1].turns == turns || board[xInit][yInit + 1].turns == (turns - 1))) {
-            freedom.push("" + (xInit + d) + (yInit + 1));
+            freedom.push(`${xInit + d}${yInit + 1}`);
             pas = true;
         }
     }
     // En passant left
     if ((xInit == 3.5 + 0.5 * d) && board[xInit][yInit - 1]) {
         if (board[xInit][yInit - 1].color != board[xInit][yInit].color && board[xInit][yInit - 1].type == "pawn" && (board[xInit][yInit - 1].turns == turns || board[xInit][yInit - 1].turns == (turns - 1))) {
-            freedom.push("" + (xInit + d) + (yInit - 1));
+            freedom.push(`${xInit + d}${yInit - 1}`);
             pas = true;
         }
     }
@@ -167,42 +177,42 @@ function horse(x, y, xInit, yInit, board, z) {
     let freedom = [];
     if (xInit + 2 <= 7 && yInit + 1 <= 7) {
         if (!board[xInit + 2][yInit + 1] || board[xInit + 2][yInit + 1] && board[xInit + 2][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 2) + (yInit + 1));
+            freedom.push(`${xInit + 2}${yInit + 1}`);
         }
     }
     if (xInit + 2 <= 7 && yInit - 1 >= 0) {
         if (!board[xInit + 2][yInit - 1] || board[xInit + 2][yInit - 1] && board[xInit + 2][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 2) + (yInit - 1));
+            freedom.push(`${xInit + 2}${yInit - 1}`);
         }
     }
     if (xInit - 2 >= 0 && yInit + 1 <= 7) {
         if (!board[xInit - 2][yInit + 1] || board[xInit - 2][yInit + 1] && board[xInit - 2][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 2) + (yInit + 1));
+            freedom.push(`${xInit - 2}${yInit + 1}`);
         }
     }
     if (xInit - 2 >= 0 && yInit - 1 >= 0) {
         if (!board[xInit - 2][yInit - 1] || board[xInit - 2][yInit - 1] && board[xInit - 2][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 2) + (yInit - 1));
+            freedom.push(`${xInit - 2}${yInit - 1}`);
         }
     }
     if (xInit + 1 <= 7 && yInit + 2 <= 7) {
         if (!board[xInit + 1][yInit + 2] || board[xInit + 1][yInit + 2] && board[xInit + 1][yInit + 2].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 1) + (yInit + 2));
+            freedom.push(`${xInit + 1}${yInit + 2}`);
         }
     }
     if (xInit + 1 <= 7 && yInit - 2 >= 0) {
         if (!board[xInit + 1][yInit - 2] || board[xInit + 1][yInit - 2] && board[xInit + 1][yInit - 2].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 1) + (yInit - 2));
+            freedom.push(`${xInit + 1}${yInit - 2}`);
         }
     }
     if (xInit - 1 >= 0 && yInit + 2 <= 7) {
         if (!board[xInit - 1][yInit + 2] || board[xInit - 1][yInit + 2] && board[xInit - 1][yInit + 2].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 1) + (yInit + 2));
+            freedom.push(`${xInit - 1}${yInit + 2}`);
         }
     }
     if (xInit - 1 >= 0 && yInit - 2 >= 0) {
         if (!board[xInit - 1][yInit - 2] || board[xInit - 1][yInit - 2] && board[xInit - 1][yInit - 2].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 1) + (yInit - 2));
+            freedom.push(`${xInit - 1}${yInit - 2}`);
         }
     }
     if (z == 2) {
@@ -222,49 +232,49 @@ function king(x, y, xInit, yInit, board, z, turns) {
     // RightDown
     if ((xInit + 1) < 8 && (yInit + 1) < 8) {
         if ((!board[xInit + 1][yInit + 1]) || (board[xInit + 1][yInit + 1]) && board[xInit + 1][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 1) + (yInit + 1));
+            freedom.push(`${xInit + 1}${yInit + 1}`);
         }
     }
     // LeftUp   
     if ((xInit - 1) >= 0 && (yInit - 1) < 8) {
         if ((!board[xInit - 1][yInit - 1]) || (board[xInit - 1][yInit - 1]) && board[xInit - 1][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 1) + (yInit - 1));
+            freedom.push(`${xInit - 1}${yInit - 1}`);
         }
     }
     // RightUp   
     if ((xInit - 1) >= 0 && (yInit + 1) < 8) {
         if ((!board[xInit - 1][yInit + 1]) || (board[xInit - 1][yInit + 1]) && board[xInit - 1][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 1) + (yInit + 1));
+            freedom.push(`${xInit - 1}${yInit + 1}`);
         }
     }
     // LeftDown    
     if ((xInit + 1) < 8 && (yInit - 1) >= 0) {
         if ((!board[xInit + 1][yInit - 1]) || (board[xInit + 1][yInit - 1]) && board[xInit + 1][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 1) + (yInit - 1));
+            freedom.push(`${xInit + 1}${yInit - 1}`);
         }
     }
     // Right
     if (yInit + 1 <= 7) {
         if ((!board[xInit][yInit + 1]) || (board[xInit][yInit + 1]) && board[xInit][yInit + 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit) + (yInit + 1));
+            freedom.push(`${xInit}${yInit + 1}`);
         }
     }
     // Left
     if (yInit - 1 >= 0) {
         if ((!board[xInit][yInit - 1]) || (board[xInit][yInit - 1]) && board[xInit][yInit - 1].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit) + (yInit - 1));
+            freedom.push(`${xInit}${yInit - 1}`);
         }
     }
     // Down
     if (xInit + 1 <= 7) {
         if ((!board[xInit + 1][yInit]) || (board[xInit + 1][yInit]) && board[xInit + 1][yInit].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit + 1) + (yInit));
+            freedom.push(`${xInit + 1}${yInit}`);
         }
     }
     // Up
     if (xInit - 1 >= 0) {
         if ((!board[xInit - 1][yInit]) || (board[xInit - 1][yInit]) && board[xInit - 1][yInit].color != board[xInit][yInit].color) {
-            freedom.push("" + (xInit - 1) + (yInit));
+            freedom.push(`${xInit - 1}${yInit}`);
         }
     }
     if (z == 2) {
@@ -277,12 +287,12 @@ function king(x, y, xInit, yInit, board, z, turns) {
     let ks = false;
     let qs = false;
     if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][7] && board[xInit][7].type == "rook" && !board[xInit][7].turns && !board[xInit][5] && !board[xInit][6] && !endangered(xInit, 5, board, color) && !endangered(xInit, 6, board, color)) {
-        freedom.push("" + (xInit) + (yInit + 2));
+        freedom.push(`${xInit}${yInit + 2}`);
         ks = true
     }
     // Queenside
     if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][0] && board[xInit][0].type == "rook" && !board[xInit][0].turns && !board[xInit][2] && !board[xInit][1] && !board[xInit][3] && !endangered(xInit, 2, board, color) && !endangered(xInit, 3, board, color)) {
-        freedom.push("" + (xInit) + (yInit - 2));
+        freedom.push(`${xInit}${yInit - 2}`);
         qs = true
     }
 
@@ -336,6 +346,10 @@ function rule(x, y, xs, ys, board, z, turns) {
     }
 }
 function movable(freedom, x, y) {
-    return freedom.indexOf("" + x + y) > -1
+    console.log("movable")
+    console.log(freedom)
+    console.log(`${x}${y}`)
+    console.log(freedom.indexOf(`${x}${y}`) > -1)
+    return freedom.indexOf(`${x}${y}`) > -1
 }
 export { rule }
