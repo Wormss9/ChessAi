@@ -105,4 +105,4 @@ function initialBoard() {
     return board
 }
 
-export { createArray, initialBoard, drawBoard, refresh, boardJson }
+export { clone, createArray, initialBoard, drawBoard, refresh, boardJson }

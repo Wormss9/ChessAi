@@ -1,25 +1,19 @@
+import { rule } from './movement.js'
+
 function check(board, color) {
-    var kx = -1;
-    var ky;
-    for (
-        let i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] && board[i][j].type == "king" && board[i][j].color == color) {
-                kx = i;
-                ky = j;
-                break;
+            if (board[i][j] && board[i][j].type == 5 && board[i][j].color == color) {
+                return endangered([i, j], board, color)
             }
         }
-        if (kx != -1) {
-            break;
-        }
     }
-    return endangered(kx, ky, board, color);
+    throw "King not found"
 }
-function endangered(kx, ky, board, color) {
-    for (let k = 0; k < 8; k++) {
-        for (let l = 0; l < 8; l++) {
-            if (board[k][l] && board[k][l].color != color && rule([kx, ky], [k, l], board, 1, turns)) {
+function endangered([x, y], board, color) {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            if (board[i][j] && board[i][j].color != color && rule([x, y], [i, j], board, 1)) {
                 return true;
             }
         }
@@ -32,7 +26,7 @@ function checkmate(board, color) {
     var ky;
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (board[i][j] && board[i][j].type == "king" && board[i][j].color == color) {
+            if (board[i][j] && board[i][j].type == 5 && board[i][j].color == color) {
                 kx = i;
                 ky = j;
                 break;

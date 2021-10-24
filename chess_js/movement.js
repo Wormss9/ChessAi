@@ -1,3 +1,5 @@
+import { endangered } from './checker.js'
+
 function verMove([x, y], board) {
     let freedom = [];
     let direction
@@ -84,7 +86,7 @@ function diaMove([x, y], board) {
         }
     }
     /* LeftDown */
-        for (let i = 1; i < 8 - x && i <= y; i++) {
+    for (let i = 1; i < 8 - x && i <= y; i++) {
         direction = `${x + i}${y - i}`
         if (!board[x + i][y - i]) {
             freedom.push(direction);
@@ -96,7 +98,7 @@ function diaMove([x, y], board) {
     }
     return freedom;
 }
-function pawn([x, y], [xInit, yInit], board, z, turns) {
+function pawn([x, y], [xInit, yInit], board, mode, turns) {
     let d = 1;
     if (!board[xInit][yInit].color) {
         d = -1;
@@ -139,7 +141,7 @@ function pawn([x, y], [xInit, yInit], board, z, turns) {
 
     if (movable(freedom, [x, y])) {
         /* Turn adder */
-        if (z == 0) {
+        if (!mode) {
             board[xInit][yInit].turns = turns;
         }
         /* MP takout right */
@@ -152,28 +154,18 @@ function pawn([x, y], [xInit, yInit], board, z, turns) {
         }
         return true;
     }
-    else {
-        if (z == 2) {
-            return freedom
-        }
-        return false
-    }
+    return false
 }
-function rook([x, y], [xInit, yInit], board, z, turns) {
-    if (z == 2) {
-        return verMove([xInit, yInit], board);
-    }
+function rook([x, y], [xInit, yInit], board, mode, turns) {
     if (movable(verMove([xInit, yInit], board), [x, y])) {
-        if (z == 0 && !board[xInit][yInit].turns) {
+        if (!mode && !board[xInit][yInit].turns) {
             board[xInit][yInit].turns = turns;
         }
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
-function horse([x, y], [xInit, yInit], board, z) {
+function horse([x, y], [xInit, yInit], board) {
     let freedom = [];
     if (xInit + 2 <= 7 && yInit + 1 <= 7) {
         if (!board[xInit + 2][yInit + 1] || board[xInit + 2][yInit + 1] && board[xInit + 2][yInit + 1].color != board[xInit][yInit].color) {
@@ -215,18 +207,12 @@ function horse([x, y], [xInit, yInit], board, z) {
             freedom.push(`${xInit - 1}${yInit - 2}`);
         }
     }
-    if (z == 2) {
-        return freedom;
-    }
     return movable(freedom, [x, y]);
 }
-function bishop([x, y], [xInit, yInit], board, z) {
-    if (z == 2) {
-        return diaMove([xInit, yInit], board);
-    }
+function bishop([x, y], [xInit, yInit], board) {
     return movable(diaMove([xInit, yInit], board), [x, y]);
 }
-function king([x, y], [xInit, yInit], board, z, turns) {
+function king([x, y], [xInit, yInit], board, mode, turns) {
     let freedom = [];
     let color = true
     /* RightDown */
@@ -241,13 +227,13 @@ function king([x, y], [xInit, yInit], board, z, turns) {
             freedom.push(`${xInit - 1}${yInit - 1}`);
         }
     }
-    /* RightUp */   
+    /* RightUp */
     if ((xInit - 1) >= 0 && (yInit + 1) < 8) {
         if ((!board[xInit - 1][yInit + 1]) || (board[xInit - 1][yInit + 1]) && board[xInit - 1][yInit + 1].color != board[xInit][yInit].color) {
             freedom.push(`${xInit - 1}${yInit + 1}`);
         }
     }
-    /* LeftDown */  
+    /* LeftDown */
     if ((xInit + 1) < 8 && (yInit - 1) >= 0) {
         if ((!board[xInit + 1][yInit - 1]) || (board[xInit + 1][yInit - 1]) && board[xInit + 1][yInit - 1].color != board[xInit][yInit].color) {
             freedom.push(`${xInit + 1}${yInit - 1}`);
@@ -277,21 +263,18 @@ function king([x, y], [xInit, yInit], board, z, turns) {
             freedom.push(`${xInit - 1}${yInit}`);
         }
     }
-    if (z == 2) {
-        return freedom;
-    }
-    if (z == 0) {
+    if (!mode) {
         color = xInit == 0
     }
     /* Kingside */
     let ks = false;
     let qs = false;
-    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][7] && board[xInit][7].type == "rook" && !board[xInit][7].turns && !board[xInit][5] && !board[xInit][6] && !endangered(xInit, 5, board, color) && !endangered(xInit, 6, board, color)) {
+    if (!mode && !board[xInit][yInit].turns && !endangered([xInit, yInit], board, color) && board[xInit][7] && board[xInit][7].type == "rook" && !board[xInit][7].turns && !board[xInit][5] && !board[xInit][6] && !endangered([xInit, 5], board, color) && !endangered([xInit, 6], board, color)) {
         freedom.push(`${xInit}${yInit + 2}`);
         ks = true
     }
     /* Queenside */
-    if (z == 0 && !board[xInit][yInit].turns && !endangered(xInit, yInit, board, color) && board[xInit][0] && board[xInit][0].type == "rook" && !board[xInit][0].turns && !board[xInit][2] && !board[xInit][1] && !board[xInit][3] && !endangered(xInit, 2, board, color) && !endangered(xInit, 3, board, color)) {
+    if (!mode && !board[xInit][yInit].turns && !endangered([xInit, yInit], board, color) && board[xInit][0] && board[xInit][0].type == "rook" && !board[xInit][0].turns && !board[xInit][2] && !board[xInit][1] && !board[xInit][3] && !endangered([xInit, 2], board, color) && !endangered([xInit, 3], board, color)) {
         freedom.push(`${xInit}${yInit - 2}`);
         qs = true
     }
@@ -299,7 +282,7 @@ function king([x, y], [xInit, yInit], board, z, turns) {
 
     if (movable(freedom, [x, y])) {
         /* Turn adder */
-        if (z == 0) {
+        if (!mode) {
             board[xInit][yInit].turns = turns;
         }
         /* KS takout right */
@@ -314,33 +297,25 @@ function king([x, y], [xInit, yInit], board, z, turns) {
         }
         return true;
     }
-    else {
-        if (z == 2) {
-            return freedom
-        }
-        return false
-    }
+    return false
 }
-function queen([x, y], [xInit, yInit], board, z) {
-    if (z == 2) {
-        return diaMove([xInit, yInit], board).concat(verMove([xInit, yInit], board));
-    }
+function queen([x, y], [xInit, yInit], board) {
     return movable(diaMove([xInit, yInit], board).concat(verMove([xInit, yInit], board)), [x, y]);
 }
-function rule(newPosition, position, board, z, turns) {
+function rule(newPosition, position, board, mode, turns) {
     switch (board[position[0]][position[1]].type) {
         case 6:
-            return pawn(newPosition, position, board, z, turns);
+            return pawn(newPosition, position, board, mode, turns);
         case 1:
-            return rook(newPosition, position, board, z, turns);
+            return rook(newPosition, position, board, mode, turns);
         case 2:
-            return horse(newPosition, position, board, z);
+            return horse(newPosition, position, board);
         case 3:
-            return bishop(newPosition, position, board, z);
+            return bishop(newPosition, position, board);
         case 4:
-            return queen(newPosition, position, board, z);
+            return queen(newPosition, position, board);
         case 5:
-            return king(newPosition, position, board, z, turns);
+            return king(newPosition, position, board, mode, turns);
         default:
             document.getElementById("error").innerHTML = "Unknown Piece";
     }
