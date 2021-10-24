@@ -75,7 +75,8 @@ function refresh(board) {
         }
     }
 }
-function initialiseBoard(board) {
+function initialBoard() {
+    let board = createArray(8, 8);
     board[0][0] = clone(pieces.wr);
     board[0][7] = clone(pieces.wr);
     board[7][0] = clone(pieces.br);
@@ -101,6 +102,7 @@ function initialiseBoard(board) {
             board[i + 2][j] = null;
         }
     }
+    return board
 }
 
-export { createArray, initialiseBoard, drawBoard, refresh, boardJson }
+export { createArray, initialBoard, drawBoard, refresh, boardJson }
