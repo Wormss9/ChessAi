@@ -1,11 +1,10 @@
 import { clone, initialBoard, refresh, boardJson } from './utils.js'
 import { pieces, pieceColor } from './pieces.js'
 import { rule } from './movement.js'
-//import { check, endangered, checkmate } from './checker.js'
+import { check } from './checker.js'
 
-let check = () => false
-let endangered = () => false
-let checkmate = () => false
+var checkmate = () => false
+
 //let info;
 //let boardBackup = createArray(8, 8);
 
