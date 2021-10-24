@@ -40,11 +40,7 @@ function boardJson(board) {
 }
 function translate(square) {
     if (!square) { return 0 }
-    let c = 0
-    if (!square.color) {
-        c = 10
-    }
-    return c + square.type
+    return !square * 10 + square.type
 }
 function drawBoard() {
     let board = "";
@@ -64,14 +60,14 @@ function drawBoard() {
 
     document.getElementById("table").innerHTML = board;
     for (let i = 0; i < 8; i++) {
-        document.getElementById("8" + i).innerHTML = String.fromCharCode(97 + i);
-        document.getElementById(i + "-1").innerHTML = i + 1;
+        document.getElementById(`8${i}`).innerHTML = String.fromCharCode(97 + i);
+        document.getElementById(`${i}-1`).innerHTML = i + 1;
     }
 }
 function refresh(board) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            const element = document.getElementById("" + i + j)
+            const element = document.getElementById(`${i}${j}`)
             if (board[i][j]) {
                 element.innerHTML = board[i][j].bn;
             }

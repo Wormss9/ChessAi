@@ -18,39 +18,23 @@ let turns = 1;
 
 class Change {
     constructor() {
-        let xs
-        let ys
+        let oldPosition
     }
-    change = (x, y, z, p) => {
-        let sel
-        //p = 0;
-        //console.log("Change " + x + y+z);
+    change = (position, z, p) => {
         switch (turn) {
             case 0:
-                //console.log("Case 0 selected"+x+y)
-                sel = selectPiece(x, y, board, z);
-                this.xs = sel[0];
-                this.ys = sel[1];
+                this.oldPosition = selectPiece(position, board, z);
                 break;
             case 1:
-                caseh = movePiece(x, y, this.xs, this.ys, board, z, p, turns);
+                caseh = movePiece(position, this.oldPosition, board, z, p, turns);
                 info += turn;
-                if (blackAI) {
-                    return changeBlack();
-                }
                 return caseh;
             case 2:
-                //console.log("Case 2 selected"+x+y)
-                sel = selectPiece(x, y, board, z);
-                this.xs = sel[0];
-                this.ys = sel[1];
+                this.oldPosition = selectPiece(position, board, z);
                 break;
             case 3:
-                caseh = movePiece(x, y, this.xs, this.ys, board, z, p, turns);
+                caseh = movePiece(position, this.oldPosition, board, z, p, turns);
                 info += turn;
-                if (whiteAI) {
-                    return changeWhite();
-                }
                 return caseh;
         }
     }
@@ -90,7 +74,7 @@ function endangered(kx, ky, board, color) {
         //console.log("Endangered "+k)
         for (let l = 0; l < 8; l++) {
             //console.log("Endangered "+k+l)
-            if (board[k][l] && board[k][l].color != color && rule(kx, ky, k, l, board, 1, turns)) {
+            if (board[k][l] && board[k][l].color != color && rule([kx, ky], [k, l], board, 1, turns)) {
                 //console.log("Endamgered by" + k + l);
                 //console.log("Endamgered by" + board[k][l].color);
                 //console.log("Endamgered by" + color);
@@ -101,9 +85,9 @@ function endangered(kx, ky, board, color) {
     return false;
 }
 
-function movePiece(x, y, xs, ys, board, z, p, turns) {
+function movePiece([x, y], [xs, ys], board, z, p, turns) {
     const color = turn == 1;
-    if (rule(x, y, xs, ys, board, z, turns)) {
+    if (rule([x, y], [xs, ys], board, z, turns)) {
         document.querySelector('#button').value = `${pieceColor[!color]} select`;
         document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
         //jsonBoard = JSON.stringify(board);
@@ -318,9 +302,9 @@ function checkmate(board, color) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if (board[i][j] && board[i][j].color != color) {
-                if (rule(0, 0, i, j, board, 2, turns).length != 0) {
+                if (rule([0, 0], [i, j], board, 2, turns).length != 0) {
                     pieces.push("" + i + j);
-                    freedoms.push(rule(0, 0, i, j, board, 2, turns));
+                    freedoms.push(rule([0, 0], [i, j], board, 2, turns));
                 }
             }
         }
@@ -330,8 +314,8 @@ function checkmate(board, color) {
     while (mate == true && i < pieces.length) {
         for (let j = 0; j < freedoms[i].length; j++) {
             //console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
-            change(pieces[i][0], pieces[i][1], 1);
-            if (change(freedoms[i][j][0], freedoms[i][j][1], 1)) {
+            change(pieces[i], 1);
+            if (change(freedoms[i][j], 1)) {
                 //console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
                 mate = false;
                 break;
@@ -342,7 +326,7 @@ function checkmate(board, color) {
     return mate;
 }
 
-function selectPiece(x, y, board, z) {
+function selectPiece([x, y], board, z) {
     if (gameover) {
         console.log(gameover)
         document.getElementById("error").innerHTML = "Game over";
@@ -375,7 +359,7 @@ function selectPiece(x, y, board, z) {
         document.getElementById("error").innerHTML = "Not your piece!";
         return false
     }
-    return ([x,y])
+    return ([x, y])
 }
 
 window.processButton = () => {
@@ -389,10 +373,11 @@ window.processButton = () => {
         console.log(p);
     }
     if (x < 0 || y < 0 || x > 7 || y > 7) { return false; }
-    change(parseInt(x), parseInt(y), 0, parseInt(p));
+    change([parseInt(x), parseInt(y)], 0, parseInt(p));
 }
 window.processClick = (coordinates) => {
     let x = parseInt(coordinates.slice(0, 1), 10);
     let y = parseInt(coordinates.slice(1, 2), 10);
-    change(x, y, 0, 1);
+    console.log("processClick", [x, y])
+    change([x, y], 0, 1);
 }
