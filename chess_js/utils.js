@@ -34,9 +34,9 @@ function clone(obj) {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 function boardJson(board) {
-    return board.flat().flat().map(square => {
+    return JSON.stringify(board.flat().flat().map(square => {
         return (`${translate(square)},`)
-    })
+    }))
 }
 function translate(square) {
     if (!square) { return 0 }
