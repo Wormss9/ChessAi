@@ -2,7 +2,7 @@ import { drawBoard } from './utils.js'
 import Changer from './changer.js'
 
 drawBoard();
-const changer = new Changer()
+const changer = new Changer({})
 
 window.processButton = () => {
     const input = document.getElementById("input").value;
