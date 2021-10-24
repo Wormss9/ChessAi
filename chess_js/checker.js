@@ -20,7 +20,7 @@ function endangered([x, y], board, color) {
     }
     return false;
 }
-function checkmate(board, color) {
+function checkmate(board, color, change) {
     if (check(board, color)) {
         /* Freedoms */
         let pieces = [];

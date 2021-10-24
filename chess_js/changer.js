@@ -1,12 +1,9 @@
 import { clone, initialBoard, refresh, boardJson } from './utils.js'
 import { pieces, pieceColor } from './pieces.js'
 import { rule } from './movement.js'
-import { check } from './checker.js'
-
-var checkmate = () => false
+import { check, checkmate } from './checker.js'
 
 //let info;
-//let boardBackup = createArray(8, 8);
 
 export default class Changer {
     constructor({ whiteAI, blackAI }) {
@@ -135,7 +132,6 @@ export default class Changer {
                 if (!mode) {
                     this.saveJsonBoard();
                 }
-
             }
             else {
                 this.turnPhase = 0;
@@ -144,79 +140,41 @@ export default class Changer {
                     this.saveJsonBoard();
                 }
             }
-            var checkStatus = check(board, !color);
+            const checkStatus = check(board, !color);
             /* Board saving */
             if (!mode) {
                 boardBackup = clone(board)
             }
             /* Checkmate */
             if (!mode && checkStatus) {
-                if (checkmate(board, !color)) {
+                if (checkmate(board, color, this.change)) {
                     document.getElementById("error").innerHTML = "Checkmate";
-                    gameover = true;
+                    this.gameover = true;
                 }
                 else {
                     document.getElementById("error").innerHTML = "Check";
-                    var tcolor = "null";
-                    for (let i = 0; i < 8; i++) {
-                        for (let j = 0; j < 8; j++) {
-                            if (board[i][j] != boardBackup[i][j]) {
-                                if (board[i][j]) {
-                                    tcolor = board[i][j].color;
-                                }
-                                board[i][j] = boardBackup[i][j];
-                            }
-                        }
-                    }
-                    if (tcolor == "White") {
-                        this.turnPhase = 0;
-                    }
-                    if (tcolor == "Black") {
-                        this.turnPhase = 2;
-                    }
+                    board = clone(boardBackup)
                     refresh(board);
                 }
 
             }
             /* Stalemate */
             if (!mode && !checkStatus) {
-                if (checkmate(board, !color)) {
+                if (checkmate(board, color, this.change)) {
                     document.getElementById("error").innerHTML = "Stalemate";
                     gameover = true;
                 }
                 else {
-                    var tcolor = "null";
-                    for (let i = 0; i < 8; i++) {
-                        for (let j = 0; j < 8; j++) {
-                            if (board[i][j] != boardBackup[i][j]) {
-                                if (board[i][j]) {
-                                    tcolor = board[i][j].color
-                                }
-                                board[i][j] = boardBackup[i][j];
-                            }
-                        }
-                    }
-                    if (tcolor == "White") {
-                        this.turnPhase = 0;
-                    }
-                    if (tcolor == "Black") {
-                        this.turnPhase = 2;
-                    }
+                    board = clone(boardBackup)
                     refresh(board);
                 }
-
             }
             refresh(board);
 
             return true;
         }
         else {
-            if (this.turnPhase == 1) {
-                this.turnPhase = 0;
-            }
-            else {
-                this.turnPhase = 2;
-            }
+            this.turnPhase -= 1
             document.querySelector('#button').value = `${pieceColor[color]} select`;
             document.getElementById("error").innerHTML = "Cant go there";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
@@ -230,7 +188,7 @@ export default class Changer {
         this.turnPhase = 0
         this.currentTurn = 1
         this.gameover = false
-        refresh(board)
+        refresh(this.board)
         document.getElementById("error").innerHTML = "Game over";
         document.querySelector('#button').value = "White select";
         return false;
