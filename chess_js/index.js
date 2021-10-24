@@ -1,8 +1,12 @@
 import { drawBoard } from './utils.js'
 import Changer from './changer.js'
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+
 drawBoard();
-const changer = new Changer({})
+const changer = new Changer({ whiteAI:urlParams.get('whiteAI'), blackAI:urlParams.get('blackAI'),tf})
 
 window.processButton = () => {
     const input = document.getElementById("input").value;

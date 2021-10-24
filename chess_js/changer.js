@@ -2,11 +2,12 @@ import { clone, initialBoard, refresh, boardJson } from './utils.js'
 import { pieces, pieceColor } from './pieces.js'
 import { rule } from './movement.js'
 import { check, checkmate } from './checker.js'
-
-//let info;
+import Predictor from './predictor.js'
 
 export default class Changer {
-    constructor({ whiteAI, blackAI }) {
+    constructor({ whiteAI, blackAI, tf }) {
+        console.log(whiteAI, blackAI)
+        this.predictor = new Predictor(tf)
         this.whiteAI = whiteAI
         this.blackAI = blackAI
         this.currentTurn = 1;
