@@ -65,19 +65,13 @@ function check(board, color) {
             break;
         }
     }
-    //console.log("King is:" + kx + ky)
     return endangered(kx, ky, board, color);
 }
 
 function endangered(kx, ky, board, color) {
     for (let k = 0; k < 8; k++) {
-        //console.log("Endangered "+k)
         for (let l = 0; l < 8; l++) {
-            //console.log("Endangered "+k+l)
             if (board[k][l] && board[k][l].color != color && rule([kx, ky], [k, l], board, 1, turns)) {
-                //console.log("Endamgered by" + k + l);
-                //console.log("Endamgered by" + board[k][l].color);
-                //console.log("Endamgered by" + color);
                 return true;
             }
         }
@@ -150,7 +144,6 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
                 turn = 0;
             }
             else {
-                //console.log("Case changed "+x+y)
                 turn = 2;
             }
             board[moving.x][moving.y] = moving.piece;
@@ -158,14 +151,11 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
             document.getElementById("error").innerHTML = "Check";
             additionalInfo = "Check";
             document.getElementById("" + xs + ys).setAttribute("style", 'font-weight: normal;');
-            //console.log("MovePiece false backmove")
             return false;
         }
         if (turn == 1) {
-            //console.log("Case changed "+x+y)
             turn = 2;
             if (z == 0) {
-                //console.log("" + (xs) + 1) + (ys) + 1) + " " + (x + 1) + (y + 1));
                 jsonBoard = boardJson(board);
             }
 
@@ -179,9 +169,8 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
                 console.log("Turn " + turns)
             }
         }
-        //console.log("Z: " + z)
         var checkStatus = check(board, !color);
-        //Board saving
+        /* Board saving */
         if (z == 0) {
             info += "Board: \n";
             for (let i = 0; i < 8; i++) {
@@ -191,7 +180,7 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
                 }
             }
         }
-        //Checkmate
+        /* Checkmate */
         if (z == 0 && checkStatus) {
             if (checkmate(board, !color)) {
                 document.getElementById("error").innerHTML = "Checkmate";
@@ -215,16 +204,13 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
-                    //console.log("Case changed "+x+y)
                     turn = 2;
                 }
-                //board = boardBackup;
-                //drawBoard(turn)
                 refresh(board);
             }
 
         }
-        //Stalemate
+        /* Stalemate */
         if (z == 0 && !checkStatus) {
             if (false && checkmate(board, !color)) {
                 document.getElementById("error").innerHTML = "Stalemate";
@@ -247,16 +233,12 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
                     turn = 0;
                 }
                 if (tcolor == "Black") {
-                    //console.log("Case changed "+x+y)
                     turn = 2;
                 }
-                //board = boardBackup;
-                //drawBoard(turn)
                 refresh(board);
             }
 
         }
-        //drawBoard(turn)
         refresh(board);
 
         return true;
@@ -266,7 +248,6 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
             turn = 0;
         }
         else {
-            //console.log("Case changed "+x+y)
             turn = 2;
         }
         additionalInfo = "Cant go there";
@@ -280,7 +261,7 @@ function movePiece([x, y], [xs, ys], board, z, p, turns) {
 }
 
 function checkmate(board, color) {
-    //king
+    /* King */
     var kx = -1;
     var ky;
     for (let i = 0; i < 8; i++) {
@@ -295,7 +276,7 @@ function checkmate(board, color) {
             break;
         }
     }
-    //freedoms
+    /* Freedoms */
     var pieces = [];
     var freedoms = [];
     color = !color
@@ -313,10 +294,8 @@ function checkmate(board, color) {
     var i = 0;
     while (mate == true && i < pieces.length) {
         for (let j = 0; j < freedoms[i].length; j++) {
-            //console.log("Piece " + board[pieces[i][0]][pieces[i][1]].type + ": " + i + ", on:" + (pieces[i][0]) + (pieces[i][1]));
             change(pieces[i], 1);
             if (change(freedoms[i][j], 1)) {
-                //console.log("Final piece " + board[freedoms[i][j][0]][freedoms[i][j][1]].type + ": " + i + ", on:" + (freedoms[i][j][0]) + (freedoms[i][j][1]));
                 mate = false;
                 break;
             }
@@ -349,11 +328,9 @@ function selectPiece([x, y], board, z) {
         else {
             turn = 3;
         }
-        //console.log("Bold"+x+y+" "+xs+ys)
         if (z == 0) {
             document.getElementById("" + x + y).setAttribute("style", 'font-weight: bold;');
         }
-        //console.log("Case = 1 " + x + y);
     }
     else {
         document.getElementById("error").innerHTML = "Not your piece!";
