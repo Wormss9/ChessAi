@@ -66,16 +66,22 @@ const pieces = {
         turn: null
     }
 }
-const pieceType= {
- 1:"rook",
- 2:"horse",
- 3:"bishop",
- 4:"queen",
- 5:"king",
- 6:"pawn",
+const pieceType = {
+    1: "rook",
+    2: "horse",
+    3: "bishop",
+    4: "queen",
+    5: "king",
+    6: "pawn",
+    rook: 1,
+    horse: 2,
+    bishop: 3,
+    queen: 4,
+    king: 5,
+    pawn: 6
 }
-const pieceColor={
-    true:"White",
-    false:"Black"
+const pieceColor = {
+    true: "White",
+    false: "Black"
 }
 export { pieces, pieceType, pieceColor }
