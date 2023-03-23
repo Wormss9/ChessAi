@@ -4,15 +4,16 @@ import { toast } from "vue3-toastify";
 import { Color } from "./types";
 import { freedom, movable, rule } from "./movement";
 import { check, checkmate } from "./check";
-import { createBoard } from "./board";
 
-export const selectPiece = ([x, y]: Position, state: State) => {
+export const selectPiece = ([x, y]: Position, state: State, test: boolean) => {
   const color: Color = state.turn == 0 ? "White" : "Black";
   if (state.board[x][y] && state.board[x][y]?.color == color) {
     state.savedPosition = [x, y];
     state.turn += 1;
   } else {
-    toast.error("Not your piece");
+    if (!test) {
+      toast.error("Not your piece");
+    }
   }
 };
 export const movePiece = (
@@ -26,9 +27,11 @@ export const movePiece = (
   const [x, y] = position;
   const [xs, ys] = state.savedPosition;
   if (!movable(freedom(state.savedPosition, state), position)) {
-    state.turn = state.turn == 1 ? 0 : 2;
     state.savedPosition = undefined;
-    toast.error("Cant go there");
+    if (!test) {
+      toast.error("Can't go there");
+    }
+    state.turn -= 1;
     return false;
   }
 
@@ -51,22 +54,14 @@ export const movePiece = (
     promote(promoteTo, state, [x, y]);
   }
   if (check(state, color[0])) {
-    state.turn -= 1;
     state.board[moving.position[0]][moving.position[1]] = moving.piece;
     state.board[moved.position[0]][moved.position[1]] = moved.piece;
     toast.error("Check");
+    state.turn -= 1;
     return false;
   }
 
   const checkStatus = check(state, color[1]);
-
-  //Board saving
-  const boardBackup = createBoard();
-  for (const [i, row] of state.board.entries()) {
-    for (const [j, piece] of row.entries()) {
-      boardBackup[i][j] = { ...piece };
-    }
-  }
 
   //Checkmate
   if (checkStatus && !test) {
@@ -75,49 +70,14 @@ export const movePiece = (
       state.gameover = true;
     } else {
       toast.info("Check");
-      let tcolor: Color;
-      for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-          if (state.board[i][j] != boardBackup[i][j]) {
-            if (state.board[i][j]) {
-              tcolor = state.board[i][j].color;
-            }
-            // JS magic, an empty proxy is something
-            state.board[i][j] = boardBackup[i][j]?.color
-              ? { ...boardBackup[i][j] }
-              : null;
-          }
-        }
-      }
-      state.turn = tcolor == "White" ? 0 : 2;
     }
   }
 
-  // // Stalemate
-  // if (!checkStatus && !test) {
-  //   if (checkmate(state, color[1])) {
-  //     toast("Stalemate");
-  //     state.gameover = true;
-  //   } else {
-  //     let tcolor: Color;
-  //     for (let i = 0; i < 8; i++) {
-  //       for (let j = 0; j < 8; j++) {
-  //         if (state.board[i][j] != boardBackup[i][j]) {
-  //           if (state.board[i][j] != null) {
-  //             tcolor = state.board[i][j].color;
-  //           }
-  //           state.board[i][j] = boardBackup[i][j];
-  //         }
-  //       }
-  //     }
-  //     if (tcolor == "White") {
-  //       state.turn = 0;
-  //     }
-  //     if (tcolor == "Black") {
-  //       state.turn = 2;
-  //     }
-  //   }
-  // }
+  // Stalemate
+  if (!checkStatus && !test && checkmate(state, color[1])) {
+    toast("Stalemate");
+    state.gameover = true;
+  }
   state.turn = state.turn == 1 ? 2 : 0;
   return true;
 };
@@ -128,7 +88,7 @@ export const change = (
 ): boolean | undefined => {
   switch (state.turn % 2) {
     case 0:
-      selectPiece(position, state);
+      selectPiece(position, state, test);
       break;
     case 1:
       return movePiece(position, state, test);

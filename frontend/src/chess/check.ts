@@ -1,14 +1,11 @@
 import { Color, Position, State } from "./types";
 import { endangered, freedom } from "./movement";
+import { restoreState, saveState } from "./utils";
 
 const find_king = (state: State, color: Color): Position => {
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      if (
-        state.board[i][j] &&
-        state.board[i][j].type == "king" &&
-        state.board[i][j].color == color
-      ) {
+  for (const [i, row] of state.board.entries()) {
+    for (const [j, piece] of row.entries()) {
+      if (piece && piece.type == "king" && piece.color == color) {
         return [i, j] as Position;
       }
     }
@@ -20,18 +17,19 @@ export function check(state: State, color: Color) {
   return endangered(find_king(state, color), state, color);
 }
 
-export function checkmate(state: State, myColor: Color) {
-  //freedoms
+export function checkmate(state: State, myColor: Color): boolean {
+  const savedState = saveState(state);
   const pieces: Position[] = [];
   const freedoms: Position[][] = [];
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      if (state.board[i][j] && state.board[i][j].color == myColor) {
+  for (const [i, row] of state.board.entries()) {
+    for (const [j, piece] of row.entries()) {
+      if (piece && piece.color == myColor) {
         pieces.push([i, j]);
         freedoms.push(freedom([i, j], state));
       }
     }
   }
+  console.log(pieces);
   for (const [i, piece] of pieces.entries()) {
     for (const freedom of freedoms[i]) {
       const [xs, ys] = piece;
@@ -48,12 +46,14 @@ export function checkmate(state: State, myColor: Color) {
       state.board[xs][ys] = undefined;
 
       if (check(state, myColor)) {
+        //Prepare for next try
         state.board[moving.position[0]][moving.position[1]] = {
           ...moving.piece,
         };
         state.board[moved.position[0]][moved.position[1]] = { ...moved.piece };
       } else {
-        console.log(moving, moved);
+        //Prepare for next turn
+        restoreState(state, savedState);
         return false;
       }
     }
