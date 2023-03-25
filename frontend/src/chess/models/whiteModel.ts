@@ -337,7 +337,7 @@ export const whiteModel = {
   },
   weightsManifest: [
     {
-      paths: [`${baseURL}/whiteModel.bin`],
+      paths: [`${baseURL}whiteModel.bin`],
       weights: [
         {
           name: "dense/kernel",
