@@ -3,6 +3,9 @@ import { ModelAndWeightsConfig } from "@tensorflow/tfjs";
 const baseURL =
   window.location.protocol === "https:" ? window.location.pathname : ".";
 
+console.log(window.location.pathname);
+console.log(`${baseURL}whiteModel.bin`);
+
 export const whiteModel = {
   format: "layers-model",
   generatedBy: "keras v2.4.0",
