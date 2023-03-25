@@ -1,10 +1,7 @@
 import { ModelAndWeightsConfig } from "@tensorflow/tfjs";
 
 const baseURL =
-  window.location.protocol === "https:" ? window.location.pathname : ".";
-
-console.log(window.location.pathname);
-console.log(`${baseURL}whiteModel.bin`);
+  window.location.protocol === "https:" ? window.location.href : "./";
 
 export const whiteModel = {
   format: "layers-model",
