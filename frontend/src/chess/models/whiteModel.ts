@@ -1,5 +1,8 @@
 import { ModelAndWeightsConfig } from "@tensorflow/tfjs";
 
+const baseURL =
+  window.location.protocol === "https:" ? window.location.origin : ".";
+
 export const whiteModel = {
   format: "layers-model",
   generatedBy: "keras v2.4.0",
@@ -334,7 +337,7 @@ export const whiteModel = {
   },
   weightsManifest: [
     {
-      paths: ["./whiteModel.bin"],
+      paths: [`${baseURL}/whiteModel.bin`],
       weights: [
         {
           name: "dense/kernel",
